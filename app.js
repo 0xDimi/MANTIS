@@ -1,19 +1,20 @@
-const STORAGE_KEY = 'xyz-labs-demo-state-v8';
-const LEGACY_STORAGE_KEY = 'xyz-labs-demo-state-v7';
+const STORAGE_KEY = 'xyz-labs-demo-state-v81';
+const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
+const ONBOARDING_VERSION = 'v81';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
 
 const copy = {
   en: {
     appTitle: 'xyz Labs Demo',
-    appSubtitle: 'Private market sandbox for Greek event pricing',
-    productIdentity: 'A private prediction market board, slowly coming to life',
+    appSubtitle: 'Private preview of a Greek prediction market',
+    productIdentity: 'Here, your opinion has value.',
     navMarkets: 'Markets',
     navPortfolio: 'Portfolio',
     sandbox: 'Spring 2026 Greek slate',
     privateBeta: 'Private beta',
     liveBoard: 'Live board lane',
-    heroEyebrow: 'Greek-first event pricing across Athens, islands, sports, culture, and weather',
+    heroEyebrow: 'A Greek prediction market, with event pricing across politics, economy, sports, culture, and more.',
     heroFeatured: 'Featured market',
     heroPulse: 'Board pulse',
     heroPulseCopy: 'A staged but live-feeling tape for private tester walkthroughs.',
@@ -120,7 +121,7 @@ const copy = {
     categoryMix: 'Category mix',
     noResultsTitle: 'No markets match that screen.',
     noResultsBody: 'Try a broader category or clear the search input.',
-    footer: 'xyz Labs Demo v0.8 keeps the 36-market Greek-first board intact, while adding private access, light onboarding, live board energy, clearer trust modules, and stronger EUR ticket intuition.',
+    footer: 'xyz Labs Demo v0.8.1 keeps the 36-market board intact while sharpening the gate-to-hero experience, clearer product storytelling, and stronger contrast across the UI.',
     toastExecutedTitle: 'Trade executed',
     toastExecutedBody: 'Your portfolio has been updated.',
     toastResetTitle: 'Portfolio reset',
@@ -146,24 +147,24 @@ const copy = {
     chartStart: '7 updates ago',
     gateEyebrow: 'Private tester access',
     gateTitle: 'Enter the room',
-    gateCopy: 'A clean password gate for private walkthroughs. No accounts yet, no backend ceremony, just intentional access before the board opens.',
+    gateCopy: 'A private preview of a Greek prediction market built around alternative event pricing across politics, economy, sports, culture, and everyday signals.',
     gateNameLabel: 'Tester name',
     gateNamePlaceholder: 'Optional, shown locally',
     gateCodeLabel: 'Access code',
     gateCodePlaceholder: 'Enter shared code',
     gateUnlock: 'Unlock board',
     gateHint: 'Local-only demo. Access state is stored in this browser.',
-    gatePoint1: '36-market Greek-first board preserved from v0.7',
-    gatePoint2: 'Amount-first EUR ticketing with instant payout intuition',
-    gatePoint3: 'Clearer trust and resolution module on every market page',
-    onboardingTitle: 'One quick pass before you start',
-    onboardingCopy: 'This is still a sandbox, but it now behaves more like a private live product. Here is the cleanest way to read it.',
-    onboardingStep1Title: 'The board has live energy',
-    onboardingStep1Body: 'Movers, tape, and subtle activity cues make the room feel inhabited without turning into fake noise.',
-    onboardingStep2Title: 'Tickets start in EUR, not shares',
-    onboardingStep2Body: 'Type the amount you want to spend first. The app derives contracts, payout, and downside instantly.',
-    onboardingStep3Title: 'Resolution trust is explicit',
-    onboardingStep3Body: 'Every market page now shows primary source, fallback path, timing, and void logic in one place.',
+    gatePoint1: '36 live markets across politics, economy, sports, culture, and weather',
+    gatePoint2: 'EUR-supported ticketing designed to feel closer to a real consumer product',
+    gatePoint3: 'Greek-first market mix built for a sharper private walkthrough',
+    onboardingTitle: 'Before you explore',
+    onboardingCopy: 'This preview is designed to show why a Greek prediction market could feel local, useful, and habit-forming from day one.',
+    onboardingStep1Title: 'Built for Greece first',
+    onboardingStep1Body: 'The slate starts from questions Greek users would naturally care about across politics, economy, sports, culture, and weather.',
+    onboardingStep2Title: 'Broad enough to revisit',
+    onboardingStep2Body: 'One board can hold serious signals and lighter social markets, giving people more than one reason to come back.',
+    onboardingStep3Title: 'Opinion turns into price',
+    onboardingStep3Body: 'Each market makes crowd conviction legible, so the product feels like a living read on what people believe.',
     onboardingDismiss: 'Got it',
     onboardingGoFeatured: 'Open featured market',
     liveUpdated: 'Updated',
@@ -174,14 +175,14 @@ const copy = {
   },
   el: {
     appTitle: 'xyz Labs Demo',
-    appSubtitle: 'Private market sandbox για ελληνικά event markets',
-    productIdentity: 'Ένα private prediction market board που αρχίζει σιγά σιγά να ζωντανεύει',
+    appSubtitle: 'Private preview ελληνικής αγοράς προβλέψεων',
+    productIdentity: 'Εδώ, η γνώμη σου έχει αξία.',
     navMarkets: 'Αγορές',
     navPortfolio: 'Χαρτοφυλάκιο',
     sandbox: 'Άνοιξη 2026 Greek slate',
     privateBeta: 'Private beta',
     liveBoard: 'Ζωντανό board lane',
-    heroEyebrow: 'Greek-first τιμολόγηση γεγονότων σε Αθήνα, νησιά, αθλητισμό, culture και καιρό',
+    heroEyebrow: 'Μια ελληνική αγορά προβλέψεων, με τιμολόγηση γεγονότων σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και πολλά ακόμη.',
     heroFeatured: 'Κύρια αγορά',
     heroPulse: 'Παλμός board',
     heroPulseCopy: 'Staged αλλά πιο live-feeling tape για private tester walkthroughs.',
@@ -288,7 +289,7 @@ const copy = {
     categoryMix: 'Μείγμα κατηγοριών',
     noResultsTitle: 'Δεν υπάρχουν αγορές για αυτό το screen.',
     noResultsBody: 'Δοκίμασε πιο ευρύ φίλτρο ή καθάρισε την αναζήτηση.',
-    footer: 'Το xyz Labs Demo v0.8 κρατά το 36-market Greek-first board άθικτο, ενώ προσθέτει private access, ελαφρύ onboarding, live board ενέργεια, καθαρότερα trust modules και πιο δυνατή EUR ticket intuition.',
+    footer: 'Το xyz Labs Demo v0.8.1 κρατά άθικτο το 36-market board και βελτιώνει την εμπειρία από το gate μέχρι το hero, με πιο καθαρό product story και πιο δυνατά contrasts σε όλο το UI.',
     toastExecutedTitle: 'Το trade εκτελέστηκε',
     toastExecutedBody: 'Το portfolio ενημερώθηκε.',
     toastResetTitle: 'Έγινε reset portfolio',
@@ -314,24 +315,24 @@ const copy = {
     chartStart: '7 updates πριν',
     gateEyebrow: 'Private tester access',
     gateTitle: 'Μπες στο room',
-    gateCopy: 'Καθαρό password gate για private walkthroughs. Χωρίς accounts ακόμα, χωρίς backend τελετουργία, μόνο intentional access πριν ανοίξει το board.',
+    gateCopy: 'Ένα private preview ελληνικής αγοράς προβλέψεων, χτισμένο γύρω από alternative event pricing σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καθημερινά σήματα.',
     gateNameLabel: 'Όνομα tester',
     gateNamePlaceholder: 'Προαιρετικό, φαίνεται μόνο τοπικά',
     gateCodeLabel: 'Access code',
     gateCodePlaceholder: 'Βάλε το shared code',
     gateUnlock: 'Ξεκλείδωμα board',
     gateHint: 'Το demo είναι local-only. Η πρόσβαση αποθηκεύεται σε αυτόν τον browser.',
-    gatePoint1: 'Το 36-market Greek-first board της v0.7 μένει άθικτο',
-    gatePoint2: 'Amount-first EUR ticketing με άμεση payout intuition',
-    gatePoint3: 'Καθαρότερο trust και resolution module σε κάθε market page',
-    onboardingTitle: 'Ένα γρήγορο πέρασμα πριν ξεκινήσεις',
-    onboardingCopy: 'Παραμένει sandbox, αλλά πλέον συμπεριφέρεται περισσότερο σαν private live product. Να ο πιο καθαρός τρόπος να το διαβάσεις.',
-    onboardingStep1Title: 'Το board έχει live ενέργεια',
-    onboardingStep1Body: 'Movers, tape και διακριτικά activity cues κάνουν το room να δείχνει κατοικημένο χωρίς ψεύτικο θόρυβο.',
-    onboardingStep2Title: 'Τα tickets ξεκινούν από EUR, όχι από shares',
-    onboardingStep2Body: 'Γράφεις πρώτα το ποσό που θέλεις να βάλεις. Η εφαρμογή βγάζει μόνη της contracts, payout και downside.',
-    onboardingStep3Title: 'Η εμπιστοσύνη στο resolution είναι ρητή',
-    onboardingStep3Body: 'Κάθε market page δείχνει πλέον primary source, fallback path, timing και void logic σε ένα σημείο.',
+    gatePoint1: '36 live αγορές σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καιρό',
+    gatePoint2: 'EUR-supported ticketing σχεδιασμένο να θυμίζει πιο πολύ πραγματικό consumer product',
+    gatePoint3: 'Greek-first market mix για πιο καθαρό private walkthrough',
+    onboardingTitle: 'Πριν μπεις στο board',
+    onboardingCopy: 'Αυτό το preview δείχνει γιατί μια ελληνική αγορά προβλέψεων μπορεί να νιώθει τοπική, χρήσιμη και με λόγο να επιστρέφεις.',
+    onboardingStep1Title: 'Χτισμένο πρώτα για την Ελλάδα',
+    onboardingStep1Body: 'Το slate ξεκινά από ερωτήματα που οι χρήστες στην Ελλάδα όντως θα ήθελαν να συζητούν σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καιρό.',
+    onboardingStep2Title: 'Αρκετά πλατύ για συνήθεια',
+    onboardingStep2Body: 'Στο ίδιο board χωρούν σοβαρά signals και πιο ανάλαφρες social αγορές, ώστε να υπάρχει παραπάνω από ένας λόγος επιστροφής.',
+    onboardingStep3Title: 'Η γνώμη γίνεται τιμή',
+    onboardingStep3Body: 'Κάθε αγορά κάνει ορατή τη συλλογική πεποίθηση, ώστε το προϊόν να μοιάζει με ζωντανή ένδειξη του τι πιστεύει ο κόσμος.',
     onboardingDismiss: 'Το έπιασα',
     onboardingGoFeatured: 'Άνοιγμα featured market',
     liveUpdated: 'Ενημέρωση',
@@ -1693,7 +1694,7 @@ function createAppState(overrides = {}) {
       testerName: overrides.access?.testerName || '',
       grantedAt: overrides.access?.grantedAt || null
     },
-    onboardingSeen: Boolean(overrides.onboardingSeen)
+    onboardingSeen: overrides.onboardingVersionSeen === ONBOARDING_VERSION
   };
 }
 
@@ -1712,7 +1713,7 @@ function createUiState() {
 
 function loadState() {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    const raw = window.localStorage.getItem(STORAGE_KEY) || LEGACY_STORAGE_KEYS.map((key) => window.localStorage.getItem(key)).find(Boolean);
     if (!raw) return createAppState();
     const parsed = JSON.parse(raw);
     return createAppState(parsed);
@@ -1728,7 +1729,7 @@ function saveState() {
       language: appState.language,
       transactions: appState.transactions,
       access: appState.access,
-      onboardingSeen: appState.onboardingSeen
+      onboardingVersionSeen: appState.onboardingSeen ? ONBOARDING_VERSION : null
     })
   );
 }
@@ -2174,7 +2175,7 @@ function renderAccessGate() {
           <div class="brand gate-brand">
             <div class="brand-mark">xyz</div>
             <div class="brand-copy">
-              <strong>${t('appTitle')} v0.8</strong>
+              <strong>${t('appTitle')} v0.8.1</strong>
               <span>${t('privateBeta')}</span>
             </div>
           </div>

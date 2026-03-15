@@ -1,8 +1,8 @@
 {
   "name": "xyz-labs-demo",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "private": true,
-  "description": "Private-tester Greek-first bilingual prediction market board for live-feeling walkthroughs",
+  "description": "Experience-polished private-preview Greek-first bilingual prediction market board for live-feeling walkthroughs",
   "scripts": {
     "start": "node server.js"
   }

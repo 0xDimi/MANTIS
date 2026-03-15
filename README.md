@@ -1,10 +1,10 @@
-# xyz Labs Demo v0.8
+# xyz Labs Demo v0.8.1
 
-Private-tester upgrade of the Greek-first prediction-market sandbox.
+Focused experience and polish pass on top of the existing v0.8 Greek-first prediction-market prototype.
 
-## What changed in v0.8
+## What changed in v0.8.1
 
-v0.8 keeps the strong v0.7 core intact:
+This pass keeps the existing v0.8 product structure intact:
 
 - still a **36-market** board
 - still Greek-first in tone and slate mix
@@ -15,54 +15,31 @@ v0.8 keeps the strong v0.7 core intact:
 - still supports the **EN / ΕΛ** switch
 - still runs locally with the same simple `npm start` flow
 
-And adds the new "bringing it slowly to life" layer:
+What changed in this polish pass:
 
-### 1) Private tester password gate
+### 1) Better gate positioning
 
-- clean access screen before the board opens
-- optional local tester-name field
-- simple shared access code flow
-- no backend, no email auth, no external dependency
-- access state stored locally in the browser
+- the left-hand gate copy now explains the product at a high level
+- the three bullets are product-level, not mechanics-heavy
+- the access flow itself stays the same
 
-### 2) Lightweight onboarding
+### 2) Better first-time onboarding
 
-- one-time onboarding overlay after unlocking
-- explains the board, EUR-first ticketing, and resolution trust model
-- can be dismissed instantly
+- the onboarding popup now highlights three product benefits
+- copy is shorter, more experience-led, and less mechanical
+- users coming from older local state will see the refreshed onboarding once
 
-### 3) More live board energy
+### 3) Hero messaging updated
 
-- subtle private-beta / live tape badges
-- recent flow signals on market cards
-- top movers module
-- live tape module on board and market detail pages
-- staged recent flow / watcher activity to make the demo feel inhabited without becoming noisy
+- hero kicker now says: **A Greek prediction market, with event pricing across politics, economy, sports, culture, and more.**
+- hero slogan now says: **Here, your opinion has value.**
+- Greek slogan updated to: **Εδώ, η γνώμη σου έχει αξία.**
 
-### 4) Stronger trust and resolution presentation
+### 4) Contrast cleanup
 
-- clearer **Resolution integrity** module on every market detail page
-- explicitly shows:
-  - primary resolution path
-  - fallback path
-  - lock / settlement timing
-  - void / manual review logic
-  - source-priority rule
-
-### 5) Clearer ticket intuition
-
-- order ticket now explains the trade in plain language
-- buying shows immediate win/loss intuition
-- clearer separation of:
-  - spend now
-  - max loss
-  - gross payout if right
-  - contracts controlled
-- selling shows:
-  - cash received now
-  - contracts closed
-  - contracts remaining
-  - exposure after sell
+- stronger readability on muted labels
+- clearer pills on dark / image-backed surfaces
+- improved visibility for hero metadata, card labels, and other low-contrast UI text
 
 ## Access code for local testing
 
@@ -93,27 +70,24 @@ http://localhost:4173
 
 ## Quick test checklist
 
-1. Open the app and confirm the **password gate** appears first
+1. Open the app and confirm the **password gate** appears first in a fresh browser session
 2. Use the access code `athens-alpha`
-3. Confirm the **onboarding overlay** appears after unlock
-4. Dismiss onboarding and verify the board still shows **36 markets**
-5. Confirm the board still feels like v0.7, not a total redesign
-6. Verify market cards now show subtle **live flow / updated / watcher** cues
-7. Verify the right rail shows **Top movers** and **Live tape**
+3. Confirm the **refreshed onboarding overlay** appears after unlock
+4. Verify the hero copy and slogan match the new v0.8.1 wording
+5. Verify the board still shows **36 markets**
+6. Confirm the overall layout and v0.8 features remain intact
+7. Check card labels, pills, dark surfaces, and muted copy for improved readability
 8. Open any market and confirm the detail page still shows the **odds chart**
-9. On the detail page, confirm the new **Resolution integrity** module is present
-10. In the ticket, enter a EUR amount and confirm the scenario cards make payout / downside easier to understand
-11. Place a buy and a sell order and confirm the mock portfolio updates instantly
-12. Switch between **EN** and **ΕΛ** and verify the main new UI copy changes cleanly
-13. Reset the portfolio and confirm the seeded state returns
+9. Place a buy and a sell order and confirm the mock portfolio still updates instantly
+10. Switch between **EN** and **ΕΛ** and verify the updated copy changes cleanly
 
 ## Files
 
-- `index.html` - app shell and v0.8 metadata
-- `styles.css` - existing visual system plus gate, onboarding, live-energy, trust-module, and ticket-clarity styling
-- `app.js` - market data, routing, password gate, onboarding, live board cues, trust modules, and EUR trade preview logic
+- `index.html` - app shell and v0.8.1 metadata
+- `styles.css` - visual system plus contrast and readability refinements
+- `app.js` - copy updates, onboarding refresh, and local-state compatibility for the v0.8.1 pass
 - `server.js` - zero-dependency static server
-- `package.json` - local start script and v0.8 metadata
+- `package.json` - local start script and v0.8.1 metadata
 
 ## Notes
 
