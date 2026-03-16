@@ -1,6 +1,6 @@
-const STORAGE_KEY = 'xyz-labs-demo-state-v81';
-const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
-const ONBOARDING_VERSION = 'v81';
+const STORAGE_KEY = 'xyz-labs-demo-state-v82';
+const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
+const ONBOARDING_VERSION = 'v82';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
 
@@ -19,13 +19,13 @@ const copy = {
     heroPulse: 'Board pulse',
     heroPulseCopy: 'A staged but live-feeling tape for private tester walkthroughs.',
     heroLiveBadge: 'Live demo tape',
-    statLiveOdds: 'Featured odds',
+    statLiveOdds: 'Featured YES / NO odds',
     statTotalVolume: 'Matched volume',
     statCash: 'Available cash',
     statPositions: 'Open positions',
     boardTitle: 'Market board',
     boardCopy: 'Browse a Greek-heavy market slate with faster scanning, live-energy cues, and cleaner private-tester flow.',
-    boardLiveNote: 'Quotes are demo, but the board now behaves like a private market room instead of a static prototype.',
+    boardLiveNote: 'Odds are demo, but the board now behaves like a private market room instead of a static prototype.',
     searchPlaceholder: 'Search markets, teams, cities, or categories',
     filtersLabel: 'Category',
     sortLabel: 'Sort',
@@ -121,7 +121,7 @@ const copy = {
     categoryMix: 'Category mix',
     noResultsTitle: 'No markets match that screen.',
     noResultsBody: 'Try a broader category or clear the search input.',
-    footer: 'xyz Labs Demo v0.8.1 keeps the 36-market board intact while sharpening the gate-to-hero experience, clearer product storytelling, and stronger contrast across the UI.',
+    footer: 'xyz Labs Demo v0.8.2 keeps the 36-market board intact while shifting headline YES / NO odds to probability-first display, preserving EUR ticket math, and tightening readability across the UI.',
     toastExecutedTitle: 'Trade executed',
     toastExecutedBody: 'Your portfolio has been updated.',
     toastResetTitle: 'Portfolio reset',
@@ -136,7 +136,7 @@ const copy = {
     statusLive: 'Live',
     statusClosing: 'Closing soon',
     statusNew: 'New',
-    shareQuote: 'YES / NO quote',
+    shareQuote: 'YES / NO odds',
     positionMixCopy: 'Current exposure grouped by category.',
     detailCopy: 'Pricing, sources, and resolution logic for this market.',
     ticketYes: 'Buy YES',
@@ -171,6 +171,7 @@ const copy = {
     liveFlow: 'Recent flow',
     liveWatchers: 'Watching',
     justNow: 'just now',
+    quoteLabel: 'quote',
     you: 'You'
   },
   el: {
@@ -187,13 +188,13 @@ const copy = {
     heroPulse: 'Παλμός board',
     heroPulseCopy: 'Staged αλλά πιο live-feeling tape για private tester walkthroughs.',
     heroLiveBadge: 'Live demo tape',
-    statLiveOdds: 'Κύριο quote',
+    statLiveOdds: 'Κύριο YES / NO',
     statTotalVolume: 'Συνολικός όγκος',
     statCash: 'Διαθέσιμα μετρητά',
     statPositions: 'Ανοιχτές θέσεις',
     boardTitle: 'Market board',
     boardCopy: 'Δες ένα Greek-heavy market slate με ταχύτερο scanning, live-energy cues και καθαρότερη private-tester ροή.',
-    boardLiveNote: 'Τα quotes είναι demo, αλλά το board πλέον συμπεριφέρεται σαν private market room και όχι σαν στατικό prototype.',
+    boardLiveNote: 'Τα odds είναι demo, αλλά το board πλέον συμπεριφέρεται σαν private market room και όχι σαν στατικό prototype.',
     searchPlaceholder: 'Αναζήτηση αγορών, ομάδων, πόλεων ή κατηγοριών',
     filtersLabel: 'Κατηγορία',
     sortLabel: 'Ταξινόμηση',
@@ -289,7 +290,7 @@ const copy = {
     categoryMix: 'Μείγμα κατηγοριών',
     noResultsTitle: 'Δεν υπάρχουν αγορές για αυτό το screen.',
     noResultsBody: 'Δοκίμασε πιο ευρύ φίλτρο ή καθάρισε την αναζήτηση.',
-    footer: 'Το xyz Labs Demo v0.8.1 κρατά άθικτο το 36-market board και βελτιώνει την εμπειρία από το gate μέχρι το hero, με πιο καθαρό product story και πιο δυνατά contrasts σε όλο το UI.',
+    footer: 'Το xyz Labs Demo v0.8.2 κρατά άθικτο το 36-market board, γυρίζει τα headline YES / NO odds σε probability-first προβολή, κρατά το EUR ticket math όπως είναι και σφίγγει τη συνολική αναγνωσιμότητα του UI.',
     toastExecutedTitle: 'Το trade εκτελέστηκε',
     toastExecutedBody: 'Το portfolio ενημερώθηκε.',
     toastResetTitle: 'Έγινε reset portfolio',
@@ -304,7 +305,7 @@ const copy = {
     statusLive: 'Live',
     statusClosing: 'Κλείνει σύντομα',
     statusNew: 'Νέα',
-    shareQuote: 'Τιμή YES / NO',
+    shareQuote: 'Πιθανότητες YES / NO',
     positionMixCopy: 'Τρέχουσα έκθεση ομαδοποιημένη ανά κατηγορία.',
     detailCopy: 'Pricing, πηγές και λογική επίλυσης για αυτή την αγορά.',
     ticketYes: 'Αγορά YES',
@@ -339,6 +340,7 @@ const copy = {
     liveFlow: 'Πρόσφατη ροή',
     liveWatchers: 'Παρακολουθούν',
     justNow: 'μόλις τώρα',
+    quoteLabel: 'τιμή',
     you: 'Εσύ'
   }
 };
@@ -1799,8 +1801,11 @@ function formatSignedCurrency(value) {
   return formatCurrency(value, { minimumFractionDigits: 0, maximumFractionDigits: 2, signDisplay: 'always' });
 }
 
-function formatPriceDelta(value) {
-  return formatCurrency(value / 100, { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: 'always' });
+function formatProbabilityDelta(value) {
+  const rounded = Math.round(value);
+  const sign = rounded > 0 ? '+' : rounded < 0 ? '-' : '';
+  const units = appState.language === 'el' ? ' μον.' : ' pts';
+  return `${sign}${Math.abs(rounded)}${units}`;
 }
 
 function formatDate(value) {
@@ -1825,7 +1830,11 @@ function formatRelativeMinutes(minutes) {
 }
 
 function getPrice(market, side) {
-  return (side === 'yes' ? market.probability : 100 - market.probability) / 100;
+  return getChance(market, side) / 100;
+}
+
+function getChance(market, side) {
+  return side === 'yes' ? market.probability : 100 - market.probability;
 }
 
 function createBlankPosition() {
@@ -2144,6 +2153,22 @@ function buildTradePreview(market, portfolio) {
   };
 }
 
+function renderProbabilityPair(market, className = '') {
+  const classes = ['probability-pair', className].filter(Boolean).join(' ');
+  return `
+    <div class="${classes}">
+      <div class="probability-pill yes">
+        <span>${t('yes')}</span>
+        <strong>${formatPercent(getChance(market, 'yes'))}</strong>
+      </div>
+      <div class="probability-pill no">
+        <span>${t('no')}</span>
+        <strong>${formatPercent(getChance(market, 'no'))}</strong>
+      </div>
+    </div>
+  `;
+}
+
 function render() {
   const route = getRoute();
   const portfolio = buildPortfolio(appState.transactions);
@@ -2175,7 +2200,7 @@ function renderAccessGate() {
           <div class="brand gate-brand">
             <div class="brand-mark">xyz</div>
             <div class="brand-copy">
-              <strong>${t('appTitle')} v0.8.1</strong>
+              <strong>${t('appTitle')} v0.8.2</strong>
               <span>${t('privateBeta')}</span>
             </div>
           </div>
@@ -2254,6 +2279,7 @@ function renderTopbar(route) {
       </div>
       <div class="topbar-actions">
         <span class="topbar-badge live-badge"><span class="live-dot"></span>${t('privateBeta')}</span>
+        <span class="topbar-badge version-badge">v0.8.2</span>
         <span class="topbar-badge">${escapeHtml(getTesterName())}</span>
         <span class="topbar-badge">${t('sandbox')}</span>
         <div class="nav-switch">
@@ -2298,9 +2324,9 @@ function renderHero(portfolio) {
             </div>
             <h2>${featured.question[appState.language]}</h2>
             <div class="hero-feature-meta">
-              <div>
-                <small>${t('chance')}</small>
-                <strong>${formatPercent(featured.probability)}</strong>
+              <div class="odds-stat-block">
+                <small>${t('statLiveOdds')}</small>
+                ${renderProbabilityPair(featured, 'compact on-dark')}
               </div>
               <div>
                 <small>${t('volume')}</small>
@@ -2318,9 +2344,9 @@ function renderHero(portfolio) {
         </div>
       </article>
       <div class="hero-stats">
-        <article class="stat-card">
+        <article class="stat-card odds-stat-card">
           <small>${t('statLiveOdds')}</small>
-          <strong>${formatPercent(featured.probability)}</strong>
+          ${renderProbabilityPair(featured, 'compact')}
           <span>${featured.question[appState.language]}</span>
         </article>
         <article class="stat-card">
@@ -2491,11 +2517,11 @@ function renderMarketCard(market, portfolio) {
         <div class="odds-grid">
           <div class="odds-chip yes-chip">
             <span>${t('yes')}</span>
-            <strong>${formatPrice(getPrice(market, 'yes'))}</strong>
+            <strong>${formatPercent(getChance(market, 'yes'))}</strong>
           </div>
           <div class="odds-chip no-chip">
             <span>${t('no')}</span>
-            <strong>${formatPrice(getPrice(market, 'no'))}</strong>
+            <strong>${formatPercent(getChance(market, 'no'))}</strong>
           </div>
         </div>
 
@@ -2505,7 +2531,7 @@ function renderMarketCard(market, portfolio) {
         </div>
 
         <div class="market-meta-row">
-          <span>${t('dayChange')}: <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatPriceDelta(market.change)}</strong></span>
+          <span>${t('dayChange')}: <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong></span>
           <span>${t('volume')}: ${formatCurrency(market.volume)}</span>
           <span>${t('close')}: ${formatDate(market.closeDate)}</span>
         </div>
@@ -2551,13 +2577,13 @@ function renderMarketDetailPage(market, portfolio) {
             <h2>${market.question[appState.language]}</h2>
             <p>${market.summary[appState.language]}</p>
             <div class="detail-stats">
-              <div>
-                <small>${t('chance')}</small>
-                <strong>${formatPercent(market.probability)}</strong>
+              <div class="odds-stat-block">
+                <small>${t('shareQuote')}</small>
+                ${renderProbabilityPair(market, 'compact')}
               </div>
               <div>
-                <small>${t('shareQuote')}</small>
-                <strong>${formatPrice(getPrice(market, 'yes'))} / ${formatPrice(getPrice(market, 'no'))}</strong>
+                <small>${t('dayChange')}</small>
+                <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
               </div>
               <div>
                 <small>${t('volume')}</small>
@@ -2587,7 +2613,7 @@ function renderMarketDetailPage(market, portfolio) {
           </article>
           <article class="info-card">
             <h3>${t('marketContext')}</h3>
-            <p>${t('close')}: ${formatDateTime(market.closeDate)}<br />${t('resolve')}: ${formatDateTime(market.resolveDate)}<br />${t('dayChange')}: ${formatPriceDelta(market.change)}</p>
+            <p>${t('close')}: ${formatDateTime(market.closeDate)}<br />${t('resolve')}: ${formatDateTime(market.resolveDate)}<br />${t('dayChange')}: ${formatProbabilityDelta(market.change)}</p>
           </article>
         </div>
       </article>
@@ -2662,7 +2688,7 @@ function renderMarketDetailPage(market, portfolio) {
                     `
                 }
               </div>
-              <div class="row"><span>${t('contractPrice')}</span><strong>${formatPrice(preview.price)} · ${formatPercent(preview.side === 'yes' ? market.probability : 100 - market.probability)}</strong></div>
+              <div class="row"><span>${t('contractPrice')}</span><strong>${formatPrice(preview.price)} · ${formatPercent(getChance(market, preview.side))}</strong></div>
               <div class="row"><span>${t('estimatedTotal')}</span><strong>${formatCurrency(preview.total)}</strong></div>
               <div class="row"><span>${t('estimatedContracts')}</span><strong>${formatQuantity(preview.contracts)}</strong></div>
               ${preview.action === 'buy'
@@ -2760,7 +2786,7 @@ function renderResolutionFramework(market) {
 function renderTradeSideButton(market, side) {
   const active = uiState.tradeSide === side;
   const price = getPrice(market, side);
-  const chance = side === 'yes' ? market.probability : 100 - market.probability;
+  const chance = getChance(market, side);
   return `
     <button
       type="button"
@@ -2768,8 +2794,8 @@ function renderTradeSideButton(market, side) {
       data-trade-side="${side}"
     >
       <span class="trade-side-label">${side === 'yes' ? t('yes') : t('no')}</span>
-      <strong>${formatPrice(price)}</strong>
-      <small>${formatPercent(chance)}</small>
+      <strong>${formatPercent(chance)}</strong>
+      <small>${formatPrice(price)} ${t('quoteLabel')}</small>
     </button>
   `;
 }
@@ -2798,8 +2824,7 @@ function renderOddsChartShell(market) {
           <p>${t('chartCopy')}</p>
         </div>
         <div class="chart-key">
-          <span class="chart-key-item yes"><strong>${t('yes')}</strong>${formatPrice(getPrice(market, 'yes'))} · ${formatPercent(market.probability)}</span>
-          <span class="chart-key-item no"><strong>${t('no')}</strong>${formatPrice(getPrice(market, 'no'))} · ${formatPercent(100 - market.probability)}</span>
+          ${renderProbabilityPair(market, 'compact')}
         </div>
       </div>
       <div class="chart-card">
@@ -3003,8 +3028,8 @@ function renderMoversList() {
                   <span>${market.question[appState.language]}</span>
                 </div>
                 <div class="mover-right">
-                  <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatPriceDelta(market.change)}</strong>
-                  <span>${selectedSide === 'yes' ? t('yes') : t('no')} · ${formatCurrency(signal.flowEur)}</span>
+                  <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
+                  <span class="mover-odds">${selectedSide === 'yes' ? t('yes') : t('no')} ${formatPercent(getChance(market, selectedSide))}</span>
                 </div>
               </button>
             </li>

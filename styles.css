@@ -152,6 +152,12 @@ button {
   font-weight: 700;
 }
 
+.version-badge {
+  background: white;
+  color: var(--text);
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
 .nav-switch,
 .lang-switch,
 .segmented,
@@ -316,7 +322,8 @@ button {
 .card-kickers,
 .held-row,
 .trade-preset-row,
-.chart-key {
+.chart-key,
+.probability-pair {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -326,6 +333,85 @@ button {
   flex: 1 1 180px;
   align-items: center;
   min-height: 32px;
+}
+
+
+.probability-pair {
+  align-items: stretch;
+}
+
+.probability-pair.compact {
+  gap: 6px;
+}
+
+.probability-pill {
+  min-width: 96px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(248, 250, 252, 0.92);
+  display: grid;
+  gap: 4px;
+}
+
+.probability-pill span {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  color: #334155;
+}
+
+.probability-pill strong {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.probability-pair.compact .probability-pill {
+  min-width: 84px;
+  padding: 9px 11px;
+  gap: 3px;
+}
+
+.probability-pair.compact .probability-pill strong {
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.probability-pill.yes {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(5, 150, 105, 0.18);
+}
+
+.probability-pill.no {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(220, 38, 38, 0.16);
+}
+
+.probability-pill.yes strong,
+.probability-pill.yes span {
+  color: var(--green-strong);
+}
+
+.probability-pill.no strong,
+.probability-pill.no span {
+  color: var(--red-strong);
+}
+
+.probability-pair.on-dark .probability-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.probability-pair.on-dark .probability-pill.yes strong,
+.probability-pair.on-dark .probability-pill.yes span {
+  color: #d1fae5;
+}
+
+.probability-pair.on-dark .probability-pill.no strong,
+.probability-pair.on-dark .probability-pill.no span {
+  color: #fee2e2;
 }
 
 .status-pill {
@@ -417,7 +503,7 @@ button {
 }
 
 .hero-feature-meta {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 0.8fr));
 }
 
 .hero-feature-meta small,
@@ -472,9 +558,38 @@ button {
   margin-bottom: 8px;
 }
 
+.odds-stat-card .probability-pair {
+  margin: 4px 0 10px;
+}
+
 .stat-card span {
   color: var(--muted);
   line-height: 1.5;
+}
+
+.odds-stat-card .probability-pill {
+  min-width: 88px;
+}
+
+.odds-stat-card .probability-pill span,
+.odds-stat-card .probability-pill strong {
+  margin: 0;
+  line-height: 1;
+}
+
+.odds-stat-card .probability-pill strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.odds-stat-card .probability-pill.yes span,
+.odds-stat-card .probability-pill.yes strong {
+  color: var(--green-strong);
+}
+
+.odds-stat-card .probability-pill.no span,
+.odds-stat-card .probability-pill.no strong {
+  color: var(--red-strong);
 }
 
 .page-grid {
@@ -997,14 +1112,15 @@ button {
   display: block;
   font-size: 0.78rem;
   letter-spacing: 0.06em;
-  color: #334155;
-  font-weight: 700;
+  color: #1e293b;
+  font-weight: 800;
 }
 
 .odds-chip strong {
   display: block;
   margin-top: 6px;
-  font-size: 1.35rem;
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .yes-chip {
@@ -1015,6 +1131,14 @@ button {
 .no-chip {
   background: rgba(239, 68, 68, 0.08);
   border-color: rgba(220, 38, 38, 0.16);
+}
+
+.yes-chip strong {
+  color: var(--green-strong);
+}
+
+.no-chip strong {
+  color: var(--red-strong);
 }
 
 .market-meta-row {
@@ -1203,6 +1327,11 @@ button {
   border: 1px solid var(--line);
 }
 
+.odds-stat-block {
+  display: grid;
+  gap: 8px;
+}
+
 .detail-stats > div,
 .ticket-box,
 .mix-card,
@@ -1343,7 +1472,8 @@ button {
 }
 
 .trade-side-button small {
-  color: var(--muted);
+  color: #334155;
+  font-weight: 700;
 }
 
 .trade-side-button.yes {
@@ -1701,6 +1831,11 @@ button {
 .mover-item span {
   color: var(--muted);
   line-height: 1.6;
+}
+
+.mover-odds {
+  color: var(--text);
+  font-weight: 700;
 }
 
 .gate-form {

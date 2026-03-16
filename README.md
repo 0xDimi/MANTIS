@@ -1,45 +1,52 @@
-# xyz Labs Demo v0.8.1
+# xyz Labs Demo v0.8.2
 
-Focused experience and polish pass on top of the existing v0.8 Greek-first prediction-market prototype.
+Probability-first UX consistency pass on top of the existing v0.8.1 Greek-first prediction-market prototype.
 
-## What changed in v0.8.1
+## What changed in v0.8.2
 
-This pass keeps the existing v0.8 product structure intact:
+This pass keeps the v0.8.1 experience intact:
 
 - still a **36-market** board
-- still Greek-first in tone and slate mix
-- still semantic art / poster treatment
 - still **amount-first EUR** ticketing
-- still **YES green / NO red**
-- still shows the illustrative odds chart on detail pages
 - still supports the **EN / ΕΛ** switch
+- still keeps the **password gate**, onboarding, live tape, resolution integrity, and chart module
 - still runs locally with the same simple `npm start` flow
 
-What changed in this polish pass:
+The v0.8.2 change is a deliberate display split:
 
-### 1) Better gate positioning
+### Headline market odds now show probabilities
 
-- the left-hand gate copy now explains the product at a high level
-- the three bullets are product-level, not mechanics-heavy
-- the access flow itself stays the same
+These surfaces now present YES / NO as percentages for a cleaner prediction-market read:
 
-### 2) Better first-time onboarding
+- board market cards
+- hero / featured market odds
+- featured odds stat card
+- market-detail header odds block
+- main YES / NO trade-side buttons
+- top movers price-discovery line
+- chart header odds key
+- 24h move display on headline market surfaces now reads as probability points instead of euro cents
 
-- the onboarding popup now highlights three product benefits
-- copy is shorter, more experience-led, and less mechanical
-- users coming from older local state will see the refreshed onboarding once
+### Ticket math and account math stay in EUR
 
-### 3) Hero messaging updated
+These surfaces still stay money-first in EUR:
 
-- hero kicker now says: **A Greek prediction market, with event pricing across politics, economy, sports, culture, and more.**
-- hero slogan now says: **Here, your opinion has value.**
-- Greek slogan updated to: **Εδώ, η γνώμη σου έχει αξία.**
+- order amount input and presets
+- selected quote row inside the ticket
+- payout preview, max loss, receive-now, remaining exposure, and sell constraints
+- cash, equity, market value, exposure, P&L, and position value
+- live flow amounts and tape amounts
+- portfolio history fills and trade tape quote execution lines
+- market volume and matched-flow metrics
 
-### 4) Contrast cleanup
+### Contrast / readability cleanup
 
-- stronger readability on muted labels
-- clearer pills on dark / image-backed surfaces
-- improved visibility for hero metadata, card labels, and other low-contrast UI text
+To support the probability-first pass, the UI also got a small readability sweep:
+
+- stronger YES / NO odds emphasis on cards
+- clearer probability pills on light and dark surfaces
+- darker secondary quote text inside trade buttons
+- stronger contrast on mover odds labels
 
 ## Access code for local testing
 
@@ -72,22 +79,22 @@ http://localhost:4173
 
 1. Open the app and confirm the **password gate** appears first in a fresh browser session
 2. Use the access code `athens-alpha`
-3. Confirm the **refreshed onboarding overlay** appears after unlock
-4. Verify the hero copy and slogan match the new v0.8.1 wording
-5. Verify the board still shows **36 markets**
-6. Confirm the overall layout and v0.8 features remain intact
-7. Check card labels, pills, dark surfaces, and muted copy for improved readability
-8. Open any market and confirm the detail page still shows the **odds chart**
-9. Place a buy and a sell order and confirm the mock portfolio still updates instantly
-10. Switch between **EN** and **ΕΛ** and verify the updated copy changes cleanly
+3. Confirm the onboarding overlay still appears after unlock
+4. Verify the gate and app metadata show **v0.8.2**
+5. Verify board cards show **YES / NO percentages** instead of euro prices
+6. Verify the hero / featured market shows **probability-first odds**
+7. Open any market and confirm the detail header and **trade-side buttons** use percentages
+8. Confirm the ticket math and payout preview remain **EUR-first**
+9. Verify the chart still renders and the odds key now reads in percentages
+10. Switch between **EN** and **ΕΛ** and verify the updated labels remain consistent
 
 ## Files
 
-- `index.html` - app shell and v0.8.1 metadata
-- `styles.css` - visual system plus contrast and readability refinements
-- `app.js` - copy updates, onboarding refresh, and local-state compatibility for the v0.8.1 pass
+- `index.html` - app shell and v0.8.2 metadata
+- `styles.css` - probability-first odds styling and readability refinements
+- `app.js` - v0.8.2 display split, copy updates, and local-state compatibility
 - `server.js` - zero-dependency static server
-- `package.json` - local start script and v0.8.1 metadata
+- `package.json` - local start script and v0.8.2 metadata
 
 ## Notes
 
