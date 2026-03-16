@@ -1,52 +1,51 @@
-# xyz Labs Demo v0.8.2
+# xyz Labs Demo v0.8.3
 
-Probability-first UX consistency pass on top of the existing v0.8.1 Greek-first prediction-market prototype.
+Premium-polish pass on top of the existing v0.8.2 Greek-first prediction-market prototype.
 
-## What changed in v0.8.2
+## What changed in v0.8.3
 
-This pass keeps the v0.8.1 experience intact:
+This pass is intentionally not a feature spree. It keeps the strong v0.8.2 product core intact:
 
 - still a **36-market** board
-- still **amount-first EUR** ticketing
-- still supports the **EN / ΕΛ** switch
-- still keeps the **password gate**, onboarding, live tape, resolution integrity, and chart module
+- still **password-gated** with onboarding
+- still supports **EN / ΕΛ** switching
+- still uses **probability-first YES / NO** headline odds
+- still keeps **EUR-first** ticketing and account math
+- still includes the **live tape, odds chart, resolution framework, and portfolio**
 - still runs locally with the same simple `npm start` flow
 
-The v0.8.2 change is a deliberate display split:
+The v0.8.3 work is a premium-polish pass focused on four things:
 
-### Headline market odds now show probabilities
+### 1) Better market-card hierarchy
 
-These surfaces now present YES / NO as percentages for a cleaner prediction-market read:
+- stronger internal structure on each board card
+- clearer separation between title, change, headline odds, and secondary metrics
+- quieter supporting metadata so the important numbers read first
+- slightly cleaner featured-card treatment without changing market logic
 
-- board market cards
-- hero / featured market odds
-- featured odds stat card
-- market-detail header odds block
-- main YES / NO trade-side buttons
-- top movers price-discovery line
-- chart header odds key
-- 24h move display on headline market surfaces now reads as probability points instead of euro cents
+### 2) Stronger featured-market / flagship presentation
 
-### Ticket math and account math stay in EUR
+- more substantial featured hero treatment
+- dedicated **Flagship lane** ahead of the full grid for the lead contracts
+- flagship section only shows on the unfiltered board so filtering/search still feels sane
 
-These surfaces still stay money-first in EUR:
+### 3) More consistent poster art / art direction
 
-- order amount input and presets
-- selected quote row inside the ticket
-- payout preview, max loss, receive-now, remaining exposure, and sell constraints
-- cash, equity, market value, exposure, P&L, and position value
-- live flow amounts and tape amounts
-- portfolio history fills and trade tape quote execution lines
-- market volume and matched-flow metrics
+- added shared poster-art shell, theme tinting, and texture treatment
+- added category-aware art fallbacks so cards without a bespoke art key still feel designed
+- expanded the semantic poster system with extra motifs like screen / awards / factory treatment
+- kept the existing market-matched gradients, labels, and emoji layer intact
 
-### Contrast / readability cleanup
+### 4) Subtle hover / motion polish
 
-To support the probability-first pass, the UI also got a small readability sweep:
+- softer hover lift on cards and flagship tiles
+- gentle poster drift / texture motion when reduced-motion is not preferred
+- tighter hover feedback on side-rail items and trade-side controls
 
-- stronger YES / NO odds emphasis on cards
-- clearer probability pills on light and dark surfaces
-- darker secondary quote text inside trade buttons
-- stronger contrast on mover odds labels
+### Small low-risk ticket clarity win
+
+- added a compact top-line ticket preview strip for order value, selected quote, and estimated contracts
+- left ticket logic and accounting behavior unchanged
 
 ## Access code for local testing
 
@@ -80,21 +79,21 @@ http://localhost:4173
 1. Open the app and confirm the **password gate** appears first in a fresh browser session
 2. Use the access code `athens-alpha`
 3. Confirm the onboarding overlay still appears after unlock
-4. Verify the gate and app metadata show **v0.8.2**
-5. Verify board cards show **YES / NO percentages** instead of euro prices
-6. Verify the hero / featured market shows **probability-first odds**
-7. Open any market and confirm the detail header and **trade-side buttons** use percentages
-8. Confirm the ticket math and payout preview remain **EUR-first**
-9. Verify the chart still renders and the odds key now reads in percentages
-10. Switch between **EN** and **ΕΛ** and verify the updated labels remain consistent
+4. Verify the gate and app metadata show **v0.8.3**
+5. Confirm the hero reads more like a flagship surface
+6. Confirm the **Flagship lane** appears on the default board and hides once search/filter is applied
+7. Verify board cards feel cleaner to scan, with headline odds and supporting metrics separated better
+8. Open a market and confirm the detail page still works normally
+9. Confirm the ticket now shows the compact preview strip while staying **EUR-first**
+10. Switch between **EN** and **ΕΛ** and verify the updated labels remain coherent
 
 ## Files
 
-- `index.html` - app shell and v0.8.2 metadata
-- `styles.css` - probability-first odds styling and readability refinements
-- `app.js` - v0.8.2 display split, copy updates, and local-state compatibility
+- `index.html` - app shell and v0.8.3 metadata
+- `styles.css` - premium-polish visual pass, hierarchy, art-direction, and motion refinements
+- `app.js` - v0.8.3 presentation updates and local-state compatibility
 - `server.js` - zero-dependency static server
-- `package.json` - local start script and v0.8.2 metadata
+- `package.json` - local start script and v0.8.3 metadata
 
 ## Notes
 

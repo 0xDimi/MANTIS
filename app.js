@@ -1,6 +1,6 @@
-const STORAGE_KEY = 'xyz-labs-demo-state-v82';
-const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
-const ONBOARDING_VERSION = 'v82';
+const STORAGE_KEY = 'xyz-labs-demo-state-v83';
+const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
+const ONBOARDING_VERSION = 'v83';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
 
@@ -19,6 +19,10 @@ const copy = {
     heroPulse: 'Board pulse',
     heroPulseCopy: 'A staged but live-feeling tape for private tester walkthroughs.',
     heroLiveBadge: 'Live demo tape',
+    heroFlagshipCopy: 'One lead contract, then a tighter shelf of high-signal markets behind it.',
+    flagshipLane: 'Flagship lane',
+    flagshipLaneCopy: 'The lead contracts that should read first in a room, before the rest of the board.',
+    cardFeatured: 'Flagship',
     statLiveOdds: 'Featured YES / NO odds',
     statTotalVolume: 'Matched volume',
     statCash: 'Available cash',
@@ -121,7 +125,7 @@ const copy = {
     categoryMix: 'Category mix',
     noResultsTitle: 'No markets match that screen.',
     noResultsBody: 'Try a broader category or clear the search input.',
-    footer: 'xyz Labs Demo v0.8.2 keeps the 36-market board intact while shifting headline YES / NO odds to probability-first display, preserving EUR ticket math, and tightening readability across the UI.',
+    footer: 'xyz Labs Demo v0.8.3 keeps the 36-market board intact while lifting flagship presentation, cleaning up card hierarchy, aligning poster art direction, and adding subtler motion polish without changing the core demo flow.',
     toastExecutedTitle: 'Trade executed',
     toastExecutedBody: 'Your portfolio has been updated.',
     toastResetTitle: 'Portfolio reset',
@@ -142,9 +146,16 @@ const copy = {
     ticketYes: 'Buy YES',
     ticketNo: 'Buy NO',
     chartTitle: 'Indicative odds chart',
-    chartCopy: 'Illustrative demo pricing path for the last seven board updates.',
+    chartCopy: 'Illustrative YES-probability path across the last seven daily demo marks.',
     chartNow: 'Now',
     chartStart: '7 updates ago',
+    chartFrameLabel: 'YES probability framing',
+    chartCurrentLabel: 'Current YES probability',
+    chartWindowLabel: 'Window',
+    chartWindowCopy: 'Last 7 daily demo marks',
+    chartMoveSupport: 'Versus the prior board mark',
+    chartAxisProbability: 'Probability',
+    chartFootnote: 'Illustrative chart for demo review only. Resolution still follows the named source stack.',
     gateEyebrow: 'Private tester access',
     gateTitle: 'Enter the room',
     gateCopy: 'A private preview of a Greek prediction market built around alternative event pricing across politics, economy, sports, culture, and everyday signals.',
@@ -188,6 +199,10 @@ const copy = {
     heroPulse: 'Παλμός board',
     heroPulseCopy: 'Staged αλλά πιο live-feeling tape για private tester walkthroughs.',
     heroLiveBadge: 'Live demo tape',
+    heroFlagshipCopy: 'Ένα lead contract και πίσω του ένα πιο σφιχτό shelf από high-signal αγορές.',
+    flagshipLane: 'Κύριες αγορές',
+    flagshipLaneCopy: 'Τα contracts που πρέπει να διαβάζονται πρώτα σε ένα room, πριν από το υπόλοιπο board.',
+    cardFeatured: 'Κύρια',
     statLiveOdds: 'Κύριο YES / NO',
     statTotalVolume: 'Συνολικός όγκος',
     statCash: 'Διαθέσιμα μετρητά',
@@ -290,7 +305,7 @@ const copy = {
     categoryMix: 'Μείγμα κατηγοριών',
     noResultsTitle: 'Δεν υπάρχουν αγορές για αυτό το screen.',
     noResultsBody: 'Δοκίμασε πιο ευρύ φίλτρο ή καθάρισε την αναζήτηση.',
-    footer: 'Το xyz Labs Demo v0.8.2 κρατά άθικτο το 36-market board, γυρίζει τα headline YES / NO odds σε probability-first προβολή, κρατά το EUR ticket math όπως είναι και σφίγγει τη συνολική αναγνωσιμότητα του UI.',
+    footer: 'Το xyz Labs Demo v0.8.3 κρατά άθικτο το 36-market board, δυναμώνει την flagship παρουσίαση, καθαρίζει την ιεραρχία των cards, ευθυγραμμίζει το art direction και προσθέτει πιο διακριτικό motion polish χωρίς να αλλάζει τον βασικό demo κορμό.',
     toastExecutedTitle: 'Το trade εκτελέστηκε',
     toastExecutedBody: 'Το portfolio ενημερώθηκε.',
     toastResetTitle: 'Έγινε reset portfolio',
@@ -311,9 +326,16 @@ const copy = {
     ticketYes: 'Αγορά YES',
     ticketNo: 'Αγορά NO',
     chartTitle: 'Indicative odds chart',
-    chartCopy: 'Ενδεικτική demo διαδρομή τιμολόγησης για τα τελευταία επτά board updates.',
+    chartCopy: 'Ενδεικτική διαδρομή πιθανότητας YES στα τελευταία επτά ημερήσια demo marks.',
     chartNow: 'Τώρα',
     chartStart: '7 updates πριν',
+    chartFrameLabel: 'YES probability framing',
+    chartCurrentLabel: 'Τρέχουσα πιθανότητα YES',
+    chartWindowLabel: 'Παράθυρο',
+    chartWindowCopy: 'Τελευταία 7 ημερήσια demo marks',
+    chartMoveSupport: 'Σε σχέση με το προηγούμενο board mark',
+    chartAxisProbability: 'Πιθανότητα',
+    chartFootnote: 'Ενδεικτικό chart μόνο για demo review. Το resolution συνεχίζει να ακολουθεί την ονομασμένη ιεραρχία πηγών.',
     gateEyebrow: 'Private tester access',
     gateTitle: 'Μπες στο room',
     gateCopy: 'Ένα private preview ελληνικής αγοράς προβλέψεων, χτισμένο γύρω από alternative event pricing σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καθημερινά σήματα.',
@@ -1960,8 +1982,12 @@ function getFilteredMarkets() {
   return filtered;
 }
 
+function getFeaturedMarkets(limit = 4) {
+  return MARKETS.filter((market) => market.featured).sort((a, b) => b.volume - a.volume).slice(0, limit);
+}
+
 function getFeaturedMarket() {
-  return MARKETS.filter((market) => market.featured).sort((a, b) => b.volume - a.volume)[0] || MARKETS[0];
+  return getFeaturedMarkets(1)[0] || MARKETS[0];
 }
 
 function getLiveSignal(market) {
@@ -2054,6 +2080,11 @@ function buildIndicativeSeries(market) {
   return series;
 }
 
+function buildIndicativeTimeline(count) {
+  const anchor = Date.now();
+  return Array.from({ length: count }, (_, index) => new Date(anchor - (count - 1 - index) * 24 * 60 * 60 * 1000));
+}
+
 function buildMovers(limit = 5) {
   return [...MARKETS]
     .sort((a, b) => Math.abs(b.change) - Math.abs(a.change) || b.volume - a.volume)
@@ -2062,6 +2093,60 @@ function buildMovers(limit = 5) {
       market,
       signal: getLiveSignal(market)
     }));
+}
+
+
+function getPosterArtClass(market) {
+  if (market.poster?.art) return market.poster.art;
+  const label = `${market.poster?.eyebrow?.en || ''} ${market.poster?.label?.en || ''} ${market.question?.en || ''}`.toLowerCase();
+
+  if (market.categoryKey === 'macro') {
+    if (label.includes('airport') || label.includes('traffic') || label.includes('travel')) return 'art-airport';
+    if (label.includes('factory') || label.includes('industrial')) return 'art-factory';
+    return 'art-chart';
+  }
+
+  if (market.categoryKey === 'social') {
+    if (label.includes('tiktok') || label.includes('youtube') || label.includes('instagram') || label.includes('views') || label.includes('clip') || label.includes('reel')) {
+      return 'art-screen';
+    }
+    return 'art-stage';
+  }
+
+  if (market.categoryKey === 'showbiz') {
+    if (label.includes('cannes') || label.includes('oscar') || label.includes('award')) return 'art-awards';
+    if (label.includes('trailer') || label.includes('teaser') || label.includes('franchise')) return 'art-screen';
+    return 'art-stage';
+  }
+
+  if (market.categoryKey === 'sports') {
+    if (label.includes('tennis') || label.includes('tsitsipas') || label.includes('sakkari') || label.includes('roland') || label.includes('wimbledon')) {
+      return 'art-tennis';
+    }
+    if (label.includes('basket') || label.includes('euroleague') || label.includes('olympiacos') || label.includes('panathinaikos')) {
+      return 'art-court';
+    }
+    return 'art-pitch';
+  }
+
+  if (market.categoryKey === 'weather') {
+    if (label.includes('rain')) return 'art-rain';
+    if (label.includes('heat') || label.includes('temperature') || label.includes('summer')) return 'art-sun';
+    return 'art-aegean';
+  }
+
+  return '';
+}
+
+function getPosterThemeClass(market) {
+  const map = {
+    macro: 'poster-theme-data',
+    social: 'poster-theme-social',
+    showbiz: 'poster-theme-showbiz',
+    sports: 'poster-theme-sports',
+    weather: 'poster-theme-weather'
+  };
+  return map[market.categoryKey] || '';
 }
 
 function buildResolutionPack(market) {
@@ -2173,6 +2258,7 @@ function render() {
   const route = getRoute();
   const portfolio = buildPortfolio(appState.transactions);
   const currentMarket = route.name === 'market' ? getMarket(route.id) : getFeaturedMarket();
+  const showHero = route.name === 'markets';
 
   if (!appState.access?.granted) {
     app.innerHTML = `${renderAccessGate()}${renderToasts()}`;
@@ -2182,7 +2268,7 @@ function render() {
   app.innerHTML = `
     <div class="shell">
       ${renderTopbar(route)}
-      ${renderHero(portfolio)}
+      ${showHero ? renderHero(portfolio) : ''}
       ${route.name === 'portfolio' ? renderPortfolioPage(portfolio) : route.name === 'market' ? renderMarketDetailPage(currentMarket, portfolio) : renderBoardPage(portfolio)}
       <footer class="footer-note">${t('footer')}</footer>
     </div>
@@ -2200,7 +2286,7 @@ function renderAccessGate() {
           <div class="brand gate-brand">
             <div class="brand-mark">xyz</div>
             <div class="brand-copy">
-              <strong>${t('appTitle')} v0.8.2</strong>
+              <strong>${t('appTitle')} v0.8.3</strong>
               <span>${t('privateBeta')}</span>
             </div>
           </div>
@@ -2279,7 +2365,7 @@ function renderTopbar(route) {
       </div>
       <div class="topbar-actions">
         <span class="topbar-badge live-badge"><span class="live-dot"></span>${t('privateBeta')}</span>
-        <span class="topbar-badge version-badge">v0.8.2</span>
+        <span class="topbar-badge version-badge">v0.8.3</span>
         <span class="topbar-badge">${escapeHtml(getTesterName())}</span>
         <span class="topbar-badge">${t('sandbox')}</span>
         <div class="nav-switch">
@@ -2297,16 +2383,25 @@ function renderTopbar(route) {
 
 function renderHero(portfolio) {
   const featured = getFeaturedMarket();
+  const featuredSignal = getLiveSignal(featured);
   const tape = buildLiveTape(3);
   const metrics = getBoardMetrics();
   return `
     <section class="hero-grid">
       <article class="hero-panel" style="background:${featured.poster.gradient};">
-        ${renderPosterArt(featured.poster)}
+        ${renderPosterArt(featured, 'hero')}
         <div class="hero-overlay">
-          <div class="hero-copy hero-copy-clean">
-            <span class="eyebrow">${t('heroEyebrow')}</span>
-            <h1>${t('productIdentity')}</h1>
+          <div class="hero-copy-cluster">
+            <div class="hero-copy hero-copy-clean">
+              <span class="eyebrow">${t('heroEyebrow')}</span>
+              <h1>${t('productIdentity')}</h1>
+              <p class="hero-subcopy">${t('heroFlagshipCopy')}</p>
+            </div>
+            <div class="hero-brief">
+              <small>${t('liveBoard')}</small>
+              <strong>${t('flagshipLane')}</strong>
+              <p>${t('flagshipLaneCopy')}</p>
+            </div>
             <div class="live-ribbon">
               <span class="ghost-pill"><span class="live-dot light"></span>${t('heroLiveBadge')}</span>
               <span class="ghost-pill">${t('testerLane')}: ${metrics.testerCount}</span>
@@ -2322,7 +2417,9 @@ function renderHero(portfolio) {
               </div>
               <button class="cta compact" data-open-market="${featured.id}">${t('openMarket')}</button>
             </div>
+            <div class="hero-feature-label">${featured.poster.eyebrow[appState.language]} · ${featured.poster.label[appState.language]}</div>
             <h2>${featured.question[appState.language]}</h2>
+            <p class="hero-feature-summary-copy">${featured.summary[appState.language]}</p>
             <div class="hero-feature-meta">
               <div class="odds-stat-block">
                 <small>${t('statLiveOdds')}</small>
@@ -2337,41 +2434,111 @@ function renderHero(portfolio) {
                 <strong>${formatDate(featured.closeDate)}</strong>
               </div>
             </div>
+            <div class="hero-feature-boardline">
+              <span class="feature-stat-pill">${t('dayChange')} <strong class="${featured.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(featured.change)}</strong></span>
+              <span class="feature-stat-pill">${t('liveFlow')} <strong>${featuredSignal.flowSide === 'yes' ? t('yes') : t('no')} ${formatCurrency(featuredSignal.flowEur)}</strong></span>
+              <span class="feature-stat-pill">${t('liveWatchers')} <strong>${featuredSignal.watchers}</strong></span>
+            </div>
             <div class="mini-tape">
               ${tape.map((item) => `<span class="mini-tape-item">${getLiveTapeInline(item)}</span>`).join('')}
             </div>
           </div>
         </div>
+        <div class="hero-panel-footer">
+          <article class="stat-card odds-stat-card">
+            <small>${t('statLiveOdds')}</small>
+            ${renderProbabilityPair(featured, 'compact on-dark')}
+            <span>${featured.question[appState.language]}</span>
+          </article>
+          <article class="stat-card">
+            <small>${t('statTotalVolume')}</small>
+            <strong>${formatCurrency(metrics.totalVolume)}</strong>
+            <span>${MARKETS.length} ${t('liveSlate').toLowerCase()}</span>
+          </article>
+          <article class="stat-card">
+            <small>${t('statCash')}</small>
+            <strong>${formatCurrency(portfolio.cash)}</strong>
+            <span>${t('availableCash')}</span>
+          </article>
+          <article class="stat-card">
+            <small>${t('heroPulse')}</small>
+            <strong>${formatCurrency(metrics.recentFlow)}</strong>
+            <span>${t('heroPulseCopy')}</span>
+          </article>
+        </div>
       </article>
-      <div class="hero-stats">
-        <article class="stat-card odds-stat-card">
-          <small>${t('statLiveOdds')}</small>
-          ${renderProbabilityPair(featured, 'compact')}
-          <span>${featured.question[appState.language]}</span>
-        </article>
-        <article class="stat-card">
-          <small>${t('statTotalVolume')}</small>
-          <strong>${formatCurrency(metrics.totalVolume)}</strong>
-          <span>${MARKETS.length} ${t('liveSlate').toLowerCase()}</span>
-        </article>
-        <article class="stat-card">
-          <small>${t('statCash')}</small>
-          <strong>${formatCurrency(portfolio.cash)}</strong>
-          <span>${t('availableCash')}</span>
-        </article>
-        <article class="stat-card">
-          <small>${t('heroPulse')}</small>
-          <strong>${formatCurrency(metrics.recentFlow)}</strong>
-          <span>${t('heroPulseCopy')}</span>
-        </article>
+    </section>
+  `;
+}
+
+function renderFlagshipLane(markets) {
+  if (!markets.length) return '';
+  return `
+    <section class="featured-lane">
+      <div class="surface-header compact-header featured-lane-header">
+        <div>
+          <h3>${t('flagshipLane')}</h3>
+          <p>${t('flagshipLaneCopy')}</p>
+        </div>
+      </div>
+      <div class="featured-lane-grid">
+        ${markets.map((market, index) => renderFlagshipCard(market, index)).join('')}
       </div>
     </section>
+  `;
+}
+
+function renderFlagshipCard(market, index) {
+  const signal = getLiveSignal(market);
+  return `
+    <button class="featured-strip-card ${index === 0 ? 'primary' : ''}" data-open-market="${market.id}" style="background:${market.poster.gradient};">
+      ${renderPosterArt(market)}
+      <div class="featured-strip-overlay">
+        <div class="featured-strip-top">
+          <div class="featured-strip-pill-row">
+            <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
+            <span class="ghost-pill">${t('cardFeatured')}</span>
+          </div>
+          <span class="featured-strip-time">${formatRelativeMinutes(signal.updatedMin)}</span>
+        </div>
+        <div class="featured-strip-body">
+          <small>${market.poster.eyebrow[appState.language]}</small>
+          <strong>${market.question[appState.language]}</strong>
+          <p>${market.summary[appState.language]}</p>
+        </div>
+        <div class="featured-strip-footer">
+          <div class="featured-strip-odds">
+            ${renderProbabilityPair(market, 'compact on-dark')}
+          </div>
+          <div class="featured-strip-metrics">
+            <span>
+              <small>${t('dayChange')}</small>
+              <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
+            </span>
+            <span>
+              <small>${t('liveFlow')}</small>
+              <strong>${signal.flowSide === 'yes' ? t('yes') : t('no')} ${formatCurrency(signal.flowEur)}</strong>
+            </span>
+            <span>
+              <small>${t('liveWatchers')}</small>
+              <strong>${signal.watchers}</strong>
+            </span>
+          </div>
+          <div class="featured-strip-actions">
+            <span class="ghost-pill">${getCategoryLabel(market.categoryKey)}</span>
+            <span class="featured-strip-link">${t('openMarket')} →</span>
+          </div>
+        </div>
+      </div>
+    </button>
   `;
 }
 
 function renderBoardPage(portfolio) {
   const filteredMarkets = getFilteredMarkets();
   const metrics = getBoardMetrics();
+  const featuredMarkets = getFeaturedMarkets(4);
+  const showFlagshipLane = uiState.filter === 'all' && !uiState.search.trim();
   return `
     <section class="page-grid board-layout">
       <article class="surface board-surface">
@@ -2421,6 +2588,8 @@ function renderBoardPage(portfolio) {
             </div>
           </div>
         </div>
+
+        ${showFlagshipLane ? renderFlagshipLane(featuredMarkets) : ''}
 
         <div class="market-grid">
           ${
@@ -2483,9 +2652,18 @@ function renderBoardPage(portfolio) {
   `;
 }
 
-function renderPosterArt(poster) {
-  if (!poster?.art) return '';
-  return `<div class="poster-art ${poster.art}" aria-hidden="true"></div>`;
+
+function renderPosterArt(market, variant = 'card') {
+  const artClass = getPosterArtClass(market);
+  const themeClass = getPosterThemeClass(market);
+  if (!artClass && !themeClass) return '';
+  return `
+    <div class="poster-art-shell ${themeClass} ${variant === 'hero' ? 'hero-shell' : variant === 'detail' ? 'detail-shell' : ''}" aria-hidden="true">
+      <div class="poster-art ${artClass}"></div>
+      <div class="poster-grain"></div>
+      <div class="poster-vignette"></div>
+    </div>
+  `;
 }
 
 function renderMarketCard(market, portfolio) {
@@ -2493,9 +2671,9 @@ function renderMarketCard(market, portfolio) {
   const heldNo = getHeldQty(portfolio, market.id, 'no');
   const signal = getLiveSignal(market);
   return `
-    <article class="market-card">
+    <article class="market-card ${market.featured ? 'featured-card' : ''}">
       <div class="market-poster" style="background:${market.poster.gradient};">
-        ${renderPosterArt(market.poster)}
+        ${renderPosterArt(market)}
         <div class="poster-top">
           <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
           <span class="ghost-pill">${market.id}</span>
@@ -2507,12 +2685,23 @@ function renderMarketCard(market, portfolio) {
         <div class="poster-icon">${market.poster.emoji}</div>
       </div>
       <div class="market-card-body">
-        <div class="card-kickers">
-          <span class="soft-pill">${getCategoryLabel(market.categoryKey)}</span>
-          <span class="soft-pill live-soft-pill"><span class="live-dot"></span>${formatRelativeMinutes(signal.updatedMin)}</span>
+        <div class="market-card-head">
+          <div class="card-kickers">
+            <span class="soft-pill">${getCategoryLabel(market.categoryKey)}</span>
+            ${market.featured ? `<span class="soft-pill featured-soft-pill">${t('cardFeatured')}</span>` : ''}
+            <span class="soft-pill live-soft-pill"><span class="live-dot"></span>${formatRelativeMinutes(signal.updatedMin)}</span>
+          </div>
+          <div class="market-card-lead">
+            <div>
+              <h3>${market.question[appState.language]}</h3>
+              <p>${market.summary[appState.language]}</p>
+            </div>
+            <div class="market-card-change ${market.change >= 0 ? 'positive' : 'negative'}">
+              <small>${t('dayChange')}</small>
+              <strong>${formatProbabilityDelta(market.change)}</strong>
+            </div>
+          </div>
         </div>
-        <h3>${market.question[appState.language]}</h3>
-        <p>${market.summary[appState.language]}</p>
 
         <div class="odds-grid">
           <div class="odds-chip yes-chip">
@@ -2525,15 +2714,24 @@ function renderMarketCard(market, portfolio) {
           </div>
         </div>
 
-        <div class="live-signal-row">
-          <span><span class="live-dot"></span>${t('liveFlow')}: ${signal.flowSide === 'yes' ? t('yes') : t('no')} ${formatCurrency(signal.flowEur)}</span>
-          <span>${t('liveWatchers')}: ${signal.watchers}</span>
+        <div class="market-meta-grid">
+          <div class="market-meta-item">
+            <small>${t('volume')}</small>
+            <strong>${formatCurrency(market.volume)}</strong>
+          </div>
+          <div class="market-meta-item">
+            <small>${t('close')}</small>
+            <strong>${formatDate(market.closeDate)}</strong>
+          </div>
+          <div class="market-meta-item">
+            <small>${t('liveWatchers')}</small>
+            <strong>${signal.watchers}</strong>
+          </div>
         </div>
 
-        <div class="market-meta-row">
-          <span>${t('dayChange')}: <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong></span>
-          <span>${t('volume')}: ${formatCurrency(market.volume)}</span>
-          <span>${t('close')}: ${formatDate(market.closeDate)}</span>
+        <div class="live-signal-row">
+          <span><span class="live-dot"></span>${t('liveFlow')}: ${signal.flowSide === 'yes' ? t('yes') : t('no')} ${formatCurrency(signal.flowEur)}</span>
+          <span>${t('testerLane')}: ${signal.activeTesters}</span>
         </div>
 
         <div class="card-actions">
@@ -2557,7 +2755,7 @@ function renderMarketDetailPage(market, portfolio) {
 
         <div class="detail-hero">
           <div class="detail-poster" style="background:${market.poster.gradient};">
-            ${renderPosterArt(market.poster)}
+            ${renderPosterArt(market, 'detail')}
             <div class="poster-top">
               <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
               <span class="ghost-pill">${market.id}</span>
@@ -2655,6 +2853,20 @@ function renderMarketDetailPage(market, portfolio) {
               </div>
             </label>
             <div class="ticket-box">
+              <div class="ticket-preview-grid">
+                <div class="ticket-preview-stat">
+                  <small>${t('estimatedTotal')}</small>
+                  <strong>${formatCurrency(preview.total)}</strong>
+                </div>
+                <div class="ticket-preview-stat">
+                  <small>${t('contractPrice')}</small>
+                  <strong>${formatPrice(preview.price)}</strong>
+                </div>
+                <div class="ticket-preview-stat">
+                  <small>${t('estimatedContracts')}</small>
+                  <strong>${formatQuantity(preview.contracts)}</strong>
+                </div>
+              </div>
               <div>
                 <small class="field-label">${t('ticketIntuition')}</small>
                 <p class="ticket-intuition-copy">${preview.narrative}</p>
@@ -2689,8 +2901,6 @@ function renderMarketDetailPage(market, portfolio) {
                 }
               </div>
               <div class="row"><span>${t('contractPrice')}</span><strong>${formatPrice(preview.price)} · ${formatPercent(getChance(market, preview.side))}</strong></div>
-              <div class="row"><span>${t('estimatedTotal')}</span><strong>${formatCurrency(preview.total)}</strong></div>
-              <div class="row"><span>${t('estimatedContracts')}</span><strong>${formatQuantity(preview.contracts)}</strong></div>
               ${preview.action === 'buy'
                 ? `<div class="row"><span>${t('ticketSpendNow')}</span><strong>${formatCurrency(preview.total)}</strong></div>
                    <div class="row"><span>${t('ticketMaxLoss')}</span><strong>${formatCurrency(preview.total)}</strong></div>`
@@ -2802,48 +3012,109 @@ function renderTradeSideButton(market, side) {
 
 function renderOddsChartShell(market) {
   const series = buildIndicativeSeries(market);
-  const width = 720;
-  const height = 220;
-  const paddingX = 20;
-  const paddingTop = 16;
-  const paddingBottom = 32;
-  const stepX = (width - paddingX * 2) / (series.length - 1);
+  const timeline = buildIndicativeTimeline(series.length);
+  const width = 760;
+  const height = 260;
+  const paddingLeft = 58;
+  const paddingRight = 20;
+  const paddingTop = 20;
+  const paddingBottom = 46;
+  const yTicks = [80, 50, 20];
+  const stepX = (width - paddingLeft - paddingRight) / (series.length - 1);
   const points = series.map((value, index) => {
-    const x = paddingX + stepX * index;
+    const x = paddingLeft + stepX * index;
     const y = paddingTop + (height - paddingTop - paddingBottom) * (1 - value / 100);
     return { x, y, value };
   });
+  const latestPoint = points[points.length - 1];
+  const xTickIndexes = [...new Set([0, Math.floor((series.length - 1) / 3), Math.floor(((series.length - 1) * 2) / 3), series.length - 1])];
+  const xTicks = xTickIndexes.map((index) => ({ x: points[index].x, label: formatDate(timeline[index]) }));
   const polyline = points.map((point) => `${point.x},${point.y}`).join(' ');
-  const area = `${paddingX},${height - paddingBottom} ${polyline} ${width - paddingX},${height - paddingBottom}`;
+  const area = `${paddingLeft},${height - paddingBottom} ${polyline} ${width - paddingRight},${height - paddingBottom}`;
+  const slug = market.id.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const areaGradientId = `chart-area-${slug}`;
+  const lineGradientId = `chart-line-${slug}`;
+  const calloutY = Math.max(8, latestPoint.y - 34);
 
   return `
     <section class="chart-shell">
-      <div class="chart-header">
-        <div>
+      <div class="chart-shell-head">
+        <div class="chart-head-copy">
+          <span class="chart-overline">${t('chartFrameLabel')}</span>
           <h3>${t('chartTitle')}</h3>
           <p>${t('chartCopy')}</p>
         </div>
-        <div class="chart-key">
-          ${renderProbabilityPair(market, 'compact')}
+        <div class="chart-summary-grid">
+          <div class="chart-summary-card">
+            <small>${t('chartCurrentLabel')}</small>
+            <strong>${formatPercent(getChance(market, 'yes'))}</strong>
+            <span>${t('no')} ${formatPercent(getChance(market, 'no'))}</span>
+          </div>
+          <div class="chart-summary-card">
+            <small>${t('dayChange')}</small>
+            <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
+            <span>${t('chartMoveSupport')}</span>
+          </div>
+          <div class="chart-summary-card">
+            <small>${t('chartWindowLabel')}</small>
+            <strong>${formatDate(timeline[0])} → ${formatDate(timeline[timeline.length - 1])}</strong>
+            <span>${t('chartWindowCopy')}</span>
+          </div>
         </div>
       </div>
       <div class="chart-card">
-        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${t('chartTitle')}">
-          <line class="chart-grid" x1="${paddingX}" y1="${paddingTop}" x2="${width - paddingX}" y2="${paddingTop}" />
-          <line class="chart-grid" x1="${paddingX}" y1="${(height - paddingBottom + paddingTop) / 2}" x2="${width - paddingX}" y2="${(height - paddingBottom + paddingTop) / 2}" />
-          <line class="chart-grid" x1="${paddingX}" y1="${height - paddingBottom}" x2="${width - paddingX}" y2="${height - paddingBottom}" />
-          <polygon class="chart-area" points="${area}" />
-          <polyline class="chart-line" points="${polyline}" />
-          ${points
-            .map(
-              (point, index) => `
-                <circle class="chart-dot ${index === points.length - 1 ? 'latest' : ''}" cx="${point.x}" cy="${point.y}" r="${index === points.length - 1 ? 5 : 3}" />
-              `
-            )
-            .join('')}
-          <text class="chart-axis-label" x="${paddingX}" y="${height - 8}">${t('chartStart')}</text>
-          <text class="chart-axis-label chart-axis-label-right" x="${width - paddingX}" y="${height - 8}">${t('chartNow')}</text>
-        </svg>
+        <div class="chart-frame">
+          <div class="chart-axis-caption">${t('chartAxisProbability')}</div>
+          <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${t('chartTitle')}">
+            <defs>
+              <linearGradient id="${areaGradientId}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(37, 99, 235, 0.28)" />
+                <stop offset="100%" stop-color="rgba(37, 99, 235, 0.02)" />
+              </linearGradient>
+              <linearGradient id="${lineGradientId}" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#1d4ed8" />
+                <stop offset="100%" stop-color="#60a5fa" />
+              </linearGradient>
+            </defs>
+            ${yTicks
+              .map((tick) => {
+                const y = paddingTop + (height - paddingTop - paddingBottom) * (1 - tick / 100);
+                return `
+                  <line class="chart-grid ${tick === 50 ? 'emphasis' : ''}" x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" />
+                  <text class="chart-y-label" x="${paddingLeft - 10}" y="${y + 4}">${tick}%</text>
+                `;
+              })
+              .join('')}
+            ${xTicks
+              .map(
+                (tick) => `
+                  <line class="chart-x-tick" x1="${tick.x}" y1="${height - paddingBottom}" x2="${tick.x}" y2="${height - paddingBottom + 6}" />
+                  <text class="chart-axis-label ${tick.x === width - paddingRight ? 'chart-axis-label-right' : ''}" x="${tick.x}" y="${height - 14}">${tick.label}</text>
+                `
+              )
+              .join('')}
+            <polygon class="chart-area" points="${area}" style="fill:url(#${areaGradientId});" />
+            <polyline class="chart-line" points="${polyline}" style="stroke:url(#${lineGradientId});" />
+            <line class="chart-guide" x1="${latestPoint.x}" y1="${latestPoint.y}" x2="${latestPoint.x}" y2="${height - paddingBottom}" />
+            ${points
+              .map(
+                (point, index) => `
+                  <circle class="chart-dot ${index === points.length - 1 ? 'latest' : ''}" cx="${point.x}" cy="${point.y}" r="${index === points.length - 1 ? 6 : 3.5}" />
+                `
+              )
+              .join('')}
+            <rect class="chart-callout" x="${latestPoint.x - 27}" y="${calloutY}" rx="10" width="54" height="24" />
+            <text class="chart-callout-text" x="${latestPoint.x}" y="${calloutY + 16}">${formatPercent(latestPoint.value)}</text>
+          </svg>
+          <div class="chart-foot">
+            <div class="chart-legend-row">
+              <span class="chart-chip"><span class="legend-swatch"></span>${t('chartCurrentLabel')} <strong>${formatPercent(getChance(market, 'yes'))}</strong></span>
+              <span class="chart-chip">${t('dayChange')} <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong></span>
+              <span class="chart-chip">${t('resolutionCutoff')} <strong>${formatDateTime(market.closeDate)}</strong></span>
+            </div>
+            <p class="chart-footnote">${t('chartFootnote')}</p>
+          </div>
+        </div>
       </div>
     </section>
   `;
