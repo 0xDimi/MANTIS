@@ -3,6 +3,7 @@ const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81
 const ONBOARDING_VERSION = 'v83';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
+const APP_VERSION = 'v0.8.3.1';
 
 const copy = {
   en: {
@@ -39,9 +40,9 @@ const copy = {
     sortClosing: 'Closing soon',
     marketPulse: 'Board pulse',
     recentActivity: 'Recent activity',
-    recentActivityCopy: 'Recent fills keep the tape and portfolio from starting cold.',
+    recentActivityCopy: 'Recent fills keep the tape and portfolio warm.',
     liveTape: 'Live tape',
-    liveTapeCopy: 'Tasteful recent flow to make the sandbox feel inhabited.',
+    liveTapeCopy: 'Recent flow that keeps the sandbox feeling lived-in.',
     moversTitle: 'Top movers',
     moversCopy: 'The contracts drawing the cleanest attention right now.',
     liveSlate: 'Markets live',
@@ -51,6 +52,7 @@ const copy = {
     openMarket: 'Open market',
     browseMarkets: 'Browse markets',
     openSource: 'Open source',
+    openOfficialSource: 'Open official source',
     yes: 'YES',
     no: 'NO',
     chance: 'Chance',
@@ -73,6 +75,21 @@ const copy = {
     resolutionSourceRule: 'Source priority',
     resolutionCutoff: 'Market lock',
     resolutionSettleTarget: 'Target settlement',
+    trustLayerEyebrow: 'Trust layer',
+    trustLayerTitle: 'Why this market is trustworthy',
+    trustLayerCopy: 'Named official sources, explicit timing, and a visible void rule so the contract can be audited at a glance.',
+    trustSourceStack: 'Source stack',
+    trustSourceTitle: 'Official source first',
+    trustSourceCopy: 'The contract names the exact public records it will use before anything else.',
+    trustSettlementPath: 'Settlement path',
+    trustResolutionTitle: 'Clear YES / NO logic',
+    trustResolutionCopy: 'The market states what settles it, when trading stops, and when a human steps in.',
+    trustCheckedFirst: 'Checked first',
+    trustFallbackOnly: 'Fallback only',
+    trustOutcomeTest: 'Outcome test',
+    trustWhyCredible: 'Why it reads as credible',
+    trustTimingWindow: 'Close + resolve window',
+    trustManualSafeguard: 'Manual safeguard',
     resolutionManualNote: 'Primary sources win. Fallbacks are only used when they are clearly official and more complete than the primary publication page.',
     voidRule: 'Contract voids if the stated outcome cannot be verified with practical certainty from the named official sources, or if the wording becomes impossible to apply cleanly.',
     whyItMatters: 'Why it matters',
@@ -80,7 +97,7 @@ const copy = {
     fallbackSource: 'Fallback source',
     marketContext: 'Market context',
     tradeTitle: 'Order ticket',
-    tradeCopy: 'Enter EUR size, pick a side, and immediately see cost, risk, and potential payout before the mock fill hits the portfolio.',
+    tradeCopy: 'Enter EUR size, pick a side, and see cost, risk, and payout before the mock fill lands.',
     tradeAction: 'Action',
     tradeSide: 'Side',
     tradeAmount: 'Order amount',
@@ -106,7 +123,7 @@ const copy = {
     ticketRemaining: 'Contracts left after sell',
     ticketExposureAfter: 'Exposure after sell',
     accountSnapshot: 'Account snapshot',
-    accountCopy: 'Portfolio metrics update instantly after every fill.',
+    accountCopy: 'Updates after each fill.',
     resetAccount: 'Reset portfolio',
     equity: 'Equity',
     cash: 'Cash',
@@ -125,7 +142,7 @@ const copy = {
     categoryMix: 'Category mix',
     noResultsTitle: 'No markets match that screen.',
     noResultsBody: 'Try a broader category or clear the search input.',
-    footer: 'xyz Labs Demo v0.8.3 keeps the 36-market board intact while lifting flagship presentation, cleaning up card hierarchy, aligning poster art direction, and adding subtler motion polish without changing the core demo flow.',
+    footer: 'xyz Labs Demo v0.8.3.1 · Private preview of a Greek prediction market.',
     toastExecutedTitle: 'Trade executed',
     toastExecutedBody: 'Your portfolio has been updated.',
     toastResetTitle: 'Portfolio reset',
@@ -165,7 +182,7 @@ const copy = {
     gateCodePlaceholder: 'Enter shared code',
     gateUnlock: 'Unlock board',
     gateHint: 'Local-only demo. Access state is stored in this browser.',
-    gatePoint1: '36 live markets across politics, economy, sports, culture, and weather',
+    gatePoint1: '39 live markets across politics, economy, sports, culture, and weather',
     gatePoint2: 'EUR-supported ticketing designed to feel closer to a real consumer product',
     gatePoint3: 'Greek-first market mix built for a sharper private walkthrough',
     onboardingTitle: 'Before you explore',
@@ -219,9 +236,9 @@ const copy = {
     sortClosing: 'Κλείνουν σύντομα',
     marketPulse: 'Παλμός αγοράς',
     recentActivity: 'Πρόσφατη δραστηριότητα',
-    recentActivityCopy: 'Οι πρόσφατες κινήσεις κρατούν ζωντανά το tape και το portfolio από την πρώτη στιγμή.',
+    recentActivityCopy: 'Οι πρόσφατες κινήσεις κρατούν ζωντανά το tape και το portfolio.',
     liveTape: 'Live tape',
-    liveTapeCopy: 'Διακριτική πρόσφατη ροή ώστε το sandbox να δείχνει κατοικημένο.',
+    liveTapeCopy: 'Πρόσφατη ροή που κρατά το sandbox ζωντανό.',
     moversTitle: 'Top movers',
     moversCopy: 'Τα contracts που τραβούν την πιο καθαρή προσοχή αυτή τη στιγμή.',
     liveSlate: 'Αγορές live',
@@ -231,6 +248,7 @@ const copy = {
     openMarket: 'Άνοιγμα αγοράς',
     browseMarkets: 'Δες αγορές',
     openSource: 'Άνοιγμα πηγής',
+    openOfficialSource: 'Άνοιγμα επίσημης πηγής',
     yes: 'YES',
     no: 'NO',
     chance: 'Πιθανότητα',
@@ -253,6 +271,21 @@ const copy = {
     resolutionSourceRule: 'Ιεραρχία πηγών',
     resolutionCutoff: 'Κλείδωμα αγοράς',
     resolutionSettleTarget: 'Στόχος settlement',
+    trustLayerEyebrow: 'Trust layer',
+    trustLayerTitle: 'Γιατί αυτή η αγορά δείχνει αξιόπιστη',
+    trustLayerCopy: 'Ονομασμένες επίσημες πηγές, καθαρό timing και ορατός κανόνας void ώστε το contract να ελέγχεται με μια ματιά.',
+    trustSourceStack: 'Ιεραρχία πηγών',
+    trustSourceTitle: 'Πρώτα η επίσημη πηγή',
+    trustSourceCopy: 'Το contract ορίζει ακριβώς ποια δημόσια records χρησιμοποιεί πριν από οτιδήποτε άλλο.',
+    trustSettlementPath: 'Path settlement',
+    trustResolutionTitle: 'Καθαρή λογική YES / NO',
+    trustResolutionCopy: 'Η αγορά λέει τι την κάνει settle, πότε σταματά το trading και πότε χρειάζεται ανθρώπινος έλεγχος.',
+    trustCheckedFirst: 'Ελέγχεται πρώτο',
+    trustFallbackOnly: 'Μόνο αν χρειαστεί',
+    trustOutcomeTest: 'Outcome test',
+    trustWhyCredible: 'Γιατί διαβάζεται ως αξιόπιστη',
+    trustTimingWindow: 'Παράθυρο close + resolve',
+    trustManualSafeguard: 'Safeguard manual review',
     resolutionManualNote: 'Οι primary πηγές υπερισχύουν. Τα fallback χρησιμοποιούνται μόνο όταν είναι καθαρά επίσημα και πιο πλήρη από την κύρια σελίδα δημοσίευσης.',
     voidRule: 'Το contract γίνεται void αν το δηλωμένο outcome δεν μπορεί να επαληθευτεί με πρακτική βεβαιότητα από τις ονομασμένες επίσημες πηγές ή αν η διατύπωση πάψει να εφαρμόζεται καθαρά.',
     whyItMatters: 'Γιατί μετράει',
@@ -260,7 +293,7 @@ const copy = {
     fallbackSource: 'Εναλλακτική πηγή',
     marketContext: 'Στοιχεία αγοράς',
     tradeTitle: 'Εντολή',
-    tradeCopy: 'Βάλε EUR ποσό, διάλεξε πλευρά και δες αμέσως κόστος, ρίσκο και πιθανή πληρωμή πριν περάσει το mock fill στο portfolio.',
+    tradeCopy: 'Βάλε EUR ποσό, διάλεξε πλευρά και δες κόστος, ρίσκο και πληρωμή πριν περάσει το mock fill.',
     tradeAction: 'Ενέργεια',
     tradeSide: 'Πλευρά',
     tradeAmount: 'Ποσό εντολής',
@@ -286,7 +319,7 @@ const copy = {
     ticketRemaining: 'Contracts που μένουν μετά το sell',
     ticketExposureAfter: 'Έκθεση μετά το sell',
     accountSnapshot: 'Στιγμιότυπο λογαριασμού',
-    accountCopy: 'Τα portfolio metrics ενημερώνονται άμεσα μετά από κάθε fill.',
+    accountCopy: 'Ενημερώνεται μετά από κάθε fill.',
     resetAccount: 'Επαναφορά χαρτοφυλακίου',
     equity: 'Συνολική αξία',
     cash: 'Μετρητά',
@@ -305,7 +338,7 @@ const copy = {
     categoryMix: 'Μείγμα κατηγοριών',
     noResultsTitle: 'Δεν υπάρχουν αγορές για αυτό το screen.',
     noResultsBody: 'Δοκίμασε πιο ευρύ φίλτρο ή καθάρισε την αναζήτηση.',
-    footer: 'Το xyz Labs Demo v0.8.3 κρατά άθικτο το 36-market board, δυναμώνει την flagship παρουσίαση, καθαρίζει την ιεραρχία των cards, ευθυγραμμίζει το art direction και προσθέτει πιο διακριτικό motion polish χωρίς να αλλάζει τον βασικό demo κορμό.',
+    footer: 'xyz Labs Demo v0.8.3.1 · Private preview ελληνικής αγοράς προβλέψεων.',
     toastExecutedTitle: 'Το trade εκτελέστηκε',
     toastExecutedBody: 'Το portfolio ενημερώθηκε.',
     toastResetTitle: 'Έγινε reset portfolio',
@@ -345,7 +378,7 @@ const copy = {
     gateCodePlaceholder: 'Βάλε το shared code',
     gateUnlock: 'Ξεκλείδωμα board',
     gateHint: 'Το demo είναι local-only. Η πρόσβαση αποθηκεύεται σε αυτόν τον browser.',
-    gatePoint1: '36 live αγορές σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καιρό',
+    gatePoint1: '39 live αγορές σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καιρό',
     gatePoint2: 'EUR-supported ticketing σχεδιασμένο να θυμίζει πιο πολύ πραγματικό consumer product',
     gatePoint3: 'Greek-first market mix για πιο καθαρό private walkthrough',
     onboardingTitle: 'Πριν μπεις στο board',
@@ -380,7 +413,7 @@ const MARKETS = [
     id: 'MAC-01',
     categoryKey: 'macro',
     status: 'closing',
-    featured: true,
+    featured: false,
     probability: 61,
     change: 4,
     volume: 24840,
@@ -921,7 +954,8 @@ const MARKETS = [
     id: 'SPT-01',
     categoryKey: 'sports',
     status: 'live',
-    featured: true,
+    featured: false,
+    surfaced: true,
     probability: 58,
     change: 7,
     volume: 22310,
@@ -1430,41 +1464,114 @@ const MARKETS = [
     fallbackSource: 'AIA investor relations traffic release'
   },
   {
-    id: 'SOC-06',
-    categoryKey: 'social',
+    id: 'MAC-07',
+    categoryKey: 'macro',
     status: 'live',
-    featured: false,
-    probability: 62,
-    change: 5,
+    featured: true,
+    probability: 56,
+    change: 4,
     volume: 17640,
-    closeDate: '2026-05-16T20:59:00+02:00',
-    resolveDate: '2026-05-19T20:59:00+02:00',
-    sourceLink: 'https://www.youtube.com/@EurovisionSongContest',
+    closeDate: '2026-04-01T11:59:00+02:00',
+    resolveDate: '2026-04-01T23:00:00+02:00',
+    sourceLink: 'https://ypergasias.gov.gr/',
     poster: {
-      eyebrow: { en: 'Eurovision Greece', el: 'Eurovision Ελλάδα' },
-      label: { en: 'Final clip', el: 'Final clip' },
-      emoji: '🎆',
-      art: 'art-stage',
-      gradient: 'linear-gradient(135deg, #0a1023 0%, #4338ca 48%, #ec4899 100%)'
+      eyebrow: { en: 'Minimum wage', el: 'Κατώτατος μισθός' },
+      label: { en: '€950 watch', el: 'Στόχος €950' },
+      emoji: '💶',
+      gradient: 'linear-gradient(135deg, #131c2e 0%, #1d4ed8 46%, #34d399 100%)'
     },
     question: {
-      en: "Will Greece's official Eurovision 2026 grand-final clip pass 2.5M YouTube views within 72 hours?",
-      el: 'Θα περάσει το επίσημο grand-final clip της Ελλάδας στη Eurovision 2026 τα 2,5M YouTube views μέσα σε 72 ώρες;'
+      en: "Will Greece's new statutory monthly minimum wage be confirmed at €950 by 1 April 2026?",
+      el: 'Θα επιβεβαιωθεί ο νέος νόμιμος μηνιαίος κατώτατος μισθός στην Ελλάδα στα €950 έως την 1η Απριλίου 2026;'
     },
     summary: {
-      en: 'Keeps the social shelf unmistakably Greek while still resolving from one clean public metric.',
-      el: 'Κρατά το social shelf αδιαμφισβήτητα ελληνικό ενώ συνεχίζει να κάνει resolve από ένα καθαρό public metric.'
+      en: 'A very legible Greek wage-policy market with immediate relevance beyond finance-native users.',
+      el: 'Πολύ καθαρή αγορά για την ελληνική μισθολογική πολιτική με άμεση συνάφεια και πέρα από finance-native χρήστες.'
     },
     resolution: {
-      en: 'YES if the official Greek grand-final clip on the Eurovision YouTube channel exceeds 2.5M views within 72 hours of upload.',
-      el: 'YES αν το επίσημο ελληνικό grand-final clip στο κανάλι της Eurovision στο YouTube ξεπεράσει τα 2,5M views μέσα σε 72 ώρες από το upload.'
+      en: 'YES if by 1 April 2026 the Greek government officially confirms a gross statutory monthly minimum wage of exactly €950 for the new rate. NO if the confirmed figure differs or no official confirmation is issued by then.',
+      el: 'YES αν έως την 1η Απριλίου 2026 η ελληνική κυβέρνηση επιβεβαιώσει επίσημα μικτό νόμιμο μηνιαίο κατώτατο μισθό ακριβώς €950 για τη νέα τιμή. NO αν το επιβεβαιωμένο ποσό είναι διαφορετικό ή δεν υπάρξει επίσημη επιβεβαίωση έως τότε.'
     },
     why: {
-      en: 'It feels internet-native, Greek-specific, and easy for a room to debate on the spot.',
-      el: 'Νιώθει internet-native, ελληνικά συγκεκριμένο και εύκολο για μια αίθουσα να το συζητήσει επί τόπου.'
+      en: 'Useful because it is local, political, economic, and instantly understandable in one read.',
+      el: 'Χρήσιμο γιατί είναι τοπικό, πολιτικό, οικονομικό και γίνεται αμέσως κατανοητό με μία ματιά.'
     },
-    primarySource: 'Eurovision official YouTube upload',
-    fallbackSource: 'Eurovision official recap page'
+    primarySource: 'Greek Ministry of Labour official announcement',
+    fallbackSource: 'Government Gazette or Prime Minister office release'
+  },
+  {
+    id: 'MAC-08',
+    categoryKey: 'macro',
+    status: 'live',
+    featured: true,
+    probability: 61,
+    change: 2,
+    volume: 16880,
+    closeDate: '2027-02-12T11:59:00+02:00',
+    resolveDate: '2027-02-26T18:00:00+02:00',
+    sourceLink: 'https://insete.gr/statistical-bulletin/',
+    poster: {
+      eyebrow: { en: 'Greek tourism', el: 'Ελληνικός τουρισμός' },
+      label: { en: '2026 record watch', el: 'Ρεκόρ 2026' },
+      emoji: '🏝️',
+      art: 'art-aegean',
+      gradient: 'linear-gradient(135deg, #082032 0%, #0f766e 46%, #38bdf8 100%)'
+    },
+    question: {
+      en: 'Will Greece\'s international tourist arrivals in 2026 exceed the 2025 total?',
+      el: 'Θα ξεπεράσουν οι διεθνείς τουριστικές αφίξεις της Ελλάδας το 2026 το σύνολο του 2025;'
+    },
+    summary: {
+      en: 'A longer-duration Greek demand market that gives the flagship shelf a full-season arc.',
+      el: 'Αγορά μεγαλύτερης διάρκειας πάνω στην ελληνική ζήτηση που δίνει full-season τόξο στο flagship shelf.'
+    },
+    resolution: {
+      en: 'YES if the official full-year 2026 total for international tourist arrivals in Greece is higher than the official full-year 2025 total. NO otherwise.',
+      el: 'YES αν το επίσημο σύνολο διεθνών τουριστικών αφίξεων της Ελλάδας για όλο το 2026 είναι υψηλότερο από το επίσημο σύνολο του 2025. NO διαφορετικά.'
+    },
+    why: {
+      en: 'It adds a credible long-dated Greek macro contract without drifting into niche finance language.',
+      el: 'Προσθέτει αξιόπιστο μακρινό ελληνικό macro contract χωρίς να γλιστρά σε niche finance γλώσσα.'
+    },
+    primarySource: 'INSETE statistical bulletin or Bank of Greece annual travel data',
+    fallbackSource: 'Greek tourism ministry or ELSTAT annual arrivals release'
+  },
+  {
+    id: 'MAC-09',
+    categoryKey: 'macro',
+    status: 'new',
+    featured: false,
+    probability: 42,
+    change: 1,
+    volume: 11980,
+    closeDate: '2026-12-31T16:59:00+02:00',
+    resolveDate: '2026-12-31T23:59:00+02:00',
+    sourceLink: 'https://disclosure.spglobal.com/ratings/en/regulatory/ratings-actions',
+    poster: {
+      eyebrow: { en: 'Sovereign rating', el: 'Κρατική αξιολόγηση' },
+      label: { en: 'A- watch', el: 'Στόχος A-' },
+      emoji: '🏦',
+      art: 'art-chart',
+      gradient: 'linear-gradient(135deg, #131c2e 0%, #1d4ed8 48%, #22c55e 100%)'
+    },
+    question: {
+      en: 'Will S&P rate Greece at A- or higher by 31 December 2026?',
+      el: 'Θα αξιολογεί η S&P την Ελλάδα σε A- ή υψηλότερα έως τις 31 Δεκεμβρίου 2026;'
+    },
+    summary: {
+      en: 'Longer-dated sovereign-risk market with a clean official source path and a familiar headline.',
+      el: 'Μακρύτερης διάρκειας αγορά sovereign risk με καθαρή επίσημη διαδρομή πηγής και οικείο headline.'
+    },
+    resolution: {
+      en: 'YES if by 31 December 2026 S&P Global Ratings publishes a long-term sovereign credit rating for Greece of A- or higher. NO otherwise.',
+      el: 'YES αν έως τις 31 Δεκεμβρίου 2026 η S&P Global Ratings δημοσιεύσει μακροπρόθεσμη κρατική πιστοληπτική αξιολόγηση για την Ελλάδα ίση με A- ή υψηλότερη. NO διαφορετικά.'
+    },
+    why: {
+      en: 'Useful because it adds a credible year-end macro contract without overlapping the faster Greek data prints.',
+      el: 'Χρήσιμο γιατί προσθέτει αξιόπιστο year-end macro contract χωρίς να επικαλύπτει τα πιο γρήγορα ελληνικά data prints.'
+    },
+    primarySource: 'S&P Global Ratings sovereign rating action',
+    fallbackSource: 'Hellenic Republic debt management office or ministry recap'
   },
   {
     id: 'SOC-07',
@@ -1649,6 +1756,42 @@ const MARKETS = [
     fallbackSource: 'WTA official match records'
   },
   {
+    id: 'SPT-12',
+    categoryKey: 'sports',
+    status: 'live',
+    featured: false,
+    probability: 39,
+    change: 2,
+    volume: 11740,
+    closeDate: '2026-12-17T10:59:00+02:00',
+    resolveDate: '2026-12-17T23:59:00+02:00',
+    sourceLink: 'https://inside.fifa.com/fifa-world-ranking/men',
+    poster: {
+      eyebrow: { en: 'National team', el: 'Εθνική ομάδα' },
+      label: { en: 'FIFA top 35', el: 'FIFA top 35' },
+      emoji: '🇬🇷',
+      gradient: 'linear-gradient(135deg, #06142a 0%, #0f4c81 48%, #60a5fa 100%)'
+    },
+    question: {
+      en: 'Will Greece finish 2026 inside the FIFA men\'s top 35 rankings?',
+      el: 'Θα κλείσει η Ελλάδα το 2026 μέσα στο FIFA men\'s top 35 rankings;'
+    },
+    summary: {
+      en: 'Long-horizon national-team market that adds Greek sports relevance without repeating the club shelf.',
+      el: 'Αγορά εθνικής ομάδας με μακρύ ορίζοντα που προσθέτει ελληνική sports συνάφεια χωρίς να επαναλαμβάνει το club shelf.'
+    },
+    resolution: {
+      en: 'YES if Greece is ranked 35th or higher in the final official FIFA men\'s ranking published in 2026.',
+      el: 'YES αν η Ελλάδα βρίσκεται στη θέση 35 ή υψηλότερα στην τελευταία επίσημη κατάταξη FIFA ανδρών που θα δημοσιευτεί μέσα στο 2026.'
+    },
+    why: {
+      en: 'It gives the sports slate a credible longer-duration arc that feels Greek but not repetitive.',
+      el: 'Δίνει στο sports slate ένα αξιόπιστο μακρύτερο τόξο που νιώθει ελληνικό αλλά όχι επαναλαμβανόμενο.'
+    },
+    primarySource: 'Official FIFA men\'s world ranking release',
+    fallbackSource: 'Hellenic Football Federation ranking recap'
+  },
+  {
     id: 'WTH-06',
     categoryKey: 'weather',
     status: 'new',
@@ -1687,14 +1830,32 @@ const MARKETS = [
   }
 ];
 
-const SEED_TRANSACTIONS = [
-  { id: 'seed-1', ts: '2026-03-15T09:05:00+02:00', marketId: 'MAC-01', action: 'buy', side: 'yes', qty: 1800, price: 0.59 },
-  { id: 'seed-2', ts: '2026-03-15T09:18:00+02:00', marketId: 'SPT-01', action: 'buy', side: 'yes', qty: 1200, price: 0.54 },
-  { id: 'seed-3', ts: '2026-03-15T09:34:00+02:00', marketId: 'WTH-02', action: 'buy', side: 'no', qty: 1400, price: 0.63 },
-  { id: 'seed-4', ts: '2026-03-15T09:52:00+02:00', marketId: 'SOC-02', action: 'buy', side: 'yes', qty: 900, price: 0.51 }
+const HERO_SURFACED_COUNT = 1;
+const FLAGSHIP_SURFACED_COUNT = 4;
+const UPPER_SURFACED_COUNT = HERO_SURFACED_COUNT + FLAGSHIP_SURFACED_COUNT;
+
+const SEED_TRANSACTION_BLUEPRINTS = [
+  { id: 'seed-1', minutesAgo: 46 * 60, marketId: 'MAC-01', action: 'buy', side: 'yes', qty: 1600, price: 0.58 },
+  { id: 'seed-2', minutesAgo: 31 * 60, marketId: 'MAC-07', action: 'buy', side: 'yes', qty: 1100, price: 0.54 },
+  { id: 'seed-3', minutesAgo: 24 * 60 + 20, marketId: 'WTH-02', action: 'buy', side: 'no', qty: 920, price: 0.62 },
+  { id: 'seed-4', minutesAgo: 17 * 60 + 40, marketId: 'SOC-02', action: 'buy', side: 'yes', qty: 720, price: 0.51 },
+  { id: 'seed-5', minutesAgo: 6 * 60 + 15, marketId: 'MAC-01', action: 'sell', side: 'yes', qty: 280, price: 0.61 },
+  { id: 'seed-6', minutesAgo: 95, marketId: 'SHW-02', action: 'buy', side: 'yes', qty: 460, price: 0.47 }
 ];
 
-const LIVE_TESTER_NAMES = ['Athens desk', 'Island desk', 'Macro lane', 'Late clip watcher', 'North desk', 'Courtside beta'];
+function createSeedTransactions(anchor = Date.now()) {
+  return SEED_TRANSACTION_BLUEPRINTS.map((tx) => ({
+    id: tx.id,
+    ts: new Date(anchor - tx.minutesAgo * 60000).toISOString(),
+    marketId: tx.marketId,
+    action: tx.action,
+    side: tx.side,
+    qty: tx.qty,
+    price: tx.price
+  }));
+}
+
+const LIVE_TESTER_NAMES = ['Athens desk', 'North desk', 'Cyclades desk', 'Maria', 'Nikos', 'Courtside'];
 
 let appState = loadState();
 let uiState = createUiState();
@@ -1712,7 +1873,7 @@ render();
 function createAppState(overrides = {}) {
   return {
     language: overrides.language === 'el' ? 'el' : 'en',
-    transactions: Array.isArray(overrides.transactions) ? overrides.transactions : clone(SEED_TRANSACTIONS),
+    transactions: Array.isArray(overrides.transactions) ? overrides.transactions : createSeedTransactions(),
     access: {
       granted: Boolean(overrides.access?.granted),
       testerName: overrides.access?.testerName || '',
@@ -1846,9 +2007,41 @@ function formatDateTime(value) {
   }).format(new Date(value));
 }
 
+function formatClockTime(value) {
+  return new Intl.DateTimeFormat(appState.language === 'el' ? 'el-GR' : 'en-GB', {
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(value));
+}
+
 function formatRelativeMinutes(minutes) {
   if (minutes <= 0) return t('justNow');
-  return appState.language === 'el' ? `${minutes}λ πριν` : `${minutes}m ago`;
+  if (minutes < 60) return appState.language === 'el' ? `${minutes}λ πριν` : `${minutes}m ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return appState.language === 'el' ? `${hours}ω πριν` : `${hours}h ago`;
+  const days = Math.round(hours / 24);
+  return appState.language === 'el' ? `${days}η πριν` : `${days}d ago`;
+}
+
+function formatActivityTimestamp(value) {
+  const ts = new Date(value).getTime();
+  const minutes = Math.max(0, Math.round((Date.now() - ts) / 60000));
+  if (minutes < 360) return formatRelativeMinutes(minutes);
+
+  const date = new Date(ts);
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const startOfYesterday = startOfToday - 24 * 60 * 60 * 1000;
+
+  if (ts >= startOfToday) {
+    return appState.language === 'el' ? `Σήμερα · ${formatClockTime(ts)}` : `Today · ${formatClockTime(ts)}`;
+  }
+
+  if (ts >= startOfYesterday) {
+    return appState.language === 'el' ? `Χθες · ${formatClockTime(ts)}` : `Yesterday · ${formatClockTime(ts)}`;
+  }
+
+  return `${formatDate(ts)} · ${formatClockTime(ts)}`;
 }
 
 function getPrice(market, side) {
@@ -1947,9 +2140,33 @@ function getHeldQty(portfolio, marketId, side) {
   return portfolio.holdings[marketId]?.[side]?.qty || 0;
 }
 
+function isSurfacedMarket(market) {
+  return market.surfaced !== false;
+}
+
+function getSurfacedMarkets() {
+  return MARKETS.filter(isSurfacedMarket);
+}
+
+function getUpperSurfacedMarkets(limit = UPPER_SURFACED_COUNT) {
+  return getSurfacedMarkets()
+    .filter((market) => market.featured)
+    .sort((a, b) => b.volume - a.volume)
+    .slice(0, limit);
+}
+
+function getUpperSurfacedMarketIds(limit = UPPER_SURFACED_COUNT) {
+  return new Set(getUpperSurfacedMarkets(limit).map((market) => market.id));
+}
+
+function getRegularSurfacedMarkets() {
+  const upperSurfacedIds = getUpperSurfacedMarketIds(UPPER_SURFACED_COUNT);
+  return getSurfacedMarkets().filter((market) => !upperSurfacedIds.has(market.id));
+}
+
 function getFilteredMarkets() {
   const query = uiState.search.trim().toLowerCase();
-  const filtered = MARKETS.filter((market) => {
+  const filtered = getRegularSurfacedMarkets().filter((market) => {
     if (uiState.filter !== 'all' && market.categoryKey !== uiState.filter) return false;
     if (!query) return true;
     const haystack = [
@@ -1975,25 +2192,25 @@ function getFilteredMarkets() {
   filtered.sort((a, b) => {
     if (uiState.sort === 'volume') return b.volume - a.volume;
     if (uiState.sort === 'closing') return new Date(a.closeDate) - new Date(b.closeDate);
-    if (b.featured !== a.featured) return Number(b.featured) - Number(a.featured);
     return b.volume - a.volume;
   });
 
   return filtered;
 }
 
-function getFeaturedMarkets(limit = 4) {
-  return MARKETS.filter((market) => market.featured).sort((a, b) => b.volume - a.volume).slice(0, limit);
+function getFlagshipMarkets(limit = FLAGSHIP_SURFACED_COUNT) {
+  return getUpperSurfacedMarkets(limit + 1).slice(1, limit + 1);
 }
 
 function getFeaturedMarket() {
-  return getFeaturedMarkets(1)[0] || MARKETS[0];
+  return getUpperSurfacedMarkets(1)[0] || getSurfacedMarkets()[0] || MARKETS[0];
 }
 
 function getLiveSignal(market) {
   const seed = hashString(market.id);
+  const cadence = [4, 7, 11, 16, 23, 31, 44, 58, 76];
   return {
-    updatedMin: 2 + (seed % 37),
+    updatedMin: cadence[seed % cadence.length] + (seed % 3),
     flowSide: seed % 2 === 0 ? 'yes' : 'no',
     flowEur: 180 + (seed % 9) * 55,
     watchers: 4 + (seed % 7),
@@ -2003,7 +2220,9 @@ function getLiveSignal(market) {
 }
 
 function buildLiveTape(limit = 8) {
-  const synthetic = MARKETS.filter((market) => market.featured || market.volume > 14000)
+  const surfacedIds = new Set(getSurfacedMarkets().map((market) => market.id));
+  const synthetic = getSurfacedMarkets()
+    .filter((market) => market.featured || market.volume > 14000)
     .sort((a, b) => b.volume - a.volume)
     .slice(0, 10)
     .map((market, index) => {
@@ -2033,7 +2252,8 @@ function buildLiveTape(limit = 8) {
       actor: getTesterName(),
       kind: 'user',
       action: tx.action
-    }));
+    }))
+    .filter((item) => item.market && surfacedIds.has(item.market.id));
 
   return [...synthetic, ...user].sort((a, b) => b.ts - a.ts).slice(0, limit);
 }
@@ -2043,11 +2263,12 @@ function buildMarketTape(market, limit = 4) {
 }
 
 function getBoardMetrics() {
+  const surfacedMarkets = getSurfacedMarkets();
   const tape = buildLiveTape(8);
   return {
-    totalMarkets: MARKETS.length,
-    closingSoon: MARKETS.filter((market) => market.status === 'closing').length,
-    totalVolume: MARKETS.reduce((sum, market) => sum + market.volume, 0),
+    totalMarkets: surfacedMarkets.length,
+    closingSoon: surfacedMarkets.filter((market) => market.status === 'closing').length,
+    totalVolume: surfacedMarkets.reduce((sum, market) => sum + market.volume, 0),
     recentFlow: roundMoney(tape.reduce((sum, item) => sum + item.amount, 0)),
     testerCount: LIVE_TESTER_NAMES.length + (appState.access?.granted ? 1 : 0)
   };
@@ -2086,7 +2307,7 @@ function buildIndicativeTimeline(count) {
 }
 
 function buildMovers(limit = 5) {
-  return [...MARKETS]
+  return [...getSurfacedMarkets()]
     .sort((a, b) => Math.abs(b.change) - Math.abs(a.change) || b.volume - a.volume)
     .slice(0, limit)
     .map((market) => ({
@@ -2173,22 +2394,68 @@ function buildResolutionPack(market) {
     }
   };
 
+  const trustProfile = {
+    macro: {
+      authorityLabel: { en: 'Official data release', el: 'Επίσημη δημοσίευση δεδομένων' },
+      authorityBody: { en: 'One named publisher prints the number directly.', el: 'Ένας ονομασμένος φορέας δημοσιεύει απευθείας το metric.' },
+      credibilityBody: { en: 'Single publisher, single metric, simple threshold.', el: 'Ένας publisher, ένα metric, καθαρό threshold.' }
+    },
+    social: {
+      authorityLabel: { en: 'Official platform upload', el: 'Επίσημο upload πλατφόρμας' },
+      authorityBody: { en: 'The public counter on the official post controls.', el: 'Το public counter του επίσημου post υπερισχύει.' },
+      credibilityBody: { en: 'One official upload, one public counter, fixed window.', el: 'Ένα επίσημο upload, ένα public counter, fixed window.' }
+    },
+    showbiz: {
+      authorityLabel: { en: 'Official result record', el: 'Επίσημο record αποτελέσματος' },
+      authorityBody: { en: 'The official results page or scoreboard controls.', el: 'Η επίσημη σελίδα αποτελεσμάτων ή το scoreboard ελέγχει το settlement.' },
+      credibilityBody: { en: 'Named official result page, binary outcome, public record.', el: 'Ονομασμένη επίσημη σελίδα, binary outcome, δημόσιο record.' }
+    },
+    sports: {
+      authorityLabel: { en: 'Official competition record', el: 'Επίσημο record διοργάνωσης' },
+      authorityBody: { en: 'Official brackets, standings, or finals pages settle the trade.', el: 'Επίσημα brackets, standings ή finals pages κάνουν settle το trade.' },
+      credibilityBody: { en: 'Named competition record, simple binary settlement.', el: 'Ονομασμένο competition record, απλό binary settlement.' }
+    },
+    weather: {
+      authorityLabel: { en: 'Official station data', el: 'Επίσημα station data' },
+      authorityBody: { en: 'Official station readings or national bulletins control.', el: 'Επίσημες μετρήσεις σταθμού ή national bulletins υπερισχύουν.' },
+      credibilityBody: { en: 'Named station reading, public data, fixed observation window.', el: 'Ονομασμένη μέτρηση σταθμού, δημόσια δεδομένα, fixed window παρατήρησης.' }
+    }
+  };
+
+  const profile = trustProfile[market.categoryKey] || {
+    authorityLabel: { en: 'Official source stack', el: 'Επίσημη ιεραρχία πηγών' },
+    authorityBody: { en: 'Named public records control settlement.', el: 'Ονομασμένα δημόσια records ελέγχουν το settlement.' },
+    credibilityBody: { en: 'Named source stack, visible timing, explicit void clause.', el: 'Ονομασμένη ιεραρχία πηγών, ορατό timing, ρητός κανόνας void.' }
+  };
+
   const fallbackCopy = {
-    en: `Used only if ${market.primarySource} is delayed, incomplete, or the first official figure appears in ${market.fallbackSource}.`,
-    el: `Χρησιμοποιείται μόνο αν το ${market.primarySource} καθυστερεί, είναι ελλιπές ή αν το πρώτο επίσημο figure εμφανιστεί στο ${market.fallbackSource}.`
+    en: `Consulted only if ${market.primarySource} is delayed, incomplete, or the first official figure is published via ${market.fallbackSource}.`,
+    el: `Ελέγχεται μόνο αν το ${market.primarySource} καθυστερεί, είναι ελλιπές ή αν το πρώτο επίσημο figure δημοσιευτεί μέσω του ${market.fallbackSource}.`
   };
 
   return {
     sourceRule: categoryRule[market.categoryKey]?.[appState.language] || t('resolutionManualNote'),
+    authorityLabel: profile.authorityLabel[appState.language],
+    authorityBody: profile.authorityBody[appState.language],
+    credibilityBody: profile.credibilityBody[appState.language],
     primaryBody:
       appState.language === 'el'
-        ? `Το contract κάνει resolve πρώτα από το ${market.primarySource}. Αν αυτό το record δίνει καθαρό outcome, αυτό υπερισχύει.`
-        : `This contract resolves from ${market.primarySource} first. If that record gives a clean outcome, it wins.`,
+        ? `Το contract ελέγχει πρώτα το ${market.primarySource}. Αν αυτό το record δίνει καθαρό outcome, αυτό κάνει settle την αγορά.`
+        : `This contract checks ${market.primarySource} first. If that record gives a clean outcome, it settles the market.`,
     fallbackBody: fallbackCopy[appState.language],
+    lockBody:
+      appState.language === 'el'
+        ? `Μετά τις ${formatDateTime(market.closeDate)} δεν μπαίνουν νέες εντολές. Το settlement ακολουθεί την ονομασμένη ιεραρχία πηγών και όχι την τελευταία traded τιμή.`
+        : `After ${formatDateTime(market.closeDate)}, no new orders can enter. Settlement follows the named source stack, not the last traded price.`,
+    settleBody:
+      appState.language === 'el'
+        ? `Στόχος settlement στις ${formatDateTime(market.resolveDate)} αφού ελεγχθεί πρώτα η primary πηγή και μόνο αν χρειαστεί το fallback.`
+        : `Target settlement is ${formatDateTime(market.resolveDate)} after checking the primary source first and consulting the fallback only if needed.`,
     timingBody:
       appState.language === 'el'
-        ? `Η αγορά κλειδώνει στις ${formatDateTime(market.closeDate)} και ο στόχος settlement είναι ${formatDateTime(market.resolveDate)} μετά από γρήγορο manual check.`
-        : `The market locks at ${formatDateTime(market.closeDate)} and targets settlement at ${formatDateTime(market.resolveDate)} after a quick manual check.`,
+        ? `Το trading κλειδώνει στις ${formatDateTime(market.closeDate)} και ο στόχος resolution είναι ${formatDateTime(market.resolveDate)} μετά από σύντομο source check.`
+        : `Trading locks at ${formatDateTime(market.closeDate)} and targets resolution at ${formatDateTime(market.resolveDate)} after a short source check.`,
+    voidHeadline: appState.language === 'el' ? 'Μόνο αν το επίσημο αποτέλεσμα μείνει ασαφές' : 'Only if the official record stays unclear',
     voidBody: t('voidRule')
   };
 }
@@ -2213,11 +2480,11 @@ function buildTradePreview(market, portfolio) {
   const narrative =
     action === 'buy'
       ? appState.language === 'el'
-        ? `Βάζεις ${formatCurrency(total)} στο ${selectedLabel} στο ${formatPrice(price)} και ελέγχεις περίπου ${formatQuantity(contracts)} contracts. Αν βγει ${selectedLabel}, πληρώνεσαι ${formatCurrency(grossPayout)} μικτά.`
-        : `You put ${formatCurrency(total)} into ${selectedLabel} at ${formatPrice(price)} and control about ${formatQuantity(contracts)} contracts. If ${selectedLabel} resolves, gross payout is ${formatCurrency(grossPayout)}.`
+        ? `Βάζεις ${formatCurrency(total)} στο ${selectedLabel} στο ${formatPrice(price)} και παίρνεις περίπου ${formatQuantity(contracts)} contracts. Αν βγει ${selectedLabel}, η μικτή πληρωμή είναι ${formatCurrency(grossPayout)}.`
+        : `You put ${formatCurrency(total)} into ${selectedLabel} at ${formatPrice(price)} for about ${formatQuantity(contracts)} contracts. If ${selectedLabel} resolves, gross payout is ${formatCurrency(grossPayout)}.`
       : appState.language === 'el'
-        ? `Πουλάς ${formatCurrency(total)} από τη θέση ${selectedLabel} στο ${formatPrice(price)}. Αυτό κλείνει περίπου ${formatQuantity(contracts)} contracts και αφήνει ${formatQuantity(remainingQty)} ανοιχτά.`
-        : `You sell ${formatCurrency(total)} of your ${selectedLabel} line at ${formatPrice(price)}. That closes about ${formatQuantity(contracts)} contracts and leaves ${formatQuantity(remainingQty)} open.`;
+        ? `Πουλάς ${formatCurrency(total)} από τη θέση ${selectedLabel} στο ${formatPrice(price)}. Κλείνεις περίπου ${formatQuantity(contracts)} contracts και μένουν ${formatQuantity(remainingQty)} ανοιχτά.`
+        : `You sell ${formatCurrency(total)} of ${selectedLabel} at ${formatPrice(price)}. That closes about ${formatQuantity(contracts)} contracts and leaves ${formatQuantity(remainingQty)} open.`;
 
   return {
     amount,
@@ -2286,7 +2553,7 @@ function renderAccessGate() {
           <div class="brand gate-brand">
             <div class="brand-mark">xyz</div>
             <div class="brand-copy">
-              <strong>${t('appTitle')} v0.8.3</strong>
+              <strong>${t('appTitle')} ${APP_VERSION}</strong>
               <span>${t('privateBeta')}</span>
             </div>
           </div>
@@ -2365,7 +2632,7 @@ function renderTopbar(route) {
       </div>
       <div class="topbar-actions">
         <span class="topbar-badge live-badge"><span class="live-dot"></span>${t('privateBeta')}</span>
-        <span class="topbar-badge version-badge">v0.8.3</span>
+        <span class="topbar-badge version-badge">${APP_VERSION}</span>
         <span class="topbar-badge">${escapeHtml(getTesterName())}</span>
         <span class="topbar-badge">${t('sandbox')}</span>
         <div class="nav-switch">
@@ -2419,7 +2686,6 @@ function renderHero(portfolio) {
             </div>
             <div class="hero-feature-label">${featured.poster.eyebrow[appState.language]} · ${featured.poster.label[appState.language]}</div>
             <h2>${featured.question[appState.language]}</h2>
-            <p class="hero-feature-summary-copy">${featured.summary[appState.language]}</p>
             <div class="hero-feature-meta">
               <div class="odds-stat-block">
                 <small>${t('statLiveOdds')}</small>
@@ -2453,7 +2719,7 @@ function renderHero(portfolio) {
           <article class="stat-card">
             <small>${t('statTotalVolume')}</small>
             <strong>${formatCurrency(metrics.totalVolume)}</strong>
-            <span>${MARKETS.length} ${t('liveSlate').toLowerCase()}</span>
+            <span>${metrics.totalMarkets} ${t('liveSlate').toLowerCase()}</span>
           </article>
           <article class="stat-card">
             <small>${t('statCash')}</small>
@@ -2504,7 +2770,6 @@ function renderFlagshipCard(market, index) {
         <div class="featured-strip-body">
           <small>${market.poster.eyebrow[appState.language]}</small>
           <strong>${market.question[appState.language]}</strong>
-          <p>${market.summary[appState.language]}</p>
         </div>
         <div class="featured-strip-footer">
           <div class="featured-strip-odds">
@@ -2537,8 +2802,8 @@ function renderFlagshipCard(market, index) {
 function renderBoardPage(portfolio) {
   const filteredMarkets = getFilteredMarkets();
   const metrics = getBoardMetrics();
-  const featuredMarkets = getFeaturedMarkets(4);
-  const showFlagshipLane = uiState.filter === 'all' && !uiState.search.trim();
+  const flagshipMarkets = getFlagshipMarkets(FLAGSHIP_SURFACED_COUNT);
+  const showFlagshipLane = uiState.filter === 'all' && !uiState.search.trim() && flagshipMarkets.length;
   return `
     <section class="page-grid board-layout">
       <article class="surface board-surface">
@@ -2589,7 +2854,7 @@ function renderBoardPage(portfolio) {
           </div>
         </div>
 
-        ${showFlagshipLane ? renderFlagshipLane(featuredMarkets) : ''}
+        ${showFlagshipLane ? renderFlagshipLane(flagshipMarkets) : ''}
 
         <div class="market-grid">
           ${
@@ -2694,7 +2959,6 @@ function renderMarketCard(market, portfolio) {
           <div class="market-card-lead">
             <div>
               <h3>${market.question[appState.language]}</h3>
-              <p>${market.summary[appState.language]}</p>
             </div>
             <div class="market-card-change ${market.change >= 0 ? 'positive' : 'negative'}">
               <small>${t('dayChange')}</small>
@@ -2746,78 +3010,78 @@ function renderMarketCard(market, portfolio) {
   `;
 }
 
+function renderTicketSupportStat(label, value) {
+  return `
+    <div class="ticket-support-stat">
+      <small>${label}</small>
+      <strong>${value}</strong>
+    </div>
+  `;
+}
+
 function renderMarketDetailPage(market, portfolio) {
   const preview = buildTradePreview(market, portfolio);
+  const pack = buildResolutionPack(market);
   return `
     <section class="page-grid detail-layout">
-      <article class="surface detail-surface">
+      <article class="surface detail-surface detail-surface-minimal">
         <button class="ghost linkish" data-nav="markets">← ${t('detailBack')}</button>
 
-        <div class="detail-hero">
-          <div class="detail-poster" style="background:${market.poster.gradient};">
-            ${renderPosterArt(market, 'detail')}
-            <div class="poster-top">
-              <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
-              <span class="ghost-pill">${market.id}</span>
-            </div>
-            <div class="poster-body large">
-              <small>${market.poster.eyebrow[appState.language]}</small>
-              <strong>${market.poster.label[appState.language]}</strong>
-            </div>
-            <div class="poster-icon large">${market.poster.emoji}</div>
-          </div>
-
-          <div class="detail-copy-wrap">
+        <div class="detail-hero detail-hero-minimal">
+          <div class="detail-copy-wrap detail-copy-wrap-minimal">
             <div class="card-kickers">
               <span class="soft-pill">${getCategoryLabel(market.categoryKey)}</span>
               <span class="soft-pill live-soft-pill"><span class="live-dot"></span>${formatRelativeMinutes(getLiveSignal(market).updatedMin)}</span>
             </div>
-            <h2>${market.question[appState.language]}</h2>
-            <p>${market.summary[appState.language]}</p>
-            <div class="detail-stats">
-              <div class="odds-stat-block">
+            <div class="detail-heading-block">
+              <h2>${market.question[appState.language]}</h2>
+              <p>${market.summary[appState.language]}</p>
+            </div>
+            <div class="detail-primary-stats">
+              <div class="detail-stat-panel detail-stat-panel-probability">
                 <small>${t('shareQuote')}</small>
                 ${renderProbabilityPair(market, 'compact')}
               </div>
-              <div>
+              <div class="detail-stat-panel">
                 <small>${t('dayChange')}</small>
                 <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
               </div>
-              <div>
+              <div class="detail-stat-panel">
                 <small>${t('volume')}</small>
                 <strong>${formatCurrency(market.volume)}</strong>
               </div>
-              <div>
+              <div class="detail-stat-panel">
                 <small>${t('close')}</small>
                 <strong>${formatDateTime(market.closeDate)}</strong>
               </div>
             </div>
-            <a class="secondary-link" href="${market.sourceLink}" target="_blank" rel="noreferrer">${t('openSource')}</a>
+            <div class="detail-trust-inline">
+              <span class="detail-trust-pill detail-trust-pill-strong">${pack.authorityLabel}</span>
+              <span class="detail-trust-pill">${t('resolutionCutoff')}: <strong>${formatDateTime(market.closeDate)}</strong></span>
+              <span class="detail-trust-pill">${t('resolutionSettleTarget')}: <strong>${formatDateTime(market.resolveDate)}</strong></span>
+              <a class="secondary-link secondary-link-quiet" href="${market.sourceLink}" target="_blank" rel="noreferrer">${t('openOfficialSource')}</a>
+            </div>
+          </div>
+
+          <div class="detail-market-mark" style="background:${market.poster.gradient};">
+            <div class="detail-market-mark-top">
+              <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
+              <span class="detail-market-mark-id">${market.id}</span>
+            </div>
+            <div class="detail-market-mark-copy">
+              <small>${market.poster.eyebrow[appState.language]}</small>
+              <strong>${market.poster.label[appState.language]}</strong>
+            </div>
+            <div class="detail-market-mark-icon">${market.poster.emoji}</div>
           </div>
         </div>
 
         ${renderOddsChartShell(market)}
-        ${renderResolutionFramework(market)}
-
-        <div class="detail-grid-cards detail-grid-cards-wide">
-          <article class="info-card">
-            <h3>${t('detailOverview')}</h3>
-            <p>${t('detailCopy')}</p>
-            <div class="detail-text-block">${market.summary[appState.language]}</div>
-          </article>
-          <article class="info-card">
-            <h3>${t('whyItMatters')}</h3>
-            <p>${market.why[appState.language]}</p>
-          </article>
-          <article class="info-card">
-            <h3>${t('marketContext')}</h3>
-            <p>${t('close')}: ${formatDateTime(market.closeDate)}<br />${t('resolve')}: ${formatDateTime(market.resolveDate)}<br />${t('dayChange')}: ${formatProbabilityDelta(market.change)}</p>
-          </article>
-        </div>
+        ${renderDetailDisclosureStack(market, preview)}
       </article>
 
       <aside class="side-rail detail-rail">
-        <article class="surface trade-surface">
+        <article class="surface side-rail-surface side-rail-ticket trade-surface">
           <div class="surface-header compact-header">
             <div>
               <h3>${t('tradeTitle')}</h3>
@@ -2900,19 +3164,21 @@ function renderMarketDetailPage(market, portfolio) {
                     `
                 }
               </div>
-              <div class="row"><span>${t('contractPrice')}</span><strong>${formatPrice(preview.price)} · ${formatPercent(getChance(market, preview.side))}</strong></div>
-              ${preview.action === 'buy'
-                ? `<div class="row"><span>${t('ticketSpendNow')}</span><strong>${formatCurrency(preview.total)}</strong></div>
-                   <div class="row"><span>${t('ticketMaxLoss')}</span><strong>${formatCurrency(preview.total)}</strong></div>`
-                : `<div class="row"><span>${t('maxSellValue')}</span><strong>${formatCurrency(preview.maxSellValue)}</strong></div>`}
-              <div class="row"><span>${t('availableCash')}</span><strong>${formatCurrency(portfolio.cash)}</strong></div>
-              <div class="row"><span>${t('heldContracts')}</span><strong>${formatQuantity(preview.heldQty)}</strong></div>
+              <div class="ticket-support-grid">
+                ${preview.action === 'buy'
+                  ? `${renderTicketSupportStat(t('ticketMaxLoss'), formatCurrency(preview.total))}
+                     ${renderTicketSupportStat(t('availableCash'), formatCurrency(portfolio.cash))}
+                     ${renderTicketSupportStat(t('heldContracts'), formatQuantity(preview.heldQty))}`
+                  : `${renderTicketSupportStat(t('maxSellValue'), formatCurrency(preview.maxSellValue))}
+                     ${renderTicketSupportStat(t('availableCash'), formatCurrency(portfolio.cash))}
+                     ${renderTicketSupportStat(t('heldContracts'), formatQuantity(preview.heldQty))}`}
+              </div>
             </div>
             <button class="cta" type="submit">${uiState.tradeAction === 'buy' ? t('placeTradeBuy') : t('placeTradeSell')}</button>
           </form>
         </article>
 
-        <article class="surface">
+        <article class="surface side-rail-surface side-rail-account">
           <div class="surface-header compact-header">
             <div>
               <h3>${t('accountSnapshot')}</h3>
@@ -2940,7 +3206,7 @@ function renderMarketDetailPage(market, portfolio) {
           <button class="ghost full-width" data-reset="true">${t('resetAccount')}</button>
         </article>
 
-        <article class="surface">
+        <article class="surface side-rail-surface side-rail-tape">
           <div class="surface-header compact-header">
             <div>
               <h3>${t('liveTape')}</h3>
@@ -2954,41 +3220,128 @@ function renderMarketDetailPage(market, portfolio) {
   `;
 }
 
-function renderResolutionFramework(market) {
-  const pack = buildResolutionPack(market);
+function renderDetailDisclosure(title, hint, body, open = false) {
   return `
-    <section class="resolution-framework">
-      <div class="surface-header compact-header">
-        <div>
-          <h3>${t('resolutionIntegrity')}</h3>
-          <p>${t('resolutionIntegrityCopy')}</p>
-        </div>
+    <details class="detail-disclosure"${open ? ' open' : ''}>
+      <summary>
+        <span class="detail-disclosure-heading">
+          <strong>${title}</strong>
+          <small>${hint}</small>
+        </span>
+        <span class="detail-disclosure-icon" aria-hidden="true"></span>
+      </summary>
+      <div class="detail-disclosure-body">
+        ${body}
       </div>
-      <div class="resolution-grid">
-        <article class="trust-card trust-card-primary">
-          <small>${t('resolutionPrimary')}</small>
-          <strong>${market.primarySource}</strong>
-          <p>${pack.primaryBody}</p>
-        </article>
-        <article class="trust-card">
-          <small>${t('resolutionFallback')}</small>
-          <strong>${market.fallbackSource}</strong>
-          <p>${pack.fallbackBody}</p>
-        </article>
-        <article class="trust-card">
-          <small>${t('resolutionTiming')}</small>
-          <strong>${t('resolutionCutoff')}: ${formatDateTime(market.closeDate)}</strong>
-          <p>${pack.timingBody}</p>
-        </article>
-        <article class="trust-card trust-card-warning">
-          <small>${t('resolutionVoid')}</small>
-          <strong>${t('voidRule')}</strong>
-          <p>${pack.voidBody}</p>
-        </article>
+    </details>
+  `;
+}
+
+function renderDetailDisclosureStack(market, preview) {
+  const pack = buildResolutionPack(market);
+  const isGreek = appState.language === 'el';
+  const payoutNarrative =
+    preview.action === 'buy'
+      ? isGreek
+        ? `Κάθε winning contract κάνει settle στο €1.00. Με ${formatCurrency(preview.total)} στο ${preview.selectedLabel}, ελέγχεις περίπου ${formatQuantity(preview.contracts)} contracts και η μικτή πληρωμή φτάνει τα ${formatCurrency(preview.grossPayout)} αν βγει η πλευρά σου.`
+        : `Each winning contract settles at €1.00. With ${formatCurrency(preview.total)} on ${preview.selectedLabel}, you control about ${formatQuantity(preview.contracts)} contracts and gross payout reaches ${formatCurrency(preview.grossPayout)} if your side resolves.`
+      : isGreek
+        ? `Το sell κλείνει περίπου ${formatQuantity(preview.contracts)} contracts στην τρέχουσα τιμή και αφήνει ${formatQuantity(preview.remainingQty)} ανοιχτά.`
+        : `The sell closes about ${formatQuantity(preview.contracts)} contracts at the current price and leaves ${formatQuantity(preview.remainingQty)} still open.`;
+
+  const overviewBody = `
+    <div class="detail-disclosure-prose">
+      <p>${market.summary[appState.language]}</p>
+      <p>${market.why[appState.language]}</p>
+    </div>
+    <div class="detail-quiet-grid">
+      <div class="detail-quiet-row">
+        <span>${t('volume')}</span>
+        <strong>${formatCurrency(market.volume)}</strong>
       </div>
-      <div class="resolution-note">
-        <strong>${t('resolutionSourceRule')}:</strong> ${pack.sourceRule}
+      <div class="detail-quiet-row">
+        <span>${t('dayChange')}</span>
+        <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
       </div>
+      <div class="detail-quiet-row">
+        <span>${isGreek ? 'Σήμα αξιοπιστίας' : 'Trust signal'}</span>
+        <strong>${pack.credibilityBody}</strong>
+      </div>
+    </div>
+  `;
+
+  const rulesBody = `
+    <div class="detail-quiet-grid">
+      <div class="detail-quiet-row detail-quiet-row-wide">
+        <span>${t('trustOutcomeTest')}</span>
+        <strong>${market.resolution[appState.language]}</strong>
+      </div>
+    </div>
+    <div class="detail-source-grid">
+      <article class="detail-source-block primary">
+        <small>${t('primarySource')}</small>
+        <strong>${market.primarySource}</strong>
+        <p>${pack.primaryBody}</p>
+      </article>
+      <article class="detail-source-block">
+        <small>${t('fallbackSource')}</small>
+        <strong>${market.fallbackSource}</strong>
+        <p>${pack.fallbackBody}</p>
+      </article>
+    </div>
+    <div class="detail-note-stack">
+      <div class="detail-note-line">
+        <small>${t('resolutionSourceRule')}</small>
+        <p>${pack.sourceRule}</p>
+      </div>
+      <div class="detail-note-line warning">
+        <small>${t('resolutionVoid')}</small>
+        <p>${pack.voidBody}</p>
+      </div>
+    </div>
+    <a class="secondary-link secondary-link-quiet" href="${market.sourceLink}" target="_blank" rel="noreferrer">${t('openOfficialSource')}</a>
+  `;
+
+  const timelineBody = `
+    <div class="detail-timeline-grid">
+      <article class="detail-timeline-item">
+        <small>${t('resolutionCutoff')}</small>
+        <strong>${formatDateTime(market.closeDate)}</strong>
+        <p>${pack.lockBody}</p>
+      </article>
+      <article class="detail-timeline-item">
+        <small>${t('resolutionSettleTarget')}</small>
+        <strong>${formatDateTime(market.resolveDate)}</strong>
+        <p>${pack.settleBody}</p>
+      </article>
+    </div>
+    <p class="detail-disclosure-footnote">${pack.timingBody}</p>
+  `;
+
+  const payoutBody = `
+    <div class="detail-quiet-grid">
+      <div class="detail-quiet-row">
+        <span>${t('contractPrice')}</span>
+        <strong>${formatPrice(preview.price)} · ${formatPercent(getChance(market, preview.side))}</strong>
+      </div>
+      <div class="detail-quiet-row">
+        <span>${isGreek ? 'Settlement ανά σωστό contract' : 'Settlement per winning contract'}</span>
+        <strong>€1.00</strong>
+      </div>
+      <div class="detail-quiet-row">
+        <span>${preview.action === 'buy' ? t('tradePayout') : t('ticketReceiveNow')}</span>
+        <strong>${formatCurrency(preview.action === 'buy' ? preview.grossPayout : preview.total)}</strong>
+      </div>
+    </div>
+    <p class="detail-disclosure-footnote">${payoutNarrative}</p>
+  `;
+
+  return `
+    <section class="detail-disclosure-stack">
+      ${renderDetailDisclosure(t('detailOverview'), isGreek ? 'Γρήγορη ανάγνωση' : 'Quick read', overviewBody, true)}
+      ${renderDetailDisclosure(t('resolutionRules'), isGreek ? 'Έκβαση, πηγές, προστασία' : 'Outcome, sources, safeguard', rulesBody)}
+      ${renderDetailDisclosure(t('marketContext'), isGreek ? 'Κλείδωμα, settlement, timing' : 'Lock, settlement, timing', timelineBody)}
+      ${renderDetailDisclosure(isGreek ? 'Πληρωμές και μηχανική' : 'Payouts and mechanics', isGreek ? 'Πώς η τιμή δίνει το outcome' : 'How price maps to outcome', payoutBody)}
     </section>
   `;
 }
@@ -3037,32 +3390,32 @@ function renderOddsChartShell(market) {
   const calloutY = Math.max(8, latestPoint.y - 34);
 
   return `
-    <section class="chart-shell">
+    <section class="chart-shell chart-shell-primary">
       <div class="chart-shell-head">
         <div class="chart-head-copy">
           <span class="chart-overline">${t('chartFrameLabel')}</span>
           <h3>${t('chartTitle')}</h3>
           <p>${t('chartCopy')}</p>
         </div>
-        <div class="chart-summary-grid">
-          <div class="chart-summary-card">
+        <div class="chart-summary-grid chart-summary-grid-compact">
+          <div class="chart-summary-card chart-summary-card-compact">
             <small>${t('chartCurrentLabel')}</small>
             <strong>${formatPercent(getChance(market, 'yes'))}</strong>
             <span>${t('no')} ${formatPercent(getChance(market, 'no'))}</span>
           </div>
-          <div class="chart-summary-card">
+          <div class="chart-summary-card chart-summary-card-compact">
             <small>${t('dayChange')}</small>
             <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
             <span>${t('chartMoveSupport')}</span>
           </div>
-          <div class="chart-summary-card">
+          <div class="chart-summary-card chart-summary-card-compact">
             <small>${t('chartWindowLabel')}</small>
             <strong>${formatDate(timeline[0])} → ${formatDate(timeline[timeline.length - 1])}</strong>
             <span>${t('chartWindowCopy')}</span>
           </div>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card chart-card-primary">
         <div class="chart-frame">
           <div class="chart-axis-caption">${t('chartAxisProbability')}</div>
           <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${t('chartTitle')}">
@@ -3275,7 +3628,7 @@ function renderHistoryItem(tx) {
       <div>
         <strong>${tx.action === 'buy' ? t('activityBuy') : t('activitySell')} ${formatQuantity(tx.qty)} ${tx.side === 'yes' ? t('yes') : t('no')}</strong>
         <div class="mini-copy">${market.id} · ${market.question[appState.language]}</div>
-        <div class="mini-copy">${formatDateTime(tx.ts)}</div>
+        <div class="mini-copy">${formatActivityTimestamp(tx.ts)}</div>
       </div>
       <div class="activity-amount">
         <strong>${formatCurrency(total)}</strong>
@@ -3441,7 +3794,7 @@ function handleClick(event) {
 
   const resetButton = event.target.closest('[data-reset]');
   if (resetButton) {
-    appState.transactions = clone(SEED_TRANSACTIONS);
+    appState.transactions = createSeedTransactions();
     saveState();
     showToast('success', t('toastResetTitle'), t('toastResetBody'));
     render();

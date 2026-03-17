@@ -1,12 +1,12 @@
-# xyz Labs Demo v0.8.3
+# xyz Labs Demo v0.8.3.1
 
 Premium-polish pass on top of the existing v0.8.2 Greek-first prediction-market prototype.
 
-## What changed in v0.8.3
+## What changed in v0.8.3.1
 
 This pass is intentionally not a feature spree. It keeps the strong v0.8.2 product core intact:
 
-- still a **36-market** board
+- still a **39-market** board
 - still **password-gated** with onboarding
 - still supports **EN / ΕΛ** switching
 - still uses **probability-first YES / NO** headline odds
@@ -14,38 +14,31 @@ This pass is intentionally not a feature spree. It keeps the strong v0.8.2 produ
 - still includes the **live tape, odds chart, resolution framework, and portfolio**
 - still runs locally with the same simple `npm start` flow
 
-The v0.8.3 work is a premium-polish pass focused on four things:
+The v0.8.3.1 work is a narrow micro-polish pass focused on four things:
 
-### 1) Better market-card hierarchy
+### 1) Calmer right rail
 
-- stronger internal structure on each board card
-- clearer separation between title, change, headline odds, and secondary metrics
-- quieter supporting metadata so the important numbers read first
-- slightly cleaner featured-card treatment without changing market logic
+- lightened the ticket, account, and live-tape stack
+- removed some repeated ticket rows and replaced them with quieter support stats
+- softened cards so the rail feels less dense and more premium
 
-### 2) Stronger featured-market / flagship presentation
+### 2) Tighter high-visibility copy
 
-- more substantial featured hero treatment
-- dedicated **Flagship lane** ahead of the full grid for the lead contracts
-- flagship section only shows on the unfiltered board so filtering/search still feels sane
+- trimmed ticket intro copy
+- shortened accordion subtitles
+- tightened right-rail helper text where the UI benefits from less explanation
 
-### 3) More consistent poster art / art direction
+### 3) More natural demo activity timing
 
-- added shared poster-art shell, theme tinting, and texture treatment
-- added category-aware art fallbacks so cards without a bespoke art key still feel designed
-- expanded the semantic poster system with extra motifs like screen / awards / factory treatment
-- kept the existing market-matched gradients, labels, and emoji layer intact
+- shifted seeded account activity to relative recent offsets instead of one clustered static block
+- made recent-activity timestamps read more naturally
+- widened live-tape freshness ranges so updates feel less obviously synthetic
 
-### 4) Subtle hover / motion polish
+### 4) Quieter footer and metadata
 
-- softer hover lift on cards and flagship tiles
-- gentle poster drift / texture motion when reduced-motion is not preferred
-- tighter hover feedback on side-rail items and trade-side controls
-
-### Small low-risk ticket clarity win
-
-- added a compact top-line ticket preview strip for order value, selected quote, and estimated contracts
-- left ticket logic and accounting behavior unchanged
+- simplified the footer into a cleaner private-preview signature
+- updated app metadata to **v0.8.3.1**
+- kept layout direction, chart-first hierarchy, and core product framing intact
 
 ## Access code for local testing
 
@@ -79,21 +72,21 @@ http://localhost:4173
 1. Open the app and confirm the **password gate** appears first in a fresh browser session
 2. Use the access code `athens-alpha`
 3. Confirm the onboarding overlay still appears after unlock
-4. Verify the gate and app metadata show **v0.8.3**
-5. Confirm the hero reads more like a flagship surface
-6. Confirm the **Flagship lane** appears on the default board and hides once search/filter is applied
-7. Verify board cards feel cleaner to scan, with headline odds and supporting metrics separated better
-8. Open a market and confirm the detail page still works normally
-9. Confirm the ticket now shows the compact preview strip while staying **EUR-first**
+4. Verify the gate and app metadata show **v0.8.3.1**
+5. Open a market and confirm the detail page still works normally
+6. Verify the right rail feels lighter, with calmer ticket/account/live-tape treatment
+7. Confirm the ticket keeps the compact top-line preview while staying **EUR-first**
+8. Check that recent activity and live tape timestamps feel more natural
+9. Confirm the footer is quieter and less explanatory
 10. Switch between **EN** and **ΕΛ** and verify the updated labels remain coherent
 
 ## Files
 
-- `index.html` - app shell and v0.8.3 metadata
+- `index.html` - app shell and v0.8.3.1 metadata
 - `styles.css` - premium-polish visual pass, hierarchy, art-direction, and motion refinements
-- `app.js` - v0.8.3 presentation updates and local-state compatibility
+- `app.js` - v0.8.3.1 micro-polish updates and local-state compatibility
 - `server.js` - zero-dependency static server
-- `package.json` - local start script and v0.8.3 metadata
+- `package.json` - local start script and v0.8.3.1 metadata
 
 ## Notes
 
