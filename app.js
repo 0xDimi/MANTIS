@@ -1,9 +1,9 @@
-const STORAGE_KEY = 'xyz-labs-demo-state-v83';
-const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
-const ONBOARDING_VERSION = 'v83';
+const STORAGE_KEY = 'xyz-labs-demo-state-v84';
+const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v83', 'xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
+const ONBOARDING_VERSION = 'v84';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
-const APP_VERSION = 'v0.8.3.1';
+const APP_VERSION = 'v0.8.4.0';
 
 const copy = {
   en: {
@@ -142,7 +142,7 @@ const copy = {
     categoryMix: 'Category mix',
     noResultsTitle: 'No markets match that screen.',
     noResultsBody: 'Try a broader category or clear the search input.',
-    footer: 'xyz Labs Demo v0.8.3.1 · Private preview of a Greek prediction market.',
+    footer: 'xyz Labs Demo v0.8.4.0 · Private preview of a Greek prediction market.',
     toastExecutedTitle: 'Trade executed',
     toastExecutedBody: 'Your portfolio has been updated.',
     toastResetTitle: 'Portfolio reset',
@@ -338,7 +338,7 @@ const copy = {
     categoryMix: 'Μείγμα κατηγοριών',
     noResultsTitle: 'Δεν υπάρχουν αγορές για αυτό το screen.',
     noResultsBody: 'Δοκίμασε πιο ευρύ φίλτρο ή καθάρισε την αναζήτηση.',
-    footer: 'xyz Labs Demo v0.8.3.1 · Private preview ελληνικής αγοράς προβλέψεων.',
+    footer: 'xyz Labs Demo v0.8.4.0 · Private preview ελληνικής αγοράς προβλέψεων.',
     toastExecutedTitle: 'Το trade εκτελέστηκε',
     toastExecutedBody: 'Το portfolio ενημερώθηκε.',
     toastResetTitle: 'Έγινε reset portfolio',
@@ -401,6 +401,7 @@ const copy = {
 };
 
 const CATEGORY_LABELS = {
+  politics: { en: 'Politics', el: 'Πολιτική' },
   macro: { en: 'Macro', el: 'Μακρο' },
   social: { en: 'Social', el: 'Social' },
   showbiz: { en: 'Showbiz', el: 'Showbiz' },
@@ -627,40 +628,41 @@ const MARKETS = [
     fallbackSource: 'Official Eurovision social recap page'
   },
   {
-    id: 'SOC-02',
-    categoryKey: 'social',
-    status: 'new',
-    featured: false,
-    probability: 54,
-    change: 3,
-    volume: 13280,
-    closeDate: '2026-04-18T23:59:00+02:00',
-    resolveDate: '2026-04-25T23:59:00+02:00',
-    sourceLink: 'https://www.youtube.com/@OpenAI',
+    id: 'POL-01',
+    categoryKey: 'politics',
+    status: 'live',
+    featured: true,
+    probability: 57,
+    change: 5,
+    volume: 28840,
+    closeDate: '2027-06-30T18:59:00+03:00',
+    resolveDate: '2027-07-01T18:00:00+03:00',
+    sourceLink: 'https://ekloges.ypes.gr/',
     poster: {
-      eyebrow: { en: 'Tech attention', el: 'Tech attention' },
-      label: { en: 'OpenAI views', el: 'OpenAI views' },
-      emoji: '🤖',
-      gradient: 'linear-gradient(135deg, #07111f 0%, #123553 48%, #22d3ee 100%)'
+      eyebrow: { en: 'Next Greek election', el: 'Επόμενες εθνικές εκλογές' },
+      label: { en: 'Leading party', el: 'Πρώτο κόμμα' },
+      emoji: '🗳️',
+      art: 'art-ballot',
+      gradient: 'linear-gradient(135deg, #061a33 0%, #1d4ed8 48%, #93c5fd 100%)'
     },
     question: {
-      en: "Will OpenAI's spring keynote highlight reel pass 5M YouTube views within 7 days?",
-      el: 'Θα περάσει το spring keynote highlight reel της OpenAI τα 5M views στο YouTube μέσα σε 7 ημέρες;'
+      en: "Will New Democracy finish first in Greece's next national election?",
+      el: 'Θα έρθει πρώτη η Νέα Δημοκρατία στις επόμενες εθνικές εκλογές στην Ελλάδα;'
     },
     summary: {
-      en: 'A clean market for platform velocity and consumer internet attention.',
-      el: 'Καθαρή αγορά για platform velocity και consumer internet attention.'
+      en: 'A clean, consumer-friendly politics market that instantly tells people this board is built for Greece, not just translated into Greek.',
+      el: 'Καθαρή, consumer-friendly πολιτική αγορά που δείχνει αμέσως ότι αυτό το board είναι φτιαγμένο για την Ελλάδα και όχι απλώς μεταφρασμένο στα ελληνικά.'
     },
     resolution: {
-      en: "YES if the official highlight reel on OpenAI's YouTube channel exceeds 5M views within 7 days of upload.",
-      el: 'YES αν το επίσημο highlight reel στο κανάλι της OpenAI στο YouTube ξεπεράσει τα 5M views μέσα σε 7 ημέρες από το upload.'
+      en: 'YES if New Democracy records the highest nationwide vote share in the next Greek parliamentary election officially published by the Ministry of Interior. NO otherwise.',
+      el: 'YES αν η Νέα Δημοκρατία καταγράψει το υψηλότερο πανελλαδικό ποσοστό ψήφων στις επόμενες βουλευτικές εκλογές, όπως θα δημοσιευτεί επίσημα από το Υπουργείο Εσωτερικών. NO διαφορετικά.'
     },
     why: {
-      en: 'Useful in pitches because people immediately understand the metric and the timing window.',
-      el: 'Χρήσιμο σε pitches γιατί ο κόσμος καταλαβαίνει αμέσως το metric και το χρονικό παράθυρο.'
+      en: 'It adds the one politics contract mainstream Greek users would understand in a second and argue about immediately.',
+      el: 'Προσθέτει το ένα πολιτικό contract που ο mainstream Έλληνας χρήστης καταλαβαίνει σε ένα δευτερόλεπτο και θα το συζητήσει αμέσως.'
     },
-    primarySource: 'OpenAI official YouTube upload',
-    fallbackSource: 'YouTube public analytics snapshot'
+    primarySource: 'Greek Ministry of Interior official national election results',
+    fallbackSource: 'Official ministry nationwide vote-share table or final certified result'
   },
   {
     id: 'SOC-03',
@@ -992,37 +994,38 @@ const MARKETS = [
     id: 'SPT-02',
     categoryKey: 'sports',
     status: 'live',
-    featured: false,
-    probability: 63,
-    change: 2,
-    volume: 15870,
-    closeDate: '2026-04-11T21:00:00+02:00',
-    resolveDate: '2026-04-11T23:30:00+02:00',
+    featured: true,
+    probability: 55,
+    change: 4,
+    volume: 23640,
+    closeDate: '2027-04-16T22:59:00+03:00',
+    resolveDate: '2027-04-17T12:00:00+03:00',
     sourceLink: 'https://www.euroleaguebasketball.net/euroleague/standings/',
     poster: {
-      eyebrow: { en: 'EuroLeague table', el: 'Βαθμολογία EuroLeague' },
-      label: { en: 'Top 4 chase', el: 'Κυνήγι Top 4' },
-      emoji: '🔥',
-      gradient: 'linear-gradient(135deg, #132238 0%, #1d4ed8 50%, #38bdf8 100%)'
+      eyebrow: { en: 'EuroLeague rivalry', el: 'Rivalry EuroLeague' },
+      label: { en: 'Panathinaikos vs Olympiacos', el: 'Παναθηναϊκός vs Ολυμπιακός' },
+      emoji: '☘️',
+      art: 'art-court',
+      gradient: 'linear-gradient(135deg, #082032 0%, #14532d 42%, #dc2626 100%)'
     },
     question: {
-      en: 'Will Panathinaikos finish the EuroLeague regular season in the top 4?',
-      el: 'Θα τερματίσει ο Παναθηναϊκός στην πρώτη τετράδα της κανονικής περιόδου της EuroLeague;'
+      en: 'Will Panathinaikos finish above Olympiacos in the 2026-27 EuroLeague regular season?',
+      el: 'Θα τερματίσει ο Παναθηναϊκός πάνω από τον Ολυμπιακό στην κανονική περίοδο της EuroLeague 2026-27;'
     },
     summary: {
-      en: 'Second EuroLeague market makes the sports shelf feel like a real category, not a single novelty card.',
-      el: 'Δεύτερη αγορά EuroLeague που κάνει το sports shelf να μοιάζει με πραγματική κατηγορία και όχι single novelty card.'
+      en: 'A sharper Greek basketball market than a generic top-four chase because the rivalry and the outcome both read instantly.',
+      el: 'Πιο κοφτερή ελληνική μπασκετική αγορά από ένα generic top-four chase, γιατί και το rivalry και το outcome διαβάζονται αμέσως.'
     },
     resolution: {
-      en: 'YES if Panathinaikos finishes the regular season inside the official top 4 standings.',
-      el: 'YES αν ο Παναθηναϊκός τερματίσει στην κανονική περίοδο μέσα στο επίσημο top 4 της βαθμολογίας.'
+      en: 'YES if the final official 2026-27 EuroLeague regular-season standings place Panathinaikos above Olympiacos. NO otherwise.',
+      el: 'YES αν η τελική επίσημη βαθμολογία της κανονικής περιόδου της EuroLeague 2026-27 τοποθετεί τον Παναθηναϊκό πάνω από τον Ολυμπιακό. NO διαφορετικά.'
     },
     why: {
-      en: 'Adds density and lets a live walkthrough show multiple sports markets with similar card grammar.',
-      el: 'Προσθέτει πυκνότητα και επιτρέπει σε ένα live walkthrough να δείξει πολλαπλές sports αγορές με ίδιο card grammar.'
+      en: 'This is the kind of local sports contract that feels obvious, premium, and shareable in a Greek consumer product.',
+      el: 'Αυτό είναι το είδος τοπικού sports contract που μοιάζει αυτονόητο, premium και shareable σε ελληνικό consumer product.'
     },
-    primarySource: 'EuroLeague official standings',
-    fallbackSource: 'EuroLeague match centre'
+    primarySource: 'EuroLeague official regular-season standings',
+    fallbackSource: 'EuroLeague official game centre and final standings recap'
   },
   {
     id: 'SPT-03',
@@ -1358,37 +1361,38 @@ const MARKETS = [
     id: 'WTH-04',
     categoryKey: 'weather',
     status: 'live',
-    featured: false,
-    probability: 62,
-    change: 3,
-    volume: 9240,
-    closeDate: '2026-06-15T18:00:00+02:00',
-    resolveDate: '2026-06-15T23:30:00+02:00',
-    sourceLink: 'https://www.emy.gr/',
+    featured: true,
+    probability: 29,
+    change: 4,
+    volume: 21420,
+    closeDate: '2026-08-31T20:00:00+03:00',
+    resolveDate: '2026-08-31T23:30:00+03:00',
+    sourceLink: 'https://www.meteo.gr/',
     poster: {
-      eyebrow: { en: 'Crete summer', el: 'Καλοκαίρι στην Κρήτη' },
-      label: { en: 'Heraklion heat', el: 'Heraklion heat' },
-      emoji: '🌡️',
-      gradient: 'linear-gradient(135deg, #431407 0%, #ea580c 48%, #facc15 100%)'
+      eyebrow: { en: 'Athens heatwave', el: 'Καύσωνας στην Αθήνα' },
+      label: { en: '43°C watch', el: 'Όριο 43°C' },
+      emoji: '🥵',
+      art: 'art-sun',
+      gradient: 'linear-gradient(135deg, #431407 0%, #ea580c 46%, #facc15 100%)'
     },
     question: {
-      en: 'Will Heraklion record a daily maximum above 34°C before 15 June 2026?',
-      el: 'Θα καταγράψει το Ηράκλειο ημερήσια μέγιστη θερμοκρασία πάνω από 34°C πριν από τις 15 Ιουνίου 2026;'
+      en: 'Will the 2026 summer heatwave in Athens break 43°C?',
+      el: 'Θα σπάσει ο καύσωνας του καλοκαιριού 2026 στην Αθήνα το όριο των 43°C;'
     },
     summary: {
-      en: 'Adds another intuitive weather contract with stronger summer-season storytelling.',
-      el: 'Προσθέτει άλλο ένα intuitive weather contract με πιο δυνατό καλοκαιρινό storytelling.'
+      en: 'Big-threshold weather market with instant consumer relevance and a much cleaner headline than a routine warm-day contract.',
+      el: 'Weather market με μεγάλο threshold, άμεση consumer συνάφεια και πολύ καθαρότερο headline από ένα routine contract ζέστης.'
     },
     resolution: {
-      en: 'YES if the official Heraklion daily maximum temperature exceeds 34°C on any day before 15 June 2026.',
-      el: 'YES αν η επίσημη ημερήσια μέγιστη θερμοκρασία στο Ηράκλειο ξεπεράσει τους 34°C οποιαδήποτε ημέρα πριν από τις 15 Ιουνίου 2026.'
+      en: 'YES if the official daily maximum temperature for the named Athens city station rises above 43.0°C on any day from 1 June through 31 August 2026. NO otherwise.',
+      el: 'YES αν η επίσημη ημερήσια μέγιστη θερμοκρασία για τον ονομασμένο σταθμό πόλης της Αθήνας ανέβει πάνω από 43,0°C σε οποιαδήποτε ημέρα από 1 Ιουνίου έως 31 Αυγούστου 2026. NO διαφορετικά.'
     },
     why: {
-      en: 'Makes the weather category feel broader and more consumer-relevant for demos.',
-      el: 'Κάνει την weather κατηγορία να μοιάζει πιο πλατιά και πιο consumer-relevant για demos.'
+      en: 'It is locally intuitive, high-signal for Greeks, and visually strong enough to deserve flagship weather placement.',
+      el: 'Είναι τοπικά διαισθητικό, high-signal για την Ελλάδα και αρκετά δυνατό οπτικά ώστε να αξίζει flagship θέση στον καιρό.'
     },
-    primarySource: 'Hellenic National Meteorological Service station data',
-    fallbackSource: 'National Observatory historical archive'
+    primarySource: 'National Observatory Athens city station daily maximum temperature',
+    fallbackSource: 'Hellenic National Meteorological Service Athens daily bulletin'
   },
   {
     id: 'WTH-05',
@@ -1430,7 +1434,7 @@ const MARKETS = [
     id: 'MAC-06',
     categoryKey: 'macro',
     status: 'new',
-    featured: true,
+    featured: false,
     probability: 64,
     change: 3,
     volume: 26340,
@@ -1467,7 +1471,7 @@ const MARKETS = [
     id: 'MAC-07',
     categoryKey: 'macro',
     status: 'live',
-    featured: true,
+    featured: false,
     probability: 56,
     change: 4,
     volume: 17640,
@@ -1503,7 +1507,7 @@ const MARKETS = [
     id: 'MAC-08',
     categoryKey: 'macro',
     status: 'live',
-    featured: true,
+    featured: false,
     probability: 61,
     change: 2,
     volume: 16880,
@@ -1539,39 +1543,39 @@ const MARKETS = [
   {
     id: 'MAC-09',
     categoryKey: 'macro',
-    status: 'new',
-    featured: false,
-    probability: 42,
-    change: 1,
-    volume: 11980,
-    closeDate: '2026-12-31T16:59:00+02:00',
+    status: 'live',
+    featured: true,
+    probability: 46,
+    change: 3,
+    volume: 24980,
+    closeDate: '2026-12-31T18:59:00+02:00',
     resolveDate: '2026-12-31T23:59:00+02:00',
-    sourceLink: 'https://disclosure.spglobal.com/ratings/en/regulatory/ratings-actions',
+    sourceLink: 'https://www.fuelprices.gr/',
     poster: {
-      eyebrow: { en: 'Sovereign rating', el: 'Κρατική αξιολόγηση' },
-      label: { en: 'A- watch', el: 'Στόχος A-' },
-      emoji: '🏦',
-      art: 'art-chart',
-      gradient: 'linear-gradient(135deg, #131c2e 0%, #1d4ed8 48%, #22c55e 100%)'
+      eyebrow: { en: 'Everyday prices', el: 'Τιμές καθημερινότητας' },
+      label: { en: 'Petrol watch', el: 'Παρακολούθηση βενζίνης' },
+      emoji: '⛽',
+      art: 'art-fuel',
+      gradient: 'linear-gradient(135deg, #081826 0%, #0f4c81 42%, #14b8a6 100%)'
     },
     question: {
-      en: 'Will S&P rate Greece at A- or higher by 31 December 2026?',
-      el: 'Θα αξιολογεί η S&P την Ελλάδα σε A- ή υψηλότερα έως τις 31 Δεκεμβρίου 2026;'
+      en: 'Will petrol in Greece go above €2 per litre again before the end of 2026?',
+      el: 'Θα πάει ξανά η βενζίνη στην Ελλάδα πάνω από €2 το λίτρο πριν από το τέλος του 2026;'
     },
     summary: {
-      en: 'Longer-dated sovereign-risk market with a clean official source path and a familiar headline.',
-      el: 'Μακρύτερης διάρκειας αγορά sovereign risk με καθαρή επίσημη διαδρομή πηγής και οικείο headline.'
+      en: 'Consumer-price market with instant everyday relevance and a headline mainstream users understand without any financial translation layer.',
+      el: 'Αγορά consumer τιμών με άμεση καθημερινή συνάφεια και headline που ο mainstream χρήστης καταλαβαίνει χωρίς καμία financial μετάφραση.'
     },
     resolution: {
-      en: 'YES if by 31 December 2026 S&P Global Ratings publishes a long-term sovereign credit rating for Greece of A- or higher. NO otherwise.',
-      el: 'YES αν έως τις 31 Δεκεμβρίου 2026 η S&P Global Ratings δημοσιεύσει μακροπρόθεσμη κρατική πιστοληπτική αξιολόγηση για την Ελλάδα ίση με A- ή υψηλότερη. NO διαφορετικά.'
+      en: 'YES if the official nationwide average price for unleaded petrol in Greece exceeds €2.00 per litre on any publication before 31 December 2026. NO otherwise.',
+      el: 'YES αν η επίσημη πανελλαδική μέση τιμή αμόλυβδης βενζίνης στην Ελλάδα ξεπεράσει τα €2,00 ανά λίτρο σε οποιαδήποτε δημοσίευση πριν από τις 31 Δεκεμβρίου 2026. NO διαφορετικά.'
     },
     why: {
-      en: 'Useful because it adds a credible year-end macro contract without overlapping the faster Greek data prints.',
-      el: 'Χρήσιμο γιατί προσθέτει αξιόπιστο year-end macro contract χωρίς να επικαλύπτει τα πιο γρήγορα ελληνικά data prints.'
+      en: 'It anchors the macro shelf in a question ordinary people actually notice in real life, not just on data calendars.',
+      el: 'Αγκυρώνει το macro shelf σε ερώτημα που ο κόσμος παρατηρεί στην πραγματική ζωή και όχι μόνο στα data calendars.'
     },
-    primarySource: 'S&P Global Ratings sovereign rating action',
-    fallbackSource: 'Hellenic Republic debt management office or ministry recap'
+    primarySource: 'Official Greek Fuel Price Observatory nationwide unleaded average',
+    fallbackSource: 'European Commission weekly oil bulletin for Greece'
   },
   {
     id: 'SOC-07',
@@ -1613,7 +1617,7 @@ const MARKETS = [
     id: 'SHW-06',
     categoryKey: 'showbiz',
     status: 'closing',
-    featured: true,
+    featured: false,
     probability: 59,
     change: 6,
     volume: 18790,
@@ -1650,7 +1654,7 @@ const MARKETS = [
     id: 'SPT-09',
     categoryKey: 'sports',
     status: 'live',
-    featured: true,
+    featured: false,
     probability: 57,
     change: 4,
     volume: 20620,
@@ -1687,37 +1691,38 @@ const MARKETS = [
     id: 'SPT-10',
     categoryKey: 'sports',
     status: 'new',
-    featured: false,
-    probability: 46,
+    featured: true,
+    probability: 38,
     change: 3,
-    volume: 15280,
-    closeDate: '2026-04-17T21:59:00+02:00',
-    resolveDate: '2026-04-18T23:59:00+02:00',
-    sourceLink: 'https://www.uefa.com/uefaeuropaleague/',
+    volume: 20780,
+    closeDate: '2027-05-30T21:30:00+03:00',
+    resolveDate: '2027-05-31T23:59:00+03:00',
+    sourceLink: 'https://www.uefa.com/',
     poster: {
       eyebrow: { en: 'Greek clubs in Europe', el: 'Ελληνικές ομάδες στην Ευρώπη' },
-      label: { en: 'Olympiacos Europe', el: 'Olympiacos Europe' },
-      emoji: '🚩',
-      gradient: 'linear-gradient(135deg, #220b0b 0%, #7f1d1d 48%, #f97316 100%)'
+      label: { en: 'European final watch', el: 'Παρουσία σε τελικό' },
+      emoji: '🏆',
+      art: 'art-awards',
+      gradient: 'linear-gradient(135deg, #081826 0%, #0f4c81 42%, #f59e0b 100%)'
     },
     question: {
-      en: 'Will Olympiacos reach the 2026 UEFA Europa League quarter-finals?',
-      el: 'Θα φτάσει ο Ολυμπιακός στα προημιτελικά του UEFA Europa League 2026;'
+      en: 'Will a Greek club reach a major European football or basketball final in the 2026-27 season?',
+      el: 'Θα φτάσει ελληνικός σύλλογος σε μεγάλο ευρωπαϊκό τελικό ποδοσφαίρου ή μπάσκετ τη σεζόν 2026-27;'
     },
     summary: {
-      en: 'European-club exposure keeps football relevant while staying clearly tied back to Greece.',
-      el: 'Η ευρωπαϊκή έκθεση συλλόγων κρατά το ποδόσφαιρο relevant ενώ μένει καθαρά δεμένη με την Ελλάδα.'
+      en: 'A broad Greek-clubs contract that feels mainstream on first read while still settling off a named competition list.',
+      el: 'Ευρύ contract για ελληνικούς συλλόγους που διαβάζεται mainstream με την πρώτη, αλλά εξακολουθεί να κάνει settle πάνω σε ονομασμένη λίστα διοργανώσεων.'
     },
     resolution: {
-      en: 'YES if Olympiacos officially qualifies for the 2026 UEFA Europa League quarter-finals.',
-      el: 'YES αν ο Ολυμπιακός προκριθεί επίσημα στα προημιτελικά του UEFA Europa League 2026.'
+      en: 'YES if a Greek club reaches the final of the 2026-27 UEFA Champions League, Europa League, Conference League, EuroLeague, EuroCup, or Basketball Champions League. NO otherwise.',
+      el: 'YES αν ελληνικός σύλλογος φτάσει στον τελικό του UEFA Champions League, Europa League, Conference League, EuroLeague, EuroCup ή Basketball Champions League της σεζόν 2026-27. NO διαφορετικά.'
     },
     why: {
-      en: 'It widens the sports shelf without slipping back into generic non-Greek football filler.',
-      el: 'Ανοίγει το sports shelf χωρίς να ξαναγλιστρά σε generic non-Greek ποδοσφαιρικό filler.'
+      en: 'It gives the board one big-picture Greek-Europe sports contract without forcing mainstream users to care about a single competition upfront.',
+      el: 'Δίνει στο board ένα big-picture ελληνικό ευρωπαϊκό sports contract χωρίς να αναγκάζει τον mainstream χρήστη να νοιάζεται από πριν για μία μόνο διοργάνωση.'
     },
-    primarySource: 'UEFA official Europa League fixtures and bracket',
-    fallbackSource: 'Official UEFA match centre'
+    primarySource: 'Official UEFA, EuroLeague, EuroCup, and Basketball Champions League final fixtures',
+    fallbackSource: 'Official competition result pages for the named tournaments'
   },
   {
     id: 'SPT-11',
@@ -2321,8 +2326,13 @@ function getPosterArtClass(market) {
   if (market.poster?.art) return market.poster.art;
   const label = `${market.poster?.eyebrow?.en || ''} ${market.poster?.label?.en || ''} ${market.question?.en || ''}`.toLowerCase();
 
+  if (market.categoryKey === 'politics') {
+    return 'art-ballot';
+  }
+
   if (market.categoryKey === 'macro') {
     if (label.includes('airport') || label.includes('traffic') || label.includes('travel')) return 'art-airport';
+    if (label.includes('petrol') || label.includes('fuel') || label.includes('gas')) return 'art-fuel';
     if (label.includes('factory') || label.includes('industrial')) return 'art-factory';
     return 'art-chart';
   }
@@ -2361,6 +2371,7 @@ function getPosterArtClass(market) {
 
 function getPosterThemeClass(market) {
   const map = {
+    politics: 'poster-theme-politics',
     macro: 'poster-theme-data',
     social: 'poster-theme-social',
     showbiz: 'poster-theme-showbiz',
@@ -2372,6 +2383,10 @@ function getPosterThemeClass(market) {
 
 function buildResolutionPack(market) {
   const categoryRule = {
+    politics: {
+      en: 'Official Ministry of Interior election results control. Polls, projections, or TV estimates never resolve the contract.',
+      el: 'Τα επίσημα αποτελέσματα του Υπουργείου Εσωτερικών υπερισχύουν. Polls, projections ή τηλεοπτικές εκτιμήσεις δεν κάνουν ποτέ resolve το contract.'
+    },
     macro: {
       en: 'The first official data publication controls. Mirrors or media summaries never outrank the underlying release.',
       el: 'Η πρώτη επίσημη δημοσίευση δεδομένων υπερισχύει. Mirrors ή media summaries δεν υπερισχύουν ποτέ της αρχικής ανακοίνωσης.'
@@ -2395,6 +2410,11 @@ function buildResolutionPack(market) {
   };
 
   const trustProfile = {
+    politics: {
+      authorityLabel: { en: 'Official election result', el: 'Επίσημο εκλογικό αποτέλεσμα' },
+      authorityBody: { en: 'The Ministry of Interior nationwide result table controls.', el: 'Ο πανελλαδικός πίνακας αποτελεσμάτων του Υπουργείου Εσωτερικών υπερισχύει.' },
+      credibilityBody: { en: 'One official result table, one nationwide winner test.', el: 'Ένας επίσημος πίνακας αποτελεσμάτων, ένα nationwide test για τον νικητή.' }
+    },
     macro: {
       authorityLabel: { en: 'Official data release', el: 'Επίσημη δημοσίευση δεδομένων' },
       authorityBody: { en: 'One named publisher prints the number directly.', el: 'Ένας ονομασμένος φορέας δημοσιεύει απευθείας το metric.' },

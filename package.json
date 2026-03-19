@@ -1,8 +1,8 @@
 {
   "name": "xyz-labs-demo",
-  "version": "0.8.3.1",
+  "version": "0.8.4.0",
   "private": true,
-  "description": "Micro-polished private-preview Greek-first bilingual prediction market board with a calmer right rail and tighter copy",
+  "description": "Mainstream-market polish pass for a Greek-first bilingual prediction market demo with a refreshed flagship shelf",
   "scripts": {
     "start": "node server.js"
   }
