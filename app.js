@@ -2937,7 +2937,6 @@ function renderFlagshipCard(market, index) {
           <span class="soft-pill category-pill">${getCategoryLabel(market.categoryKey)}</span>
           <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
         </div>
-        <span class="ghost-pill market-id-pill">${market.id}</span>
       </div>
       <div class="featured-strip-body featured-strip-body-clean">
         <strong>${market.question[appState.language]}</strong>
@@ -3170,7 +3169,6 @@ function renderMarketCard(market, portfolio) {
             <span class="soft-pill category-pill">${getCategoryLabel(market.categoryKey)}</span>
             <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
           </div>
-          <span class="ghost-pill market-id-pill">${market.id}</span>
         </div>
 
         <div class="market-card-copy">
@@ -3664,7 +3662,6 @@ function renderPositionCard(row) {
       <div class="position-card-top">
         <div>
           <div class="card-kickers">
-            <span class="soft-pill">${row.market.id}</span>
             <span class="soft-pill">${getCategoryLabel(row.market.categoryKey)}</span>
             <span class="soft-pill ${row.side === 'yes' ? 'yes-label' : 'no-label'}">${row.side === 'yes' ? t('yes') : t('no')}</span>
           </div>
