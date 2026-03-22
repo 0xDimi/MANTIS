@@ -1,9 +1,9 @@
-const STORAGE_KEY = 'xyz-labs-demo-state-v85';
-const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v84', 'xyz-labs-demo-state-v83', 'xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
-const ONBOARDING_VERSION = 'v85';
+const STORAGE_KEY = 'xyz-labs-demo-state-v86';
+const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v85', 'xyz-labs-demo-state-v84', 'xyz-labs-demo-state-v83', 'xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
+const ONBOARDING_VERSION = 'v86';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
-const APP_VERSION = 'v0.8.6.3';
+const APP_VERSION = 'v0.8.6.6';
 
 const copy = {
   en: {
@@ -71,6 +71,8 @@ const copy = {
     dayChange: '24h move',
     held: 'Held',
     detailBack: 'Back to markets',
+    detailBackDesk: 'Back to desk',
+    detailBackPortfolio: 'Back to portfolio',
     detailOverview: 'Overview',
     resolutionRules: 'Resolution rules',
     resolutionIntegrity: 'Resolution integrity',
@@ -275,6 +277,8 @@ const copy = {
     dayChange: 'Μεταβολή 24h',
     held: 'Κατοχή',
     detailBack: 'Επιστροφή στις αγορές',
+    detailBackDesk: 'Επιστροφή στο desk',
+    detailBackPortfolio: 'Επιστροφή στο χαρτοφυλάκιο',
     detailOverview: 'Σύνοψη',
     resolutionRules: 'Κανόνες resolution',
     resolutionIntegrity: 'Resolution integrity',
@@ -1882,6 +1886,7 @@ const LIVE_TESTER_NAMES = ['Athens desk', 'North desk', 'Cyclades desk', 'Maria'
 let appState = loadState();
 let uiState = createUiState();
 let toasts = [];
+let navigationState = createNavigationState();
 
 const app = document.querySelector('#app');
 
@@ -1917,6 +1922,16 @@ function createUiState() {
     tradeAmount: 100,
     accessName: '',
     accessCode: ''
+  };
+}
+
+function createNavigationState() {
+  return {
+    detailOriginRoute: { name: 'markets' },
+    lastRouteKey: '',
+    pendingRestoreKey: null,
+    pendingScrollTop: false,
+    scrollByRoute: {}
   };
 }
 
@@ -1958,6 +1973,98 @@ function getRoute() {
   if (raw === 'portfolio') return { name: 'portfolio' };
   if (raw.startsWith('market/')) return { name: 'market', id: raw.split('/')[1] };
   return { name: 'markets' };
+}
+
+function getRouteKey(route = getRoute()) {
+  return route.name === 'market' ? `market:${route.id}` : route.name;
+}
+
+function getRouteHash(route) {
+  if (route.name === 'market') return `#/market/${route.id}`;
+  return route.name === 'markets' ? '#/markets' : `#/${route.name}`;
+}
+
+function rememberScrollPosition(route = getRoute()) {
+  if (route.name === 'market') return;
+  navigationState.scrollByRoute[getRouteKey(route)] = window.scrollY || window.pageYOffset || 0;
+}
+
+function scheduleScrollBehavior(route) {
+  if (route.name === 'market') {
+    navigationState.pendingRestoreKey = null;
+    navigationState.pendingScrollTop = true;
+    return;
+  }
+
+  const restoreKey = getRouteKey(route);
+  if (typeof navigationState.scrollByRoute[restoreKey] === 'number') {
+    navigationState.pendingRestoreKey = restoreKey;
+    navigationState.pendingScrollTop = false;
+    return;
+  }
+
+  navigationState.pendingRestoreKey = null;
+  navigationState.pendingScrollTop = true;
+}
+
+function applyPendingScrollBehavior() {
+  const restoreKey = navigationState.pendingRestoreKey;
+  const shouldScrollTop = navigationState.pendingScrollTop;
+
+  navigationState.pendingRestoreKey = null;
+  navigationState.pendingScrollTop = false;
+
+  if (!restoreKey && !shouldScrollTop) return;
+
+  window.requestAnimationFrame(() => {
+    if (restoreKey) {
+      window.scrollTo(0, navigationState.scrollByRoute[restoreKey] || 0);
+      return;
+    }
+
+    window.scrollTo(0, 0);
+  });
+}
+
+function navigateTo(route, options = {}) {
+  const { setDetailOrigin = false } = options;
+  const currentRoute = getRoute();
+
+  rememberScrollPosition(currentRoute);
+
+  if (setDetailOrigin && currentRoute.name !== 'market') {
+    navigationState.detailOriginRoute = { name: currentRoute.name };
+  }
+
+  scheduleScrollBehavior(route);
+
+  const nextHash = getRouteHash(route);
+  if (window.location.hash === nextHash) {
+    render();
+    return;
+  }
+
+  window.location.hash = nextHash;
+}
+
+function getDetailBackTarget() {
+  const originName = navigationState.detailOriginRoute?.name;
+  if (originName === 'portfolio') return { name: 'portfolio', label: t('detailBackPortfolio') };
+  if (originName === 'desk') return { name: 'desk', label: t('detailBackDesk') };
+  return { name: 'markets', label: t('detailBack') };
+}
+
+function syncScrollableActiveControl(selector) {
+  if (!window.matchMedia('(max-width: 860px)').matches) return;
+  const activeControl = app.querySelector(selector);
+  if (!activeControl) return;
+  activeControl.scrollIntoView({ block: 'nearest', inline: 'center' });
+}
+
+function runPostRenderPass(route) {
+  applyPendingScrollBehavior();
+  navigationState.lastRouteKey = getRouteKey(route);
+  syncScrollableActiveControl('.detail-info-tab.active');
 }
 
 function getMarket(id) {
@@ -2617,9 +2724,12 @@ function render() {
               : renderBoardPage(portfolio)
       }
       <footer class="footer-note">${t('footer')}</footer>
+      ${renderMobileBottomNav(route)}
     </div>
     ${renderToasts()}
   `;
+
+  runPostRenderPass(route);
 }
 
 function renderAccessGate() {
@@ -2710,9 +2820,9 @@ function renderTopbar(route) {
         </div>
       </a>
       <div class="nav-switch">
-        <button class="${isMarketsRoute ? 'active' : ''}" data-nav="markets">${t('navMarkets')}</button>
-        <button class="${route.name === 'desk' ? 'active' : ''}" data-nav="desk">${t('navDesk')}</button>
-        <button class="${route.name === 'portfolio' ? 'active' : ''}" data-nav="portfolio">${t('navPortfolio')}</button>
+        <button type="button" class="${isMarketsRoute ? 'active' : ''}" data-nav="markets" aria-current="${isMarketsRoute ? 'page' : 'false'}">${t('navMarkets')}</button>
+        <button type="button" class="${route.name === 'desk' ? 'active' : ''}" data-nav="desk" aria-current="${route.name === 'desk' ? 'page' : 'false'}">${t('navDesk')}</button>
+        <button type="button" class="${route.name === 'portfolio' ? 'active' : ''}" data-nav="portfolio" aria-current="${route.name === 'portfolio' ? 'page' : 'false'}">${t('navPortfolio')}</button>
       </div>
       <div class="topbar-actions">
         <span class="topbar-badge topbar-status"><span class="live-dot"></span>${t('privateBeta')} · ${APP_VERSION}</span>
@@ -2722,6 +2832,26 @@ function renderTopbar(route) {
         </div>
       </div>
     </header>
+  `;
+}
+
+function renderMobileBottomNav(route) {
+  const isMarketsRoute = route.name === 'markets' || route.name === 'market';
+  return `
+    <nav class="mobile-bottom-nav" aria-label="Mobile primary navigation">
+      <button type="button" class="mobile-bottom-nav-link ${isMarketsRoute ? 'active' : ''}" data-nav="markets" aria-current="${isMarketsRoute ? 'page' : 'false'}">
+        <small>${appState.language === 'el' ? 'Board' : 'Board'}</small>
+        <strong>${t('navMarkets')}</strong>
+      </button>
+      <button type="button" class="mobile-bottom-nav-link ${route.name === 'desk' ? 'active' : ''}" data-nav="desk" aria-current="${route.name === 'desk' ? 'page' : 'false'}">
+        <small>${appState.language === 'el' ? 'Pulse' : 'Pulse'}</small>
+        <strong>${t('navDesk')}</strong>
+      </button>
+      <button type="button" class="mobile-bottom-nav-link ${route.name === 'portfolio' ? 'active' : ''}" data-nav="portfolio" aria-current="${route.name === 'portfolio' ? 'page' : 'false'}">
+        <small>${appState.language === 'el' ? 'Θέσεις' : 'Positions'}</small>
+        <strong>${t('navPortfolio')}</strong>
+      </button>
+    </nav>
   `;
 }
 
@@ -3052,6 +3182,7 @@ function renderMarketCard(market, portfolio) {
 
         <div class="card-actions clean-card-actions">
           ${renderHeldLine(heldYes, heldNo)}
+          <span class="card-open-indicator">${t('openMarket')} <span aria-hidden="true">→</span></span>
         </div>
       </div>
     </article>
@@ -3079,16 +3210,112 @@ function buildTicketOutcomeNote(preview) {
     : `${formatQuantity(preview.remainingQty)} contracts remain after the sale.`;
 }
 
+function renderTradeTicket(market, portfolio, preview, variant = 'desktop') {
+  const outcomeLabel = preview.action === 'buy' ? t('ticketToWin') : t('ticketReceiveNow');
+  const outcomeValue = preview.action === 'buy' ? formatCurrency(preview.netIfCorrect) : formatCurrency(preview.total);
+  const selectedPrice = formatPercent(getChance(market, preview.side));
+  return `
+    <article class="trade-surface trade-surface-v0860 detail-ticket-panel detail-ticket-panel-${variant}">
+      <div class="detail-ticket-top">
+        <div class="detail-ticket-heading">
+          <span class="detail-ticket-kicker">${uiState.tradeAction === 'buy' ? t('tradeBuy') : t('tradeSell')}</span>
+          <h3>${t('tradeTitle')}</h3>
+        </div>
+        <div class="detail-ticket-price-tag ${preview.side}">
+          <span>${t('shareQuote')}</span>
+          <strong>${selectedPrice}</strong>
+        </div>
+      </div>
+      <form class="trade-form trade-form-v0860" data-trade-form="true">
+        <div>
+          <small class="field-label">${t('tradeAction')}</small>
+          <div class="segmented full-width trade-action-tabs">
+            <button type="button" class="${uiState.tradeAction === 'buy' ? 'active' : ''}" data-trade-action="buy">${t('tradeBuy')}</button>
+            <button type="button" class="${uiState.tradeAction === 'sell' ? 'active' : ''}" data-trade-action="sell">${t('tradeSell')}</button>
+          </div>
+        </div>
+        <div>
+          <small class="field-label">${t('tradeSide')}</small>
+          <div class="trade-side-grid">
+            ${renderTradeSideButton(market, 'yes')}
+            ${renderTradeSideButton(market, 'no')}
+          </div>
+        </div>
+        <div>
+          <small class="field-label">${t('tradeAmount')}</small>
+          <label class="number-input money-input detail-money-input">
+            <div class="money-field">
+              <span class="money-prefix">€</span>
+              <input type="number" min="1" step="1" value="${preview.amount}" data-field="tradeAmount" />
+            </div>
+          </label>
+        </div>
+        <div>
+          <small class="field-label">${t('amountPresets')}</small>
+          <div class="trade-preset-row detail-preset-row">
+            ${[50, 100, 250, 500]
+              .map(
+                (size) =>
+                  `<button type="button" class="preset-chip ${uiState.tradeAmount === size ? 'active' : ''}" data-trade-amount-preset="${size}">${formatCurrency(size, { maximumFractionDigits: 0 })}</button>`
+              )
+              .join('')}
+          </div>
+        </div>
+        <div class="ticket-box ticket-box-v0860">
+          <div class="detail-ticket-outcome ${preview.side}">
+            <small>${outcomeLabel}</small>
+            <strong>${outcomeValue}</strong>
+            <p>${buildTicketOutcomeNote(preview)}</p>
+          </div>
+          <div class="ticket-support-grid detail-ticket-support-grid">
+            ${renderTicketSupportStat(t('availableCash'), formatCurrency(portfolio.cash))}
+            ${renderTicketSupportStat(t('heldContracts'), formatQuantity(preview.heldQty))}
+          </div>
+        </div>
+        <button class="cta detail-ticket-submit" type="submit">${uiState.tradeAction === 'buy' ? t('tradeBuy') : t('tradeSell')} ${preview.selectedLabel}</button>
+      </form>
+    </article>
+  `;
+}
+
+function renderAccountSnapshot(portfolio) {
+  return `
+    <article class="surface side-rail-surface detail-rail-account-v0860">
+      <div class="detail-compact-head">
+        <h3>${t('accountSnapshot')}</h3>
+      </div>
+      <div class="pulse-grid detail-position-grid">
+        <div class="pulse-card">
+          <small>${t('equity')}</small>
+          <strong>${formatCurrency(portfolio.equity)}</strong>
+        </div>
+        <div class="pulse-card">
+          <small>${t('cash')}</small>
+          <strong>${formatCurrency(portfolio.cash)}</strong>
+        </div>
+        <div class="pulse-card">
+          <small>${t('marketValue')}</small>
+          <strong>${formatCurrency(portfolio.marketValue)}</strong>
+        </div>
+        <div class="pulse-card">
+          <small>${t('pnl')}</small>
+          <strong>${formatSignedCurrency(portfolio.pnl)}</strong>
+        </div>
+      </div>
+      <button class="ghost full-width" data-reset="true">${t('resetAccount')}</button>
+    </article>
+  `;
+}
+
 function renderMarketDetailPage(market, portfolio) {
   const preview = buildTradePreview(market, portfolio);
   const pack = buildResolutionPack(market);
   const signal = getLiveSignal(market);
-  const outcomeLabel = preview.action === 'buy' ? t('ticketToWin') : t('ticketReceiveNow');
-  const outcomeValue = preview.action === 'buy' ? formatCurrency(preview.netIfCorrect) : formatCurrency(preview.total);
+  const backTarget = getDetailBackTarget();
   return `
     <section class="page-grid detail-layout detail-layout-v0860" data-category="${market.categoryKey}">
       <article class="surface detail-surface detail-surface-v0860">
-        <button class="ghost linkish detail-back-button" data-nav="markets">← ${t('detailBack')}</button>
+        <button type="button" class="ghost detail-back-button" data-nav="${backTarget.name}">← ${backTarget.label}</button>
 
         <header class="detail-title-shell">
           <div class="detail-title-meta-row">
@@ -3118,87 +3345,14 @@ function renderMarketDetailPage(market, portfolio) {
           </div>
         </header>
 
+        ${renderTradeTicket(market, portfolio, preview, 'mobile')}
         ${renderOddsChartShell(market)}
         ${renderDetailInfoTabs(market, pack)}
       </article>
 
       <aside class="side-rail detail-rail detail-rail-v0860">
-        <article class="surface side-rail-surface side-rail-ticket trade-surface trade-surface-v0860">
-          <div class="detail-ticket-top">
-            <div>
-              <span class="detail-ticket-kicker">${uiState.tradeAction === 'buy' ? t('tradeBuy') : t('tradeSell')}</span>
-              <h3>${t('tradeTitle')}</h3>
-            </div>
-          </div>
-          <form class="trade-form trade-form-v0860" data-trade-form="true">
-            <div>
-              <small class="field-label">${t('tradeAction')}</small>
-              <div class="segmented full-width trade-action-tabs">
-                <button type="button" class="${uiState.tradeAction === 'buy' ? 'active' : ''}" data-trade-action="buy">${t('tradeBuy')}</button>
-                <button type="button" class="${uiState.tradeAction === 'sell' ? 'active' : ''}" data-trade-action="sell">${t('tradeSell')}</button>
-              </div>
-            </div>
-            <div>
-              <small class="field-label">${t('tradeSide')}</small>
-              <div class="trade-side-grid">
-                ${renderTradeSideButton(market, 'yes')}
-                ${renderTradeSideButton(market, 'no')}
-              </div>
-            </div>
-            <div>
-              <small class="field-label">${t('tradeAmount')}</small>
-              <label class="number-input money-input detail-money-input">
-                <div class="money-field">
-                  <span class="money-prefix">€</span>
-                  <input type="number" min="1" step="1" value="${preview.amount}" data-field="tradeAmount" />
-                </div>
-              </label>
-            </div>
-            <div>
-              <small class="field-label">${t('amountPresets')}</small>
-              <div class="trade-preset-row detail-preset-row">
-                ${[50, 100, 250, 500].map((size) => `<button type="button" class="preset-chip ${uiState.tradeAmount === size ? 'active' : ''}" data-trade-amount-preset="${size}">${formatCurrency(size, { maximumFractionDigits: 0 })}</button>`).join('')}
-              </div>
-            </div>
-            <div class="ticket-box ticket-box-v0860">
-              <div class="detail-ticket-outcome ${preview.side}">
-                <small>${outcomeLabel}</small>
-                <strong>${outcomeValue}</strong>
-                <p>${buildTicketOutcomeNote(preview)}</p>
-              </div>
-              <div class="ticket-support-grid detail-ticket-support-grid">
-                ${renderTicketSupportStat(t('availableCash'), formatCurrency(portfolio.cash))}
-                ${renderTicketSupportStat(t('heldContracts'), formatQuantity(preview.heldQty))}
-              </div>
-            </div>
-            <button class="cta detail-ticket-submit" type="submit">${uiState.tradeAction === 'buy' ? t('tradeBuy') : t('tradeSell')} ${preview.selectedLabel}</button>
-          </form>
-        </article>
-
-        <article class="surface side-rail-surface detail-rail-account-v0860">
-          <div class="detail-compact-head">
-            <h3>${t('accountSnapshot')}</h3>
-          </div>
-          <div class="pulse-grid detail-position-grid">
-            <div class="pulse-card">
-              <small>${t('equity')}</small>
-              <strong>${formatCurrency(portfolio.equity)}</strong>
-            </div>
-            <div class="pulse-card">
-              <small>${t('cash')}</small>
-              <strong>${formatCurrency(portfolio.cash)}</strong>
-            </div>
-            <div class="pulse-card">
-              <small>${t('marketValue')}</small>
-              <strong>${formatCurrency(portfolio.marketValue)}</strong>
-            </div>
-            <div class="pulse-card">
-              <small>${t('pnl')}</small>
-              <strong>${formatSignedCurrency(portfolio.pnl)}</strong>
-            </div>
-          </div>
-          <button class="ghost full-width" data-reset="true">${t('resetAccount')}</button>
-        </article>
+        ${renderTradeTicket(market, portfolio, preview, 'desktop')}
+        ${renderAccountSnapshot(portfolio)}
       </aside>
     </section>
   `;
@@ -3338,12 +3492,13 @@ function renderTradeSideButton(market, side) {
 function renderOddsChartShell(market) {
   const series = buildIndicativeSeries(market);
   const timeline = buildIndicativeTimeline(series.length);
+  const isPhoneChart = window.innerWidth <= 480;
   const width = 760;
-  const height = 280;
-  const paddingLeft = 54;
-  const paddingRight = 18;
-  const paddingTop = 18;
-  const paddingBottom = 42;
+  const height = isPhoneChart ? 236 : 280;
+  const paddingLeft = isPhoneChart ? 42 : 54;
+  const paddingRight = isPhoneChart ? 14 : 18;
+  const paddingTop = isPhoneChart ? 14 : 18;
+  const paddingBottom = isPhoneChart ? 34 : 42;
   const yTicks = [75, 50, 25];
   const stepX = (width - paddingLeft - paddingRight) / (series.length - 1);
   const points = series.map((value, index) => {
@@ -3352,11 +3507,15 @@ function renderOddsChartShell(market) {
     return { x, y, value };
   });
   const latestPoint = points[points.length - 1];
-  const xTickIndexes = [...new Set([0, Math.floor((series.length - 1) / 3), Math.floor(((series.length - 1) * 2) / 3), series.length - 1])];
+  const xTickIndexes = isPhoneChart
+    ? [...new Set([0, Math.floor((series.length - 1) / 2), series.length - 1])]
+    : [...new Set([0, Math.floor((series.length - 1) / 3), Math.floor(((series.length - 1) * 2) / 3), series.length - 1])];
   const xTicks = xTickIndexes.map((index) => ({ x: points[index].x, label: formatDate(timeline[index]) }));
   const linePath = buildSmoothPath(points);
   const slug = market.id.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  const calloutY = Math.max(8, latestPoint.y - 34);
+  const calloutWidth = isPhoneChart ? 48 : 54;
+  const calloutHeight = isPhoneChart ? 22 : 24;
+  const calloutY = Math.max(8, latestPoint.y - (isPhoneChart ? 30 : 34));
 
   return `
     <section class="chart-shell detail-chart-shell">
@@ -3394,8 +3553,8 @@ function renderOddsChartShell(market) {
             <path class="chart-line" d="${linePath}" />
             <line class="chart-guide" x1="${latestPoint.x}" y1="${latestPoint.y}" x2="${latestPoint.x}" y2="${height - paddingBottom}" />
             <circle class="chart-dot latest" cx="${latestPoint.x}" cy="${latestPoint.y}" r="5.5" />
-            <rect class="chart-callout" x="${latestPoint.x - 27}" y="${calloutY}" rx="10" width="54" height="24" />
-            <text class="chart-callout-text" x="${latestPoint.x}" y="${calloutY + 16}">${formatPercent(latestPoint.value)}</text>
+            <rect class="chart-callout" x="${latestPoint.x - calloutWidth / 2}" y="${calloutY}" rx="10" width="${calloutWidth}" height="${calloutHeight}" />
+            <text class="chart-callout-text" x="${latestPoint.x}" y="${calloutY + (isPhoneChart ? 15 : 16)}">${formatPercent(latestPoint.value)}</text>
           </svg>
           <div class="detail-chart-footer">
             <span>${formatDate(timeline[0])}</span>
@@ -3674,14 +3833,13 @@ function handleClick(event) {
   if (onboardingMarket) {
     appState.onboardingSeen = true;
     saveState();
-    window.location.hash = `#/market/${onboardingMarket.dataset.onboardingMarket}`;
-    render();
+    navigateTo({ name: 'market', id: onboardingMarket.dataset.onboardingMarket });
     return;
   }
 
   const navButton = event.target.closest('[data-nav]');
   if (navButton) {
-    window.location.hash = `#/${navButton.dataset.nav}`;
+    navigateTo({ name: navButton.dataset.nav });
     return;
   }
 
@@ -3701,7 +3859,8 @@ function handleClick(event) {
 
   const openMarket = event.target.closest('[data-open-market]');
   if (openMarket) {
-    window.location.hash = `#/market/${openMarket.dataset.openMarket}`;
+    uiState.detailTab = 'context';
+    navigateTo({ name: 'market', id: openMarket.dataset.openMarket }, { setDetailOrigin: true });
     return;
   }
 
@@ -3747,7 +3906,8 @@ function handleKeydown(event) {
   const openMarket = event.target.closest('.market-card-link[data-open-market]');
   if (!openMarket) return;
   event.preventDefault();
-  window.location.hash = `#/market/${openMarket.dataset.openMarket}`;
+  uiState.detailTab = 'context';
+  navigateTo({ name: 'market', id: openMarket.dataset.openMarket }, { setDetailOrigin: true });
 }
 
 function handleInput(event) {

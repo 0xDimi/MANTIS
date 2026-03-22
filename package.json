@@ -1,8 +1,8 @@
 {
   "name": "xyz-labs-demo",
-  "version": "0.8.6.3",
+  "version": "0.8.6.6",
   "private": true,
-  "description": "Focused refinement pass for market cards and compact market detail tabs",
+  "description": "Third dedicated mobile polish pass focused on navigation flow, final consistency polish, and mobile QA cleanup",
   "scripts": {
     "start": "node server.js"
   }
