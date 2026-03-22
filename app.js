@@ -3,7 +3,7 @@ const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v84', 'xyz-labs-demo-state-v83
 const ONBOARDING_VERSION = 'v85';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
-const APP_VERSION = 'v0.8.6.2';
+const APP_VERSION = 'v0.8.6.3';
 
 const copy = {
   en: {
@@ -1911,6 +1911,7 @@ function createUiState() {
     search: '',
     filter: 'all',
     sort: 'volume',
+    detailTab: 'context',
     tradeAction: 'buy',
     tradeSide: 'yes',
     tradeAmount: 100,
@@ -2000,19 +2001,31 @@ function formatPrice(value) {
   return formatCurrency(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function formatPercentValue(value, options = {}) {
+  const { minimumFractionDigits = 0, maximumFractionDigits = 0, signDisplay = 'auto' } = options;
+  return `${new Intl.NumberFormat(appState.language === 'el' ? 'el-GR' : 'en-GB', {
+    minimumFractionDigits,
+    maximumFractionDigits,
+    signDisplay
+  }).format(value)}%`;
+}
+
 function formatPercent(value) {
-  return `${Math.round(value)}%`;
+  return formatPercentValue(value);
 }
 
 function formatSignedCurrency(value) {
   return formatCurrency(value, { minimumFractionDigits: 0, maximumFractionDigits: 2, signDisplay: 'always' });
 }
 
-function formatProbabilityDelta(value) {
-  const rounded = Math.round(value);
-  const sign = rounded > 0 ? '+' : rounded < 0 ? '-' : '';
-  const units = appState.language === 'el' ? ' μον.' : ' pts';
-  return `${sign}${Math.abs(rounded)}${units}`;
+function formatProbabilityDelta(market) {
+  const previousProbability = market.probability - market.change;
+  if (previousProbability <= 0) {
+    return formatPercentValue(market.change, { signDisplay: 'always' });
+  }
+
+  const relativeMove = (market.change / previousProbability) * 100;
+  return formatPercentValue(relativeMove, { signDisplay: 'always' });
 }
 
 function formatDate(value) {
@@ -2540,11 +2553,11 @@ function buildTradePreview(market, portfolio) {
   const narrative =
     action === 'buy'
       ? appState.language === 'el'
-        ? `Βάζεις ${formatCurrency(total)} στο ${selectedLabel} στο ${formatPrice(price)} και παίρνεις περίπου ${formatQuantity(contracts)} contracts. Αν βγει ${selectedLabel}, η μικτή πληρωμή είναι ${formatCurrency(grossPayout)}.`
-        : `You put ${formatCurrency(total)} into ${selectedLabel} at ${formatPrice(price)} for about ${formatQuantity(contracts)} contracts. If ${selectedLabel} resolves, gross payout is ${formatCurrency(grossPayout)}.`
+        ? `Βάζεις ${formatCurrency(total)} στο ${selectedLabel} και παίρνεις περίπου ${formatQuantity(contracts)} contracts. Αν βγει ${selectedLabel}, η μικτή πληρωμή είναι ${formatCurrency(grossPayout)}.`
+        : `You put ${formatCurrency(total)} into ${selectedLabel} for about ${formatQuantity(contracts)} contracts. If ${selectedLabel} resolves, gross payout is ${formatCurrency(grossPayout)}.`
       : appState.language === 'el'
-        ? `Πουλάς ${formatCurrency(total)} από τη θέση ${selectedLabel} στο ${formatPrice(price)}. Κλείνεις περίπου ${formatQuantity(contracts)} contracts και μένουν ${formatQuantity(remainingQty)} ανοιχτά.`
-        : `You sell ${formatCurrency(total)} of ${selectedLabel} at ${formatPrice(price)}. That closes about ${formatQuantity(contracts)} contracts and leaves ${formatQuantity(remainingQty)} open.`;
+        ? `Πουλάς ${formatCurrency(total)} από τη θέση ${selectedLabel}. Κλείνεις περίπου ${formatQuantity(contracts)} contracts και μένουν ${formatQuantity(remainingQty)} ανοιχτά.`
+        : `You sell ${formatCurrency(total)} of ${selectedLabel}. That closes about ${formatQuantity(contracts)} contracts and leaves ${formatQuantity(remainingQty)} open.`;
 
   return {
     amount,
@@ -2756,7 +2769,7 @@ function renderHero(portfolio) {
               </div>
             </div>
             <div class="hero-feature-boardline">
-              <span class="feature-stat-pill">${t('dayChange')} <strong class="${featured.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(featured.change)}</strong></span>
+              <span class="feature-stat-pill">${t('dayChange')} <strong class="${featured.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(featured)}</strong></span>
               <span class="feature-stat-pill">${t('liveFlow')} <strong>${featuredSignal.flowSide === 'yes' ? t('yes') : t('no')} ${formatCurrency(featuredSignal.flowEur)}</strong></span>
               <span class="feature-stat-pill">${t('liveWatchers')} <strong>${featuredSignal.watchers}</strong></span>
             </div>
@@ -3092,7 +3105,7 @@ function renderMarketDetailPage(market, portfolio) {
             </div>
             <div class="detail-market-strip-stat">
               <small>${t('dayChange')}</small>
-              <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
+              <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market)}</strong>
             </div>
             <div class="detail-market-strip-stat">
               <small>${t('volume')}</small>
@@ -3106,7 +3119,7 @@ function renderMarketDetailPage(market, portfolio) {
         </header>
 
         ${renderOddsChartShell(market)}
-        ${renderDetailInfoGrid(market, pack)}
+        ${renderDetailInfoTabs(market, pack)}
       </article>
 
       <aside class="side-rail detail-rail detail-rail-v0860">
@@ -3191,23 +3204,16 @@ function renderMarketDetailPage(market, portfolio) {
   `;
 }
 
-function renderDetailInfoGrid(market, pack) {
-  return `
-    <section class="detail-info-grid">
-      <article class="detail-info-card">
-        <div class="detail-info-head">
-          <h3>${t('detailOverview')}</h3>
-        </div>
+function getDetailTabSections(market, pack) {
+  return [
+    {
+      id: 'context',
+      label: t('marketContext'),
+      content: `
         <p class="detail-info-lead">${market.summary[appState.language]}</p>
         <div class="detail-info-block">
           <small>${t('whyItMatters')}</small>
           <p>${market.why[appState.language]}</p>
-        </div>
-      </article>
-
-      <article class="detail-info-card">
-        <div class="detail-info-head">
-          <h3>${t('marketContext')}</h3>
         </div>
         <div class="detail-info-rows">
           <div class="detail-info-row">
@@ -3216,7 +3222,7 @@ function renderDetailInfoGrid(market, pack) {
           </div>
           <div class="detail-info-row">
             <span>${t('dayChange')}</span>
-            <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
+            <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market)}</strong>
           </div>
           <div class="detail-info-row">
             <span>${t('resolutionCutoff')}</span>
@@ -3227,13 +3233,13 @@ function renderDetailInfoGrid(market, pack) {
             <strong>${formatDateTime(market.resolveDate)}</strong>
           </div>
         </div>
-      </article>
-
-      <article class="detail-info-card">
-        <div class="detail-info-head">
-          <h3>${t('resolutionRules')}</h3>
-        </div>
-        <div class="detail-info-block">
+      `
+    },
+    {
+      id: 'rules',
+      label: t('resolutionRules'),
+      content: `
+        <div class="detail-info-block detail-info-block-first">
           <small>${t('trustOutcomeTest')}</small>
           <p>${market.resolution[appState.language]}</p>
         </div>
@@ -3247,12 +3253,13 @@ function renderDetailInfoGrid(market, pack) {
             <strong>${market.fallbackSource}</strong>
           </div>
         </div>
-      </article>
-
-      <article class="detail-info-card">
-        <div class="detail-info-head">
-          <h3>${t('resolutionIntegrity')}</h3>
-        </div>
+      `
+    },
+    {
+      id: 'integrity',
+      label: t('resolutionIntegrity'),
+      content: `
+        <p class="detail-info-lead">${t('resolutionIntegrityCopy')}</p>
         <div class="detail-info-block">
           <small>${pack.authorityLabel}</small>
           <p>${pack.authorityBody}</p>
@@ -3266,6 +3273,47 @@ function renderDetailInfoGrid(market, pack) {
           <p>${pack.voidBody}</p>
         </div>
         <a class="secondary-link secondary-link-quiet" href="${market.sourceLink}" target="_blank" rel="noreferrer">${t('openOfficialSource')}</a>
+      `
+    }
+  ];
+}
+
+function renderDetailInfoTabs(market, pack) {
+  const tabs = getDetailTabSections(market, pack);
+  const activeTab = tabs.find((tab) => tab.id === uiState.detailTab) || tabs[0];
+  const tabsetId = market.id.toLowerCase();
+
+  return `
+    <section class="detail-info-tabs-shell">
+      <div class="detail-info-tabs" role="tablist" aria-label="${appState.language === 'el' ? 'Ενότητες αγοράς' : 'Market sections'}">
+        ${tabs
+          .map(
+            (tab) => `
+              <button
+                type="button"
+                class="detail-info-tab ${tab.id === activeTab.id ? 'active' : ''}"
+                role="tab"
+                id="detail-tab-${tabsetId}-${tab.id}"
+                aria-selected="${tab.id === activeTab.id}"
+                aria-controls="detail-panel-${tabsetId}-${tab.id}"
+                data-detail-tab="${tab.id}"
+              >
+                ${tab.label}
+              </button>
+            `
+          )
+          .join('')}
+      </div>
+      <article
+        class="detail-info-card detail-info-panel"
+        role="tabpanel"
+        id="detail-panel-${tabsetId}-${activeTab.id}"
+        aria-labelledby="detail-tab-${tabsetId}-${activeTab.id}"
+      >
+        <div class="detail-info-head">
+          <h3>${activeTab.label}</h3>
+        </div>
+        ${activeTab.content}
       </article>
     </section>
   `;
@@ -3274,7 +3322,6 @@ function renderDetailInfoGrid(market, pack) {
 function renderTradeSideButton(market, side) {
   const active = uiState.tradeSide === side;
   const chance = getChance(market, side);
-  const price = getPrice(market, side);
   return `
     <button
       type="button"
@@ -3282,8 +3329,8 @@ function renderTradeSideButton(market, side) {
       data-trade-side="${side}"
     >
       <span class="trade-side-label">${side === 'yes' ? t('yes') : t('no')}</span>
-      <strong>${formatPrice(price)}</strong>
-      <small>${formatPercent(chance)}</small>
+      <strong>${formatPercent(chance)}</strong>
+      <small>${t('shareQuote')}</small>
     </button>
   `;
 }
@@ -3319,7 +3366,7 @@ function renderOddsChartShell(market) {
         </div>
         <div class="detail-chart-stat-row">
           <span class="detail-chart-stat"><small>${t('currentMark')}</small><strong>${formatPercent(market.probability)}</strong></span>
-          <span class="detail-chart-stat"><small>${t('dayChange')}</small><strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong></span>
+          <span class="detail-chart-stat"><small>${t('dayChange')}</small><strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market)}</strong></span>
           <span class="detail-chart-stat"><small>${t('volume')}</small><strong>${formatCurrency(market.volume)}</strong></span>
         </div>
       </div>
@@ -3539,7 +3586,7 @@ function renderMoversList() {
                   <span>${market.question[appState.language]}</span>
                 </div>
                 <div class="mover-right">
-                  <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
+                  <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market)}</strong>
                   <span class="mover-odds">${selectedSide === 'yes' ? t('yes') : t('no')} ${formatPercent(getChance(market, selectedSide))}</span>
                 </div>
               </button>
@@ -3668,6 +3715,13 @@ function handleClick(event) {
   const tradeSide = event.target.closest('[data-trade-side]');
   if (tradeSide) {
     uiState.tradeSide = tradeSide.dataset.tradeSide;
+    render();
+    return;
+  }
+
+  const detailTab = event.target.closest('[data-detail-tab]');
+  if (detailTab) {
+    uiState.detailTab = detailTab.dataset.detailTab;
     render();
     return;
   }
