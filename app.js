@@ -1,50 +1,57 @@
-const STORAGE_KEY = 'xyz-labs-demo-state-v84';
-const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v83', 'xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
-const ONBOARDING_VERSION = 'v84';
+const STORAGE_KEY = 'xyz-labs-demo-state-v85';
+const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v84', 'xyz-labs-demo-state-v83', 'xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
+const ONBOARDING_VERSION = 'v85';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
-const APP_VERSION = 'v0.8.4.0';
+const APP_VERSION = 'v0.8.6.2';
 
 const copy = {
   en: {
-    appTitle: 'xyz Labs Demo',
-    appSubtitle: 'Private preview of a Greek prediction market',
-    productIdentity: 'Here, your opinion has value.',
+    appTitle: 'xyz Labs',
+    appSubtitle: 'Greek event markets',
+    productIdentity: 'Here, your opinion has value',
     navMarkets: 'Markets',
+    navDesk: 'Desk',
     navPortfolio: 'Portfolio',
     sandbox: 'Spring 2026 Greek slate',
-    privateBeta: 'Private beta',
+    privateBeta: 'Live preview',
     liveBoard: 'Live board lane',
     heroEyebrow: 'A Greek prediction market, with event pricing across politics, economy, sports, culture, and more.',
     heroFeatured: 'Featured market',
     heroPulse: 'Board pulse',
     heroPulseCopy: 'A staged but live-feeling tape for private tester walkthroughs.',
     heroLiveBadge: 'Live demo tape',
-    heroFlagshipCopy: 'One lead contract, then a tighter shelf of high-signal markets behind it.',
-    flagshipLane: 'Flagship lane',
-    flagshipLaneCopy: 'The lead contracts that should read first in a room, before the rest of the board.',
-    cardFeatured: 'Flagship',
+    heroFlagshipCopy: 'One main market up front, then the rest of the featured board underneath.',
+    flagshipLane: 'Featured markets',
+    flagshipLaneCopy: 'High-signal markets near the top of the board.',
+    cardFeatured: 'Featured',
     statLiveOdds: 'Featured YES / NO odds',
     statTotalVolume: 'Matched volume',
     statCash: 'Available cash',
     statPositions: 'Open positions',
-    boardTitle: 'Market board',
-    boardCopy: 'Browse a Greek-heavy market slate with faster scanning, live-energy cues, and cleaner private-tester flow.',
+    boardTitle: 'Greek markets',
+    boardCopy: 'A cleaner board for fast YES / NO scanning across politics, economy, sports, culture, and weather.',
+    featuredMarketsTitle: 'Featured markets',
+    featuredMarketsCopy: 'A short list of lead contracts worth reading first.',
+    allMarketsTitle: 'All markets',
+    allMarketsCopy: 'Browse the full board by category.',
+    deskTitle: 'Desk',
+    deskCopy: 'Pulse, movers, and seeded activity live here instead of the main board.',
     boardLiveNote: 'Odds are demo, but the board now behaves like a private market room instead of a static prototype.',
-    searchPlaceholder: 'Search markets, teams, cities, or categories',
+    searchPlaceholder: 'Search markets, teams, cities, or sources',
     filtersLabel: 'Category',
     sortLabel: 'Sort',
     filterAll: 'All',
-    sortFeatured: 'Featured',
+    sortFeatured: 'Top',
     sortVolume: 'Volume',
     sortClosing: 'Closing soon',
     marketPulse: 'Board pulse',
     recentActivity: 'Recent activity',
     recentActivityCopy: 'Recent fills keep the tape and portfolio warm.',
     liveTape: 'Live tape',
-    liveTapeCopy: 'Recent flow that keeps the sandbox feeling lived-in.',
+    liveTapeCopy: 'Recent board flow and seeded activity.',
     moversTitle: 'Top movers',
-    moversCopy: 'The contracts drawing the cleanest attention right now.',
+    moversCopy: 'Contracts seeing the biggest price move right now.',
     liveSlate: 'Markets live',
     closingSoon: 'Closing soon',
     testerLane: 'Tracked testers',
@@ -63,7 +70,7 @@ const copy = {
     liquidity: 'Liquidity',
     dayChange: '24h move',
     held: 'Held',
-    detailBack: 'Back to board',
+    detailBack: 'Back to markets',
     detailOverview: 'Overview',
     resolutionRules: 'Resolution rules',
     resolutionIntegrity: 'Resolution integrity',
@@ -96,14 +103,14 @@ const copy = {
     primarySource: 'Primary source',
     fallbackSource: 'Fallback source',
     marketContext: 'Market context',
-    tradeTitle: 'Order ticket',
-    tradeCopy: 'Enter EUR size, pick a side, and see cost, risk, and payout before the mock fill lands.',
+    tradeTitle: 'Trade',
+    tradeCopy: 'Enter EUR size, pick a side, and review cost, risk, and payout before you place the order.',
     tradeAction: 'Action',
     tradeSide: 'Side',
     tradeAmount: 'Order amount',
     tradeBuy: 'Buy',
     tradeSell: 'Sell',
-    contractPrice: 'Selected quote',
+    contractPrice: 'Selected price',
     estimatedTotal: 'Order value',
     estimatedContracts: 'Estimated contracts',
     availableCash: 'Available cash',
@@ -131,7 +138,7 @@ const copy = {
     exposure: 'Exposure',
     pnl: 'Unrealized P/L',
     portfolioTitle: 'Portfolio',
-    portfolioCopy: 'Marked-to-market positions, category exposure, and recent fills in one clean view.',
+    portfolioCopy: 'Marked-to-market positions, category exposure, and recent fills in one view.',
     positionsTitle: 'Open positions',
     positionsEmpty: 'No open positions yet. Place a trade from the board.',
     activityEmpty: 'No activity yet.',
@@ -142,7 +149,7 @@ const copy = {
     categoryMix: 'Category mix',
     noResultsTitle: 'No markets match that screen.',
     noResultsBody: 'Try a broader category or clear the search input.',
-    footer: 'xyz Labs Demo v0.8.4.0 · Private preview of a Greek prediction market.',
+    footer: `xyz Labs · Greek event markets · ${APP_VERSION}`,
     toastExecutedTitle: 'Trade executed',
     toastExecutedBody: 'Your portfolio has been updated.',
     toastResetTitle: 'Portfolio reset',
@@ -157,13 +164,13 @@ const copy = {
     statusLive: 'Live',
     statusClosing: 'Closing soon',
     statusNew: 'New',
-    shareQuote: 'YES / NO odds',
+    shareQuote: 'Market price',
     positionMixCopy: 'Current exposure grouped by category.',
     detailCopy: 'Pricing, sources, and resolution logic for this market.',
     ticketYes: 'Buy YES',
     ticketNo: 'Buy NO',
-    chartTitle: 'Indicative odds chart',
-    chartCopy: 'Illustrative YES-probability path across the last seven daily demo marks.',
+    chartTitle: 'Price history',
+    chartCopy: 'Illustrative market-price path across recent demo marks.',
     chartNow: 'Now',
     chartStart: '7 updates ago',
     chartFrameLabel: 'YES probability framing',
@@ -173,15 +180,16 @@ const copy = {
     chartMoveSupport: 'Versus the prior board mark',
     chartAxisProbability: 'Probability',
     chartFootnote: 'Illustrative chart for demo review only. Resolution still follows the named source stack.',
-    gateEyebrow: 'Private tester access',
-    gateTitle: 'Enter the room',
-    gateCopy: 'A private preview of a Greek prediction market built around alternative event pricing across politics, economy, sports, culture, and everyday signals.',
+    ticketToWin: 'To win',
+    gateEyebrow: 'Private access',
+    gateTitle: 'Unlock markets',
+    gateCopy: 'A Greece-first prediction market board across politics, economy, sports, culture, and weather.',
     gateNameLabel: 'Tester name',
     gateNamePlaceholder: 'Optional, shown locally',
     gateCodeLabel: 'Access code',
     gateCodePlaceholder: 'Enter shared code',
-    gateUnlock: 'Unlock board',
-    gateHint: 'Local-only demo. Access state is stored in this browser.',
+    gateUnlock: 'Unlock markets',
+    gateHint: 'Local access only. State is stored in this browser.',
     gatePoint1: '39 live markets across politics, economy, sports, culture, and weather',
     gatePoint2: 'EUR-supported ticketing designed to feel closer to a real consumer product',
     gatePoint3: 'Greek-first market mix built for a sharper private walkthrough',
@@ -203,44 +211,51 @@ const copy = {
     you: 'You'
   },
   el: {
-    appTitle: 'xyz Labs Demo',
-    appSubtitle: 'Private preview ελληνικής αγοράς προβλέψεων',
+    appTitle: 'xyz Labs',
+    appSubtitle: 'Ελληνικές αγορές γεγονότων',
     productIdentity: 'Εδώ, η γνώμη σου έχει αξία.',
     navMarkets: 'Αγορές',
+    navDesk: 'Desk',
     navPortfolio: 'Χαρτοφυλάκιο',
     sandbox: 'Άνοιξη 2026 Greek slate',
-    privateBeta: 'Private beta',
+    privateBeta: 'Live preview',
     liveBoard: 'Ζωντανό board lane',
     heroEyebrow: 'Μια ελληνική αγορά προβλέψεων, με τιμολόγηση γεγονότων σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και πολλά ακόμη.',
     heroFeatured: 'Κύρια αγορά',
     heroPulse: 'Παλμός board',
     heroPulseCopy: 'Staged αλλά πιο live-feeling tape για private tester walkthroughs.',
     heroLiveBadge: 'Live demo tape',
-    heroFlagshipCopy: 'Ένα lead contract και πίσω του ένα πιο σφιχτό shelf από high-signal αγορές.',
-    flagshipLane: 'Κύριες αγορές',
-    flagshipLaneCopy: 'Τα contracts που πρέπει να διαβάζονται πρώτα σε ένα room, πριν από το υπόλοιπο board.',
-    cardFeatured: 'Κύρια',
+    heroFlagshipCopy: 'Μία κύρια αγορά μπροστά και αμέσως μετά το υπόλοιπο featured board.',
+    flagshipLane: 'Featured markets',
+    flagshipLaneCopy: 'High-signal αγορές κοντά στην κορυφή του board.',
+    cardFeatured: 'Featured',
     statLiveOdds: 'Κύριο YES / NO',
     statTotalVolume: 'Συνολικός όγκος',
     statCash: 'Διαθέσιμα μετρητά',
     statPositions: 'Ανοιχτές θέσεις',
-    boardTitle: 'Market board',
-    boardCopy: 'Δες ένα Greek-heavy market slate με ταχύτερο scanning, live-energy cues και καθαρότερη private-tester ροή.',
+    boardTitle: 'Ελληνικές αγορές',
+    boardCopy: 'Καθαρότερο board για γρήγορο YES / NO scanning σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καιρό.',
+    featuredMarketsTitle: 'Featured markets',
+    featuredMarketsCopy: 'Μικρό lead set από αγορές που αξίζει να διαβαστούν πρώτα.',
+    allMarketsTitle: 'Όλες οι αγορές',
+    allMarketsCopy: 'Δες όλο το board ανά κατηγορία.',
+    deskTitle: 'Desk',
+    deskCopy: 'Pulse, movers και seeded activity μεταφέρονται εδώ και όχι στο κύριο board.',
     boardLiveNote: 'Τα odds είναι demo, αλλά το board πλέον συμπεριφέρεται σαν private market room και όχι σαν στατικό prototype.',
-    searchPlaceholder: 'Αναζήτηση αγορών, ομάδων, πόλεων ή κατηγοριών',
+    searchPlaceholder: 'Αναζήτηση αγορών, ομάδων, πόλεων ή πηγών',
     filtersLabel: 'Κατηγορία',
     sortLabel: 'Ταξινόμηση',
     filterAll: 'Όλα',
-    sortFeatured: 'Κύριες',
+    sortFeatured: 'Top',
     sortVolume: 'Όγκος',
     sortClosing: 'Κλείνουν σύντομα',
     marketPulse: 'Παλμός αγοράς',
     recentActivity: 'Πρόσφατη δραστηριότητα',
     recentActivityCopy: 'Οι πρόσφατες κινήσεις κρατούν ζωντανά το tape και το portfolio.',
     liveTape: 'Live tape',
-    liveTapeCopy: 'Πρόσφατη ροή που κρατά το sandbox ζωντανό.',
+    liveTapeCopy: 'Πρόσφατη ροή board και seeded activity.',
     moversTitle: 'Top movers',
-    moversCopy: 'Τα contracts που τραβούν την πιο καθαρή προσοχή αυτή τη στιγμή.',
+    moversCopy: 'Τα contracts με τη μεγαλύτερη μεταβολή τιμής τώρα.',
     liveSlate: 'Αγορές live',
     closingSoon: 'Κλείνουν σύντομα',
     testerLane: 'Tracked testers',
@@ -259,7 +274,7 @@ const copy = {
     liquidity: 'Ρευστότητα',
     dayChange: 'Μεταβολή 24h',
     held: 'Κατοχή',
-    detailBack: 'Επιστροφή στο board',
+    detailBack: 'Επιστροφή στις αγορές',
     detailOverview: 'Σύνοψη',
     resolutionRules: 'Κανόνες resolution',
     resolutionIntegrity: 'Resolution integrity',
@@ -292,14 +307,14 @@ const copy = {
     primarySource: 'Κύρια πηγή',
     fallbackSource: 'Εναλλακτική πηγή',
     marketContext: 'Στοιχεία αγοράς',
-    tradeTitle: 'Εντολή',
-    tradeCopy: 'Βάλε EUR ποσό, διάλεξε πλευρά και δες κόστος, ρίσκο και πληρωμή πριν περάσει το mock fill.',
+    tradeTitle: 'Trade',
+    tradeCopy: 'Βάλε EUR ποσό, διάλεξε πλευρά και δες κόστος, ρίσκο και πληρωμή πριν περάσεις την εντολή.',
     tradeAction: 'Ενέργεια',
     tradeSide: 'Πλευρά',
     tradeAmount: 'Ποσό εντολής',
     tradeBuy: 'Αγορά',
     tradeSell: 'Πώληση',
-    contractPrice: 'Επιλεγμένο quote',
+    contractPrice: 'Επιλεγμένη τιμή',
     estimatedTotal: 'Αξία εντολής',
     estimatedContracts: 'Εκτιμώμενα contracts',
     availableCash: 'Διαθέσιμα μετρητά',
@@ -327,7 +342,7 @@ const copy = {
     exposure: 'Έκθεση',
     pnl: 'Μη πραγματοποιημένο P/L',
     portfolioTitle: 'Χαρτοφυλάκιο',
-    portfolioCopy: 'Marked-to-market θέσεις, category exposure και πρόσφατα fills σε ένα καθαρό view.',
+    portfolioCopy: 'Marked-to-market θέσεις, category exposure και πρόσφατα fills σε ένα view.',
     positionsTitle: 'Ανοιχτές θέσεις',
     positionsEmpty: 'Δεν υπάρχουν ανοιχτές θέσεις ακόμα. Κάνε μία κίνηση από το board.',
     activityEmpty: 'Δεν υπάρχει δραστηριότητα ακόμα.',
@@ -338,7 +353,7 @@ const copy = {
     categoryMix: 'Μείγμα κατηγοριών',
     noResultsTitle: 'Δεν υπάρχουν αγορές για αυτό το screen.',
     noResultsBody: 'Δοκίμασε πιο ευρύ φίλτρο ή καθάρισε την αναζήτηση.',
-    footer: 'xyz Labs Demo v0.8.4.0 · Private preview ελληνικής αγοράς προβλέψεων.',
+    footer: `xyz Labs · Ελληνικές αγορές γεγονότων · ${APP_VERSION}`,
     toastExecutedTitle: 'Το trade εκτελέστηκε',
     toastExecutedBody: 'Το portfolio ενημερώθηκε.',
     toastResetTitle: 'Έγινε reset portfolio',
@@ -353,13 +368,13 @@ const copy = {
     statusLive: 'Live',
     statusClosing: 'Κλείνει σύντομα',
     statusNew: 'Νέα',
-    shareQuote: 'Πιθανότητες YES / NO',
+    shareQuote: 'Τιμή αγοράς',
     positionMixCopy: 'Τρέχουσα έκθεση ομαδοποιημένη ανά κατηγορία.',
     detailCopy: 'Pricing, πηγές και λογική επίλυσης για αυτή την αγορά.',
     ticketYes: 'Αγορά YES',
     ticketNo: 'Αγορά NO',
-    chartTitle: 'Indicative odds chart',
-    chartCopy: 'Ενδεικτική διαδρομή πιθανότητας YES στα τελευταία επτά ημερήσια demo marks.',
+    chartTitle: 'Ιστορικό τιμής',
+    chartCopy: 'Ενδεικτική διαδρομή τιμής αγοράς στα πρόσφατα demo marks.',
     chartNow: 'Τώρα',
     chartStart: '7 updates πριν',
     chartFrameLabel: 'YES probability framing',
@@ -369,15 +384,16 @@ const copy = {
     chartMoveSupport: 'Σε σχέση με το προηγούμενο board mark',
     chartAxisProbability: 'Πιθανότητα',
     chartFootnote: 'Ενδεικτικό chart μόνο για demo review. Το resolution συνεχίζει να ακολουθεί την ονομασμένη ιεραρχία πηγών.',
-    gateEyebrow: 'Private tester access',
-    gateTitle: 'Μπες στο room',
-    gateCopy: 'Ένα private preview ελληνικής αγοράς προβλέψεων, χτισμένο γύρω από alternative event pricing σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καθημερινά σήματα.',
+    ticketToWin: 'Κέρδος',
+    gateEyebrow: 'Private access',
+    gateTitle: 'Άνοιγμα αγορών',
+    gateCopy: 'Greece-first board αγορών προβλέψεων σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καιρό.',
     gateNameLabel: 'Όνομα tester',
     gateNamePlaceholder: 'Προαιρετικό, φαίνεται μόνο τοπικά',
     gateCodeLabel: 'Access code',
     gateCodePlaceholder: 'Βάλε το shared code',
-    gateUnlock: 'Ξεκλείδωμα board',
-    gateHint: 'Το demo είναι local-only. Η πρόσβαση αποθηκεύεται σε αυτόν τον browser.',
+    gateUnlock: 'Ξεκλείδωμα αγορών',
+    gateHint: 'Η πρόσβαση είναι local-only και αποθηκεύεται σε αυτόν τον browser.',
     gatePoint1: '39 live αγορές σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και καιρό',
     gatePoint2: 'EUR-supported ticketing σχεδιασμένο να θυμίζει πιο πολύ πραγματικό consumer product',
     gatePoint3: 'Greek-first market mix για πιο καθαρό private walkthrough',
@@ -433,8 +449,8 @@ const MARKETS = [
       el: 'Θα τυπώσει ο πληθωρισμός ΔΤΚ της Ελλάδας για τον Μάρτιο 2026 πάνω από 2,5% σε ετήσια βάση;'
     },
     summary: {
-      en: 'Flagship macro market with a simple threshold and a very legible investor story.',
-      el: 'Flagship macro αγορά με απλό threshold και πολύ καθαρό investor story.'
+      en: 'Lead macro market with a simple threshold and a very legible investor story.',
+      el: 'Lead macro αγορά με απλό threshold και πολύ καθαρό investor story.'
     },
     resolution: {
       en: 'YES if ELSTAT reports annual CPI inflation above 2.5% for March 2026. NO otherwise.',
@@ -505,8 +521,8 @@ const MARKETS = [
       el: 'Θα είναι θετική η πραγματική αύξηση ΑΕΠ της Ελλάδας στο Q1 2026 σε ετήσια βάση;'
     },
     summary: {
-      en: 'A longer-dated flagship market that helps the board feel like a real series instead of a one-off listing.',
-      el: 'Πιο μακρινή flagship αγορά που κάνει το board να μοιάζει με πραγματική σειρά και όχι με μεμονωμένο listing.'
+      en: 'A longer-dated market that helps the board feel like a real series instead of a one-off listing.',
+      el: 'Πιο μακρινή αγορά που κάνει το board να μοιάζει με πραγματική σειρά και όχι με μεμονωμένο listing.'
     },
     resolution: {
       en: 'YES if ELSTAT reports positive year-on-year real GDP growth for Q1 2026.',
@@ -1388,8 +1404,8 @@ const MARKETS = [
       el: 'YES αν η επίσημη ημερήσια μέγιστη θερμοκρασία για τον ονομασμένο σταθμό πόλης της Αθήνας ανέβει πάνω από 43,0°C σε οποιαδήποτε ημέρα από 1 Ιουνίου έως 31 Αυγούστου 2026. NO διαφορετικά.'
     },
     why: {
-      en: 'It is locally intuitive, high-signal for Greeks, and visually strong enough to deserve flagship weather placement.',
-      el: 'Είναι τοπικά διαισθητικό, high-signal για την Ελλάδα και αρκετά δυνατό οπτικά ώστε να αξίζει flagship θέση στον καιρό.'
+      en: 'It is locally intuitive, high-signal for Greeks, and strong enough to anchor the weather category.',
+      el: 'Είναι τοπικά διαισθητικό, high-signal για την Ελλάδα και αρκετά δυνατό ώστε να αγκυρώνει την κατηγορία καιρού.'
     },
     primarySource: 'National Observatory Athens city station daily maximum temperature',
     fallbackSource: 'Hellenic National Meteorological Service Athens daily bulletin'
@@ -1526,8 +1542,8 @@ const MARKETS = [
       el: 'Θα ξεπεράσουν οι διεθνείς τουριστικές αφίξεις της Ελλάδας το 2026 το σύνολο του 2025;'
     },
     summary: {
-      en: 'A longer-duration Greek demand market that gives the flagship shelf a full-season arc.',
-      el: 'Αγορά μεγαλύτερης διάρκειας πάνω στην ελληνική ζήτηση που δίνει full-season τόξο στο flagship shelf.'
+      en: 'A longer-duration Greek demand market that gives the category a full-season arc.',
+      el: 'Αγορά μεγαλύτερης διάρκειας πάνω στην ελληνική ζήτηση που δίνει full-season τόξο στην κατηγορία.'
     },
     resolution: {
       en: 'YES if the official full-year 2026 total for international tourist arrivals in Greece is higher than the official full-year 2025 total. NO otherwise.',
@@ -1673,8 +1689,8 @@ const MARKETS = [
       el: 'Θα κατακτήσει ο Παναθηναϊκός τον τίτλο της Greek Basket League 2025-26;'
     },
     summary: {
-      en: 'A flagship local-sports market that makes the sports shelf feel built for Greece first.',
-      el: 'Flagship local-sports αγορά που κάνει το sports shelf να μοιάζει χτισμένο πρώτα για την Ελλάδα.'
+      en: 'A local-sports market that makes the sports slate feel built for Greece first.',
+      el: 'Local-sports αγορά που κάνει το sports slate να μοιάζει χτισμένο πρώτα για την Ελλάδα.'
     },
     resolution: {
       en: 'YES if Panathinaikos is the official 2025-26 Greek Basket League champion.',
@@ -1838,6 +1854,7 @@ const MARKETS = [
 const HERO_SURFACED_COUNT = 1;
 const FLAGSHIP_SURFACED_COUNT = 4;
 const UPPER_SURFACED_COUNT = HERO_SURFACED_COUNT + FLAGSHIP_SURFACED_COUNT;
+const FEATURED_MARKET_COUNT = 3;
 
 const SEED_TRANSACTION_BLUEPRINTS = [
   { id: 'seed-1', minutesAgo: 46 * 60, marketId: 'MAC-01', action: 'buy', side: 'yes', qty: 1600, price: 0.58 },
@@ -1870,6 +1887,7 @@ const app = document.querySelector('#app');
 
 window.addEventListener('hashchange', render);
 document.addEventListener('click', handleClick);
+document.addEventListener('keydown', handleKeydown);
 document.addEventListener('input', handleInput);
 document.addEventListener('submit', handleSubmit);
 
@@ -1892,7 +1910,7 @@ function createUiState() {
   return {
     search: '',
     filter: 'all',
-    sort: 'featured',
+    sort: 'volume',
     tradeAction: 'buy',
     tradeSide: 'yes',
     tradeAmount: 100,
@@ -1935,6 +1953,7 @@ function t(key) {
 function getRoute() {
   const raw = window.location.hash.replace(/^#\/?/, '');
   if (!raw || raw === 'markets') return { name: 'markets' };
+  if (raw === 'desk') return { name: 'desk' };
   if (raw === 'portfolio') return { name: 'portfolio' };
   if (raw.startsWith('market/')) return { name: 'market', id: raw.split('/')[1] };
   return { name: 'markets' };
@@ -2171,7 +2190,7 @@ function getRegularSurfacedMarkets() {
 
 function getFilteredMarkets() {
   const query = uiState.search.trim().toLowerCase();
-  const filtered = getRegularSurfacedMarkets().filter((market) => {
+  const filtered = getSurfacedMarkets().filter((market) => {
     if (uiState.filter !== 'all' && market.categoryKey !== uiState.filter) return false;
     if (!query) return true;
     const haystack = [
@@ -2195,12 +2214,17 @@ function getFilteredMarkets() {
   });
 
   filtered.sort((a, b) => {
+    if (uiState.sort === 'featured') return Number(b.featured) - Number(a.featured) || b.volume - a.volume;
     if (uiState.sort === 'volume') return b.volume - a.volume;
     if (uiState.sort === 'closing') return new Date(a.closeDate) - new Date(b.closeDate);
     return b.volume - a.volume;
   });
 
   return filtered;
+}
+
+function getFeaturedMarkets(limit = FEATURED_MARKET_COUNT) {
+  return getUpperSurfacedMarkets(limit);
 }
 
 function getFlagshipMarkets(limit = FLAGSHIP_SURFACED_COUNT) {
@@ -2296,7 +2320,7 @@ function buildIndicativeSeries(market) {
 
   for (let index = 0; index < 8; index += 1) {
     const progress = index / 7;
-    const wobble = Math.sin(progress * Math.PI * 2 + seed / 37) * 4 + Math.cos(progress * Math.PI * 3 + seed / 19) * 1.7;
+    const wobble = Math.sin(progress * Math.PI * 1.6 + seed / 37) * 2.2 + Math.cos(progress * Math.PI * 2.4 + seed / 19) * 0.9;
     const drift = (market.probability - start) * progress;
     const value = clamp(start + drift + wobble, 10, 90);
     series.push(Math.round(value));
@@ -2309,6 +2333,22 @@ function buildIndicativeSeries(market) {
 function buildIndicativeTimeline(count) {
   const anchor = Date.now();
   return Array.from({ length: count }, (_, index) => new Date(anchor - (count - 1 - index) * 24 * 60 * 60 * 1000));
+}
+
+function buildSmoothPath(points) {
+  if (!points.length) return '';
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+
+  let path = `M ${points[0].x} ${points[0].y}`;
+
+  for (let index = 1; index < points.length; index += 1) {
+    const previous = points[index - 1];
+    const point = points[index];
+    const midX = (previous.x + point.x) / 2;
+    path += ` C ${midX} ${previous.y}, ${midX} ${point.y}, ${point.x} ${point.y}`;
+  }
+
+  return path;
 }
 
 function buildMovers(limit = 5) {
@@ -2545,7 +2585,6 @@ function render() {
   const route = getRoute();
   const portfolio = buildPortfolio(appState.transactions);
   const currentMarket = route.name === 'market' ? getMarket(route.id) : getFeaturedMarket();
-  const showHero = route.name === 'markets';
 
   if (!appState.access?.granted) {
     app.innerHTML = `${renderAccessGate()}${renderToasts()}`;
@@ -2555,11 +2594,17 @@ function render() {
   app.innerHTML = `
     <div class="shell">
       ${renderTopbar(route)}
-      ${showHero ? renderHero(portfolio) : ''}
-      ${route.name === 'portfolio' ? renderPortfolioPage(portfolio) : route.name === 'market' ? renderMarketDetailPage(currentMarket, portfolio) : renderBoardPage(portfolio)}
+      ${
+        route.name === 'portfolio'
+          ? renderPortfolioPage(portfolio)
+          : route.name === 'market'
+            ? renderMarketDetailPage(currentMarket, portfolio)
+            : route.name === 'desk'
+              ? renderDeskPage()
+              : renderBoardPage(portfolio)
+      }
       <footer class="footer-note">${t('footer')}</footer>
     </div>
-    ${!appState.onboardingSeen ? renderOnboardingOverlay() : ''}
     ${renderToasts()}
   `;
 }
@@ -2641,24 +2686,23 @@ function renderOnboardingOverlay() {
 }
 
 function renderTopbar(route) {
+  const isMarketsRoute = route.name === 'markets' || route.name === 'market';
   return `
     <header class="topbar">
-      <div class="brand">
+      <a class="brand" href="#/markets" aria-label="${t('navMarkets')}">
         <div class="brand-mark">xyz</div>
         <div class="brand-copy">
           <strong>${t('appTitle')}</strong>
           <span>${t('appSubtitle')}</span>
         </div>
+      </a>
+      <div class="nav-switch">
+        <button class="${isMarketsRoute ? 'active' : ''}" data-nav="markets">${t('navMarkets')}</button>
+        <button class="${route.name === 'desk' ? 'active' : ''}" data-nav="desk">${t('navDesk')}</button>
+        <button class="${route.name === 'portfolio' ? 'active' : ''}" data-nav="portfolio">${t('navPortfolio')}</button>
       </div>
       <div class="topbar-actions">
-        <span class="topbar-badge live-badge"><span class="live-dot"></span>${t('privateBeta')}</span>
-        <span class="topbar-badge version-badge">${APP_VERSION}</span>
-        <span class="topbar-badge">${escapeHtml(getTesterName())}</span>
-        <span class="topbar-badge">${t('sandbox')}</span>
-        <div class="nav-switch">
-          <button class="${route.name !== 'portfolio' ? 'active' : ''}" data-nav="markets">${t('navMarkets')}</button>
-          <button class="${route.name === 'portfolio' ? 'active' : ''}" data-nav="portfolio">${t('navPortfolio')}</button>
-        </div>
+        <span class="topbar-badge topbar-status"><span class="live-dot"></span>${t('privateBeta')} · ${APP_VERSION}</span>
         <div class="lang-switch" aria-label="Language switch">
           <button class="${appState.language === 'en' ? 'active' : ''}" data-lang="en">EN</button>
           <button class="${appState.language === 'el' ? 'active' : ''}" data-lang="el">ΕΛ</button>
@@ -2671,31 +2715,22 @@ function renderTopbar(route) {
 function renderHero(portfolio) {
   const featured = getFeaturedMarket();
   const featuredSignal = getLiveSignal(featured);
-  const tape = buildLiveTape(3);
   const metrics = getBoardMetrics();
   return `
     <section class="hero-grid">
-      <article class="hero-panel" style="background:${featured.poster.gradient};">
-        ${renderPosterArt(featured, 'hero')}
+      <article class="hero-panel">
         <div class="hero-overlay">
           <div class="hero-copy-cluster">
             <div class="hero-copy hero-copy-clean">
               <span class="eyebrow">${t('heroEyebrow')}</span>
               <h1>${t('productIdentity')}</h1>
-              <p class="hero-subcopy">${t('heroFlagshipCopy')}</p>
-            </div>
-            <div class="hero-brief">
-              <small>${t('liveBoard')}</small>
-              <strong>${t('flagshipLane')}</strong>
-              <p>${t('flagshipLaneCopy')}</p>
             </div>
             <div class="live-ribbon">
-              <span class="ghost-pill"><span class="live-dot light"></span>${t('heroLiveBadge')}</span>
               <span class="ghost-pill">${t('testerLane')}: ${metrics.testerCount}</span>
               <span class="ghost-pill">${t('flowLastHour')}: ${formatCurrency(metrics.recentFlow)}</span>
             </div>
           </div>
-          <div class="hero-feature-card">
+          <div class="hero-feature-card" data-category="${featured.categoryKey}">
             <div class="hero-feature-top">
               <div class="pill-row">
                 <span class="status-pill ${featured.status}">${getStatusLabel(featured.status)}</span>
@@ -2725,32 +2760,7 @@ function renderHero(portfolio) {
               <span class="feature-stat-pill">${t('liveFlow')} <strong>${featuredSignal.flowSide === 'yes' ? t('yes') : t('no')} ${formatCurrency(featuredSignal.flowEur)}</strong></span>
               <span class="feature-stat-pill">${t('liveWatchers')} <strong>${featuredSignal.watchers}</strong></span>
             </div>
-            <div class="mini-tape">
-              ${tape.map((item) => `<span class="mini-tape-item">${getLiveTapeInline(item)}</span>`).join('')}
-            </div>
           </div>
-        </div>
-        <div class="hero-panel-footer">
-          <article class="stat-card odds-stat-card">
-            <small>${t('statLiveOdds')}</small>
-            ${renderProbabilityPair(featured, 'compact on-dark')}
-            <span>${featured.question[appState.language]}</span>
-          </article>
-          <article class="stat-card">
-            <small>${t('statTotalVolume')}</small>
-            <strong>${formatCurrency(metrics.totalVolume)}</strong>
-            <span>${metrics.totalMarkets} ${t('liveSlate').toLowerCase()}</span>
-          </article>
-          <article class="stat-card">
-            <small>${t('statCash')}</small>
-            <strong>${formatCurrency(portfolio.cash)}</strong>
-            <span>${t('availableCash')}</span>
-          </article>
-          <article class="stat-card">
-            <small>${t('heroPulse')}</small>
-            <strong>${formatCurrency(metrics.recentFlow)}</strong>
-            <span>${t('heroPulseCopy')}</span>
-          </article>
         </div>
       </article>
     </section>
@@ -2761,13 +2771,13 @@ function renderFlagshipLane(markets) {
   if (!markets.length) return '';
   return `
     <section class="featured-lane">
-      <div class="surface-header compact-header featured-lane-header">
-        <div>
-          <h3>${t('flagshipLane')}</h3>
-          <p>${t('flagshipLaneCopy')}</p>
+      <div class="board-section-head featured-lane-header">
+        <h2>${t('featuredMarketsTitle')}</h2>
+        <div class="board-results-meta">
+          <span class="ghost-pill board-result-pill">${markets.length} ${t('liveSlate').toLowerCase()}</span>
         </div>
       </div>
-      <div class="featured-lane-grid">
+      <div class="featured-lane-grid featured-lane-grid-clean">
         ${markets.map((market, index) => renderFlagshipCard(market, index)).join('')}
       </div>
     </section>
@@ -2777,42 +2787,33 @@ function renderFlagshipLane(markets) {
 function renderFlagshipCard(market, index) {
   const signal = getLiveSignal(market);
   return `
-    <button class="featured-strip-card ${index === 0 ? 'primary' : ''}" data-open-market="${market.id}" style="background:${market.poster.gradient};">
-      ${renderPosterArt(market)}
-      <div class="featured-strip-overlay">
-        <div class="featured-strip-top">
-          <div class="featured-strip-pill-row">
-            <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
-            <span class="ghost-pill">${t('cardFeatured')}</span>
-          </div>
-          <span class="featured-strip-time">${formatRelativeMinutes(signal.updatedMin)}</span>
+    <button class="featured-strip-card featured-strip-card-clean ${index === 0 ? 'primary' : ''}" data-open-market="${market.id}" data-category="${market.categoryKey}">
+      <div class="market-card-accent"></div>
+      <div class="featured-strip-top featured-strip-top-clean">
+        <div class="card-kickers">
+          <span class="soft-pill category-pill">${getCategoryLabel(market.categoryKey)}</span>
+          <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
         </div>
-        <div class="featured-strip-body">
-          <small>${market.poster.eyebrow[appState.language]}</small>
-          <strong>${market.question[appState.language]}</strong>
-        </div>
-        <div class="featured-strip-footer">
-          <div class="featured-strip-odds">
-            ${renderProbabilityPair(market, 'compact on-dark')}
-          </div>
-          <div class="featured-strip-metrics">
-            <span>
-              <small>${t('dayChange')}</small>
-              <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
-            </span>
-            <span>
-              <small>${t('liveFlow')}</small>
-              <strong>${signal.flowSide === 'yes' ? t('yes') : t('no')} ${formatCurrency(signal.flowEur)}</strong>
-            </span>
-            <span>
-              <small>${t('liveWatchers')}</small>
-              <strong>${signal.watchers}</strong>
-            </span>
-          </div>
-          <div class="featured-strip-actions">
-            <span class="ghost-pill">${getCategoryLabel(market.categoryKey)}</span>
-            <span class="featured-strip-link">${t('openMarket')} →</span>
-          </div>
+        <span class="ghost-pill market-id-pill">${market.id}</span>
+      </div>
+      <div class="featured-strip-body featured-strip-body-clean">
+        <strong>${market.question[appState.language]}</strong>
+      </div>
+      <div class="featured-strip-footer featured-strip-footer-clean">
+        ${renderProbabilityPair(market, 'compact')}
+        <div class="featured-strip-metrics featured-strip-metrics-clean">
+          <span>
+            <small>${t('volume')}</small>
+            <strong>${formatCurrency(market.volume)}</strong>
+          </span>
+          <span>
+            <small>${t('close')}</small>
+            <strong>${formatDate(market.closeDate)}</strong>
+          </span>
+          <span>
+            <small>${t('liveUpdated')}</small>
+            <strong>${formatRelativeMinutes(signal.updatedMin)}</strong>
+          </span>
         </div>
       </div>
     </button>
@@ -2821,118 +2822,180 @@ function renderFlagshipCard(market, index) {
 
 function renderBoardPage(portfolio) {
   const filteredMarkets = getFilteredMarkets();
-  const metrics = getBoardMetrics();
-  const flagshipMarkets = getFlagshipMarkets(FLAGSHIP_SURFACED_COUNT);
-  const showFlagshipLane = uiState.filter === 'all' && !uiState.search.trim() && flagshipMarkets.length;
+  const flagshipMarkets = getFlagshipMarkets();
+  const activeFilterLabel = uiState.filter === 'all' ? t('filterAll') : getCategoryLabel(uiState.filter);
   return `
-    <section class="page-grid board-layout">
-      <article class="surface board-surface">
-        <div class="surface-header">
+    <section class="page-grid board-layout board-layout-clean">
+      <div class="board-flow-shell">
+        ${renderHero(portfolio)}
+        ${renderFlagshipLane(flagshipMarkets)}
+        <article class="surface board-surface board-surface-clean">
+          <div class="board-results-head board-results-head-top">
+            <div>
+              <h2>${t('allMarketsTitle')}</h2>
+            </div>
+            <div class="board-results-meta">
+              <span class="soft-pill board-result-pill">${activeFilterLabel}</span>
+              <span class="ghost-pill board-result-pill">${filteredMarkets.length} ${t('liveSlate').toLowerCase()}</span>
+            </div>
+          </div>
+
+          <section class="board-toolbar">
+            <div class="toolbar-group toolbar-group-categories">
+              <span class="toolbar-label">${t('filtersLabel')}</span>
+              <div class="category-filter-bar">
+                <button class="${uiState.filter === 'all' ? 'active' : ''}" data-filter="all">${t('filterAll')}</button>
+                ${Object.entries(CATEGORY_LABELS)
+                  .map(
+                    ([key, label]) =>
+                      `<button class="${uiState.filter === key ? 'active' : ''}" data-filter="${key}">${label[appState.language]}</button>`
+                  )
+                  .join('')}
+              </div>
+            </div>
+            <label class="search-input board-search-input">
+              <span>⌕</span>
+              <input type="search" value="${escapeHtml(uiState.search)}" data-field="search" placeholder="${t('searchPlaceholder')}" />
+            </label>
+          </section>
+
+          <div class="market-grid market-grid-clean">
+            ${
+              filteredMarkets.length
+                ? filteredMarkets.map((market) => renderMarketCard(market, portfolio)).join('')
+                : `<div class="empty-state"><strong>${t('noResultsTitle')}</strong><span>${t('noResultsBody')}</span></div>`
+            }
+          </div>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function renderMarketOddsBlocks(market) {
+  return `
+    <div class="market-odds-grid">
+      <div class="odds-slab yes">
+        <div class="odds-slab-head">
+          <span>${t('yes')}</span>
+        </div>
+        <strong>${formatPercent(getChance(market, 'yes'))}</strong>
+      </div>
+      <div class="odds-slab no">
+        <div class="odds-slab-head">
+          <span>${t('no')}</span>
+        </div>
+        <strong>${formatPercent(getChance(market, 'no'))}</strong>
+      </div>
+    </div>
+  `;
+}
+
+function renderMarketMetaLine(market, signal) {
+  return `
+    <div class="market-meta-line">
+      <span>${t('close')} <strong>${formatDate(market.closeDate)}</strong></span>
+      <span>${t('volume')} <strong>${formatCurrency(market.volume)}</strong></span>
+      <span>${t('liveUpdated')} <strong>${formatRelativeMinutes(signal.updatedMin)}</strong></span>
+    </div>
+  `;
+}
+
+function renderHeldLine(heldYes, heldNo) {
+  if (!heldYes && !heldNo) return '<div class="held-row held-row-empty"></div>';
+  return `
+    <div class="held-row">
+      ${heldYes ? `<span class="held-pill">${t('held')} ${t('yes')}: ${formatQuantity(heldYes)}</span>` : ''}
+      ${heldNo ? `<span class="held-pill">${t('held')} ${t('no')}: ${formatQuantity(heldNo)}</span>` : ''}
+    </div>
+  `;
+}
+
+function renderFeaturedMarketCard(market, portfolio) {
+  const signal = getLiveSignal(market);
+  const heldYes = getHeldQty(portfolio, market.id, 'yes');
+  const heldNo = getHeldQty(portfolio, market.id, 'no');
+  return `
+    <article class="featured-market-card" data-category="${market.categoryKey}">
+      <div class="featured-market-top">
+        <div class="card-kickers">
+          <span class="soft-pill category-pill">${getCategoryLabel(market.categoryKey)}</span>
+          <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
+        </div>
+        <span class="ghost-pill market-id-pill">${market.id}</span>
+      </div>
+      <div class="featured-market-copy">
+        <h3>${market.question[appState.language]}</h3>
+      </div>
+      ${renderMarketOddsBlocks(market)}
+      ${renderMarketMetaLine(market, signal)}
+      <div class="card-actions compact-card-actions">
+        ${renderHeldLine(heldYes, heldNo)}
+        <button class="secondary" data-open-market="${market.id}">${t('openMarket')}</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderDeskPage() {
+  const metrics = getBoardMetrics();
+  return `
+    <section class="page-grid desk-layout">
+      <article class="surface desk-surface">
+        <div class="board-intro">
           <div>
-            <h2>${t('boardTitle')}</h2>
-            <p>${t('boardCopy')}</p>
-          </div>
-          <div class="metric-pills">
-            <span class="metric-pill"><strong>${metrics.totalMarkets}</strong>${t('liveSlate')}</span>
-            <span class="metric-pill"><strong>${metrics.closingSoon}</strong>${t('closingSoon')}</span>
-            <span class="metric-pill"><strong>${formatCurrency(metrics.totalVolume)}</strong>${t('volume')}</span>
+            <h1>${t('deskTitle')}</h1>
+            <p>${t('deskCopy')}</p>
           </div>
         </div>
-
-        <div class="live-note-banner">
-          <span class="live-dot"></span>
-          <strong>${t('privateBeta')}</strong>
-          <span>${t('boardLiveNote')}</span>
+        <div class="desk-metric-grid">
+          <article class="desk-metric-card">
+            <small>${t('liveSlate')}</small>
+            <strong>${metrics.totalMarkets}</strong>
+          </article>
+          <article class="desk-metric-card">
+            <small>${t('closingSoon')}</small>
+            <strong>${metrics.closingSoon}</strong>
+          </article>
+          <article class="desk-metric-card">
+            <small>${t('flowLastHour')}</small>
+            <strong>${formatCurrency(metrics.recentFlow)}</strong>
+          </article>
+          <article class="desk-metric-card">
+            <small>${t('testerLane')}</small>
+            <strong>${metrics.testerCount}</strong>
+          </article>
         </div>
-
-        <div class="filter-shell">
-          <label class="search-input">
-            <span>⌕</span>
-            <input type="search" value="${escapeHtml(uiState.search)}" data-field="search" placeholder="${t('searchPlaceholder')}" />
-          </label>
-
-          <div class="toolbar-group">
-            <span class="toolbar-label">${t('filtersLabel')}</span>
-            <div class="pill-toggle">
-              <button class="${uiState.filter === 'all' ? 'active' : ''}" data-filter="all">${t('filterAll')}</button>
-              ${Object.entries(CATEGORY_LABELS)
-                .map(
-                  ([key, label]) =>
-                    `<button class="${uiState.filter === key ? 'active' : ''}" data-filter="${key}">${label[appState.language]}</button>`
-                )
-                .join('')}
+        <div class="desk-grid">
+          <article class="surface desk-panel">
+            <div class="surface-header compact-header">
+              <div>
+                <h3>${t('moversTitle')}</h3>
+                <p>${t('moversCopy')}</p>
+              </div>
             </div>
-          </div>
-
-          <div class="toolbar-group">
-            <span class="toolbar-label">${t('sortLabel')}</span>
-            <div class="segmented compact">
-              <button class="${uiState.sort === 'featured' ? 'active' : ''}" data-sort="featured">${t('sortFeatured')}</button>
-              <button class="${uiState.sort === 'volume' ? 'active' : ''}" data-sort="volume">${t('sortVolume')}</button>
-              <button class="${uiState.sort === 'closing' ? 'active' : ''}" data-sort="closing">${t('sortClosing')}</button>
+            ${renderMoversList()}
+          </article>
+          <article class="surface desk-panel">
+            <div class="surface-header compact-header">
+              <div>
+                <h3>${t('liveTape')}</h3>
+                <p>${t('liveTapeCopy')}</p>
+              </div>
             </div>
-          </div>
-        </div>
-
-        ${showFlagshipLane ? renderFlagshipLane(flagshipMarkets) : ''}
-
-        <div class="market-grid">
-          ${
-            filteredMarkets.length
-              ? filteredMarkets.map((market) => renderMarketCard(market, portfolio)).join('')
-              : `<div class="empty-state"><strong>${t('noResultsTitle')}</strong><span>${t('noResultsBody')}</span></div>`
-          }
+            ${renderLiveTapeList(buildLiveTape(10))}
+          </article>
+          <article class="surface desk-panel">
+            <div class="surface-header compact-header">
+              <div>
+                <h3>${t('recentActivity')}</h3>
+                <p>${t('recentActivityCopy')}</p>
+              </div>
+            </div>
+            ${renderActivityList(10)}
+          </article>
         </div>
       </article>
-
-      <aside class="side-rail">
-        <article class="surface dark-surface">
-          <div class="surface-header compact-header">
-            <div>
-              <h3>${t('marketPulse')}</h3>
-              <p>${t('heroPulseCopy')}</p>
-            </div>
-          </div>
-          <div class="pulse-grid">
-            <div class="pulse-card">
-              <small>${t('liveSlate')}</small>
-              <strong>${metrics.totalMarkets}</strong>
-            </div>
-            <div class="pulse-card">
-              <small>${t('closingSoon')}</small>
-              <strong>${metrics.closingSoon}</strong>
-            </div>
-            <div class="pulse-card">
-              <small>${t('flowLastHour')}</small>
-              <strong>${formatCurrency(metrics.recentFlow)}</strong>
-            </div>
-            <div class="pulse-card">
-              <small>${t('testerLane')}</small>
-              <strong>${metrics.testerCount}</strong>
-            </div>
-          </div>
-        </article>
-
-        <article class="surface">
-          <div class="surface-header compact-header">
-            <div>
-              <h3>${t('moversTitle')}</h3>
-              <p>${t('moversCopy')}</p>
-            </div>
-          </div>
-          ${renderMoversList()}
-        </article>
-
-        <article class="surface">
-          <div class="surface-header compact-header">
-            <div>
-              <h3>${t('liveTape')}</h3>
-              <p>${t('liveTapeCopy')}</p>
-            </div>
-          </div>
-          ${renderLiveTapeList(buildLiveTape(7))}
-        </article>
-      </aside>
     </section>
   `;
 }
@@ -2956,74 +3019,26 @@ function renderMarketCard(market, portfolio) {
   const heldNo = getHeldQty(portfolio, market.id, 'no');
   const signal = getLiveSignal(market);
   return `
-    <article class="market-card ${market.featured ? 'featured-card' : ''}">
-      <div class="market-poster" style="background:${market.poster.gradient};">
-        ${renderPosterArt(market)}
-        <div class="poster-top">
-          <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
-          <span class="ghost-pill">${market.id}</span>
-        </div>
-        <div class="poster-body">
-          <small>${market.poster.eyebrow[appState.language]}</small>
-          <strong>${market.poster.label[appState.language]}</strong>
-        </div>
-        <div class="poster-icon">${market.poster.emoji}</div>
-      </div>
-      <div class="market-card-body">
-        <div class="market-card-head">
+    <article class="market-card market-card-clean market-card-link ${market.featured ? 'featured-card' : ''}" data-category="${market.categoryKey}" data-open-market="${market.id}" role="link" tabindex="0" aria-label="${escapeHtml(market.question[appState.language])}">
+      <div class="market-card-accent"></div>
+      <div class="market-card-body clean-market-card-body">
+        <div class="market-card-head market-card-head-clean">
           <div class="card-kickers">
-            <span class="soft-pill">${getCategoryLabel(market.categoryKey)}</span>
-            ${market.featured ? `<span class="soft-pill featured-soft-pill">${t('cardFeatured')}</span>` : ''}
-            <span class="soft-pill live-soft-pill"><span class="live-dot"></span>${formatRelativeMinutes(signal.updatedMin)}</span>
+            <span class="soft-pill category-pill">${getCategoryLabel(market.categoryKey)}</span>
+            <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
           </div>
-          <div class="market-card-lead">
-            <div>
-              <h3>${market.question[appState.language]}</h3>
-            </div>
-            <div class="market-card-change ${market.change >= 0 ? 'positive' : 'negative'}">
-              <small>${t('dayChange')}</small>
-              <strong>${formatProbabilityDelta(market.change)}</strong>
-            </div>
-          </div>
+          <span class="ghost-pill market-id-pill">${market.id}</span>
         </div>
 
-        <div class="odds-grid">
-          <div class="odds-chip yes-chip">
-            <span>${t('yes')}</span>
-            <strong>${formatPercent(getChance(market, 'yes'))}</strong>
-          </div>
-          <div class="odds-chip no-chip">
-            <span>${t('no')}</span>
-            <strong>${formatPercent(getChance(market, 'no'))}</strong>
-          </div>
+        <div class="market-card-copy">
+          <h3>${market.question[appState.language]}</h3>
         </div>
 
-        <div class="market-meta-grid">
-          <div class="market-meta-item">
-            <small>${t('volume')}</small>
-            <strong>${formatCurrency(market.volume)}</strong>
-          </div>
-          <div class="market-meta-item">
-            <small>${t('close')}</small>
-            <strong>${formatDate(market.closeDate)}</strong>
-          </div>
-          <div class="market-meta-item">
-            <small>${t('liveWatchers')}</small>
-            <strong>${signal.watchers}</strong>
-          </div>
-        </div>
+        ${renderMarketOddsBlocks(market)}
+        ${renderMarketMetaLine(market, signal)}
 
-        <div class="live-signal-row">
-          <span><span class="live-dot"></span>${t('liveFlow')}: ${signal.flowSide === 'yes' ? t('yes') : t('no')} ${formatCurrency(signal.flowEur)}</span>
-          <span>${t('testerLane')}: ${signal.activeTesters}</span>
-        </div>
-
-        <div class="card-actions">
-          <div class="held-row">
-            ${heldYes ? `<span class="held-pill">${t('held')} ${t('yes')}: ${formatQuantity(heldYes)}</span>` : ''}
-            ${heldNo ? `<span class="held-pill">${t('held')} ${t('no')}: ${formatQuantity(heldNo)}</span>` : ''}
-          </div>
-          <button class="secondary" data-open-market="${market.id}">${t('openMarket')}</button>
+        <div class="card-actions clean-card-actions">
+          ${renderHeldLine(heldYes, heldNo)}
         </div>
       </div>
     </article>
@@ -3039,76 +3054,70 @@ function renderTicketSupportStat(label, value) {
   `;
 }
 
+function buildTicketOutcomeNote(preview) {
+  if (preview.action === 'buy') {
+    return appState.language === 'el'
+      ? `Αν βγει ${preview.selectedLabel}, η συνολική επιστροφή είναι ${formatCurrency(preview.grossPayout)}.`
+      : `If ${preview.selectedLabel} resolves, total return is ${formatCurrency(preview.grossPayout)}.`;
+  }
+
+  return appState.language === 'el'
+    ? `${formatQuantity(preview.remainingQty)} contracts μένουν μετά την πώληση.`
+    : `${formatQuantity(preview.remainingQty)} contracts remain after the sale.`;
+}
+
 function renderMarketDetailPage(market, portfolio) {
   const preview = buildTradePreview(market, portfolio);
   const pack = buildResolutionPack(market);
+  const signal = getLiveSignal(market);
+  const outcomeLabel = preview.action === 'buy' ? t('ticketToWin') : t('ticketReceiveNow');
+  const outcomeValue = preview.action === 'buy' ? formatCurrency(preview.netIfCorrect) : formatCurrency(preview.total);
   return `
-    <section class="page-grid detail-layout">
-      <article class="surface detail-surface detail-surface-minimal">
-        <button class="ghost linkish" data-nav="markets">← ${t('detailBack')}</button>
+    <section class="page-grid detail-layout detail-layout-v0860" data-category="${market.categoryKey}">
+      <article class="surface detail-surface detail-surface-v0860">
+        <button class="ghost linkish detail-back-button" data-nav="markets">← ${t('detailBack')}</button>
 
-        <div class="detail-hero detail-hero-minimal">
-          <div class="detail-copy-wrap detail-copy-wrap-minimal">
-            <div class="card-kickers">
-              <span class="soft-pill">${getCategoryLabel(market.categoryKey)}</span>
-              <span class="soft-pill live-soft-pill"><span class="live-dot"></span>${formatRelativeMinutes(getLiveSignal(market).updatedMin)}</span>
+        <header class="detail-title-shell">
+          <div class="detail-title-meta-row">
+            <span class="soft-pill">${getCategoryLabel(market.categoryKey)}</span>
+            <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
+            <span class="soft-pill live-soft-pill"><span class="live-dot"></span>${formatRelativeMinutes(signal.updatedMin)}</span>
+          </div>
+          <h1>${market.question[appState.language]}</h1>
+          <div class="detail-market-strip">
+            <div class="detail-market-strip-primary">
+              <small>${t('shareQuote')}</small>
+              <strong>${formatPercent(market.probability)}</strong>
+              <span>${appState.language === 'el' ? 'τελευταίο board mark' : 'latest board mark'}</span>
             </div>
-            <div class="detail-heading-block">
-              <h2>${market.question[appState.language]}</h2>
-              <p>${market.summary[appState.language]}</p>
+            <div class="detail-market-strip-stat">
+              <small>${t('dayChange')}</small>
+              <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
             </div>
-            <div class="detail-primary-stats">
-              <div class="detail-stat-panel detail-stat-panel-probability">
-                <small>${t('shareQuote')}</small>
-                ${renderProbabilityPair(market, 'compact')}
-              </div>
-              <div class="detail-stat-panel">
-                <small>${t('dayChange')}</small>
-                <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
-              </div>
-              <div class="detail-stat-panel">
-                <small>${t('volume')}</small>
-                <strong>${formatCurrency(market.volume)}</strong>
-              </div>
-              <div class="detail-stat-panel">
-                <small>${t('close')}</small>
-                <strong>${formatDateTime(market.closeDate)}</strong>
-              </div>
+            <div class="detail-market-strip-stat">
+              <small>${t('volume')}</small>
+              <strong>${formatCurrency(market.volume)}</strong>
             </div>
-            <div class="detail-trust-inline">
-              <span class="detail-trust-pill detail-trust-pill-strong">${pack.authorityLabel}</span>
-              <span class="detail-trust-pill">${t('resolutionCutoff')}: <strong>${formatDateTime(market.closeDate)}</strong></span>
-              <span class="detail-trust-pill">${t('resolutionSettleTarget')}: <strong>${formatDateTime(market.resolveDate)}</strong></span>
-              <a class="secondary-link secondary-link-quiet" href="${market.sourceLink}" target="_blank" rel="noreferrer">${t('openOfficialSource')}</a>
+            <div class="detail-market-strip-stat">
+              <small>${t('resolutionCutoff')}</small>
+              <strong>${formatDateTime(market.closeDate)}</strong>
             </div>
           </div>
-
-          <div class="detail-market-mark" style="background:${market.poster.gradient};">
-            <div class="detail-market-mark-top">
-              <span class="status-pill ${market.status}">${getStatusLabel(market.status)}</span>
-              <span class="detail-market-mark-id">${market.id}</span>
-            </div>
-            <div class="detail-market-mark-copy">
-              <small>${market.poster.eyebrow[appState.language]}</small>
-              <strong>${market.poster.label[appState.language]}</strong>
-            </div>
-            <div class="detail-market-mark-icon">${market.poster.emoji}</div>
-          </div>
-        </div>
+        </header>
 
         ${renderOddsChartShell(market)}
-        ${renderDetailDisclosureStack(market, preview)}
+        ${renderDetailInfoGrid(market, pack)}
       </article>
 
-      <aside class="side-rail detail-rail">
-        <article class="surface side-rail-surface side-rail-ticket trade-surface">
-          <div class="surface-header compact-header">
+      <aside class="side-rail detail-rail detail-rail-v0860">
+        <article class="surface side-rail-surface side-rail-ticket trade-surface trade-surface-v0860">
+          <div class="detail-ticket-top">
             <div>
+              <span class="detail-ticket-kicker">${uiState.tradeAction === 'buy' ? t('tradeBuy') : t('tradeSell')}</span>
               <h3>${t('tradeTitle')}</h3>
-              <p>${t('tradeCopy')}</p>
             </div>
           </div>
-          <form class="trade-form" data-trade-form="true">
+          <form class="trade-form trade-form-v0860" data-trade-form="true">
             <div>
               <small class="field-label">${t('tradeAction')}</small>
               <div class="segmented full-width trade-action-tabs">
@@ -3124,88 +3133,40 @@ function renderMarketDetailPage(market, portfolio) {
               </div>
             </div>
             <div>
+              <small class="field-label">${t('tradeAmount')}</small>
+              <label class="number-input money-input detail-money-input">
+                <div class="money-field">
+                  <span class="money-prefix">€</span>
+                  <input type="number" min="1" step="1" value="${preview.amount}" data-field="tradeAmount" />
+                </div>
+              </label>
+            </div>
+            <div>
               <small class="field-label">${t('amountPresets')}</small>
-              <div class="trade-preset-row">
+              <div class="trade-preset-row detail-preset-row">
                 ${[50, 100, 250, 500].map((size) => `<button type="button" class="preset-chip ${uiState.tradeAmount === size ? 'active' : ''}" data-trade-amount-preset="${size}">${formatCurrency(size, { maximumFractionDigits: 0 })}</button>`).join('')}
               </div>
             </div>
-            <label class="number-input money-input">
-              <span>${t('tradeAmount')}</span>
-              <div class="money-field">
-                <span class="money-prefix">€</span>
-                <input type="number" min="1" step="1" value="${preview.amount}" data-field="tradeAmount" />
+            <div class="ticket-box ticket-box-v0860">
+              <div class="detail-ticket-outcome ${preview.side}">
+                <small>${outcomeLabel}</small>
+                <strong>${outcomeValue}</strong>
+                <p>${buildTicketOutcomeNote(preview)}</p>
               </div>
-            </label>
-            <div class="ticket-box">
-              <div class="ticket-preview-grid">
-                <div class="ticket-preview-stat">
-                  <small>${t('estimatedTotal')}</small>
-                  <strong>${formatCurrency(preview.total)}</strong>
-                </div>
-                <div class="ticket-preview-stat">
-                  <small>${t('contractPrice')}</small>
-                  <strong>${formatPrice(preview.price)}</strong>
-                </div>
-                <div class="ticket-preview-stat">
-                  <small>${t('estimatedContracts')}</small>
-                  <strong>${formatQuantity(preview.contracts)}</strong>
-                </div>
-              </div>
-              <div>
-                <small class="field-label">${t('ticketIntuition')}</small>
-                <p class="ticket-intuition-copy">${preview.narrative}</p>
-              </div>
-              <div class="scenario-grid">
-                ${
-                  preview.action === 'buy'
-                    ? `
-                      <div class="scenario-card positive-surface">
-                        <small>${t('ticketScenarioWin')}</small>
-                        <strong>${formatCurrency(preview.grossPayout)}</strong>
-                        <span>${t('tradePayout')} · ${formatSignedCurrency(preview.netIfCorrect)} net</span>
-                      </div>
-                      <div class="scenario-card negative-surface">
-                        <small>${t('ticketScenarioLose')}</small>
-                        <strong>${formatCurrency(preview.total)}</strong>
-                        <span>${t('ticketMaxLoss')}</span>
-                      </div>
-                    `
-                    : `
-                      <div class="scenario-card neutral-surface">
-                        <small>${t('ticketReceiveNow')}</small>
-                        <strong>${formatCurrency(preview.total)}</strong>
-                        <span>${t('estimatedContracts')}: ${formatQuantity(preview.contracts)}</span>
-                      </div>
-                      <div class="scenario-card neutral-surface">
-                        <small>${t('ticketRemaining')}</small>
-                        <strong>${formatQuantity(preview.remainingQty)}</strong>
-                        <span>${t('ticketExposureAfter')}: ${formatCurrency(preview.exposureAfter)}</span>
-                      </div>
-                    `
-                }
-              </div>
-              <div class="ticket-support-grid">
-                ${preview.action === 'buy'
-                  ? `${renderTicketSupportStat(t('ticketMaxLoss'), formatCurrency(preview.total))}
-                     ${renderTicketSupportStat(t('availableCash'), formatCurrency(portfolio.cash))}
-                     ${renderTicketSupportStat(t('heldContracts'), formatQuantity(preview.heldQty))}`
-                  : `${renderTicketSupportStat(t('maxSellValue'), formatCurrency(preview.maxSellValue))}
-                     ${renderTicketSupportStat(t('availableCash'), formatCurrency(portfolio.cash))}
-                     ${renderTicketSupportStat(t('heldContracts'), formatQuantity(preview.heldQty))}`}
+              <div class="ticket-support-grid detail-ticket-support-grid">
+                ${renderTicketSupportStat(t('availableCash'), formatCurrency(portfolio.cash))}
+                ${renderTicketSupportStat(t('heldContracts'), formatQuantity(preview.heldQty))}
               </div>
             </div>
-            <button class="cta" type="submit">${uiState.tradeAction === 'buy' ? t('placeTradeBuy') : t('placeTradeSell')}</button>
+            <button class="cta detail-ticket-submit" type="submit">${uiState.tradeAction === 'buy' ? t('tradeBuy') : t('tradeSell')} ${preview.selectedLabel}</button>
           </form>
         </article>
 
-        <article class="surface side-rail-surface side-rail-account">
-          <div class="surface-header compact-header">
-            <div>
-              <h3>${t('accountSnapshot')}</h3>
-              <p>${t('accountCopy')}</p>
-            </div>
+        <article class="surface side-rail-surface detail-rail-account-v0860">
+          <div class="detail-compact-head">
+            <h3>${t('accountSnapshot')}</h3>
           </div>
-          <div class="pulse-grid">
+          <div class="pulse-grid detail-position-grid">
             <div class="pulse-card">
               <small>${t('equity')}</small>
               <strong>${formatCurrency(portfolio.equity)}</strong>
@@ -3225,151 +3186,95 @@ function renderMarketDetailPage(market, portfolio) {
           </div>
           <button class="ghost full-width" data-reset="true">${t('resetAccount')}</button>
         </article>
-
-        <article class="surface side-rail-surface side-rail-tape">
-          <div class="surface-header compact-header">
-            <div>
-              <h3>${t('liveTape')}</h3>
-              <p>${t('liveTapeCopy')}</p>
-            </div>
-          </div>
-          ${renderLiveTapeList(buildMarketTape(market, 4))}
-        </article>
       </aside>
     </section>
   `;
 }
 
-function renderDetailDisclosure(title, hint, body, open = false) {
+function renderDetailInfoGrid(market, pack) {
   return `
-    <details class="detail-disclosure"${open ? ' open' : ''}>
-      <summary>
-        <span class="detail-disclosure-heading">
-          <strong>${title}</strong>
-          <small>${hint}</small>
-        </span>
-        <span class="detail-disclosure-icon" aria-hidden="true"></span>
-      </summary>
-      <div class="detail-disclosure-body">
-        ${body}
-      </div>
-    </details>
-  `;
-}
-
-function renderDetailDisclosureStack(market, preview) {
-  const pack = buildResolutionPack(market);
-  const isGreek = appState.language === 'el';
-  const payoutNarrative =
-    preview.action === 'buy'
-      ? isGreek
-        ? `Κάθε winning contract κάνει settle στο €1.00. Με ${formatCurrency(preview.total)} στο ${preview.selectedLabel}, ελέγχεις περίπου ${formatQuantity(preview.contracts)} contracts και η μικτή πληρωμή φτάνει τα ${formatCurrency(preview.grossPayout)} αν βγει η πλευρά σου.`
-        : `Each winning contract settles at €1.00. With ${formatCurrency(preview.total)} on ${preview.selectedLabel}, you control about ${formatQuantity(preview.contracts)} contracts and gross payout reaches ${formatCurrency(preview.grossPayout)} if your side resolves.`
-      : isGreek
-        ? `Το sell κλείνει περίπου ${formatQuantity(preview.contracts)} contracts στην τρέχουσα τιμή και αφήνει ${formatQuantity(preview.remainingQty)} ανοιχτά.`
-        : `The sell closes about ${formatQuantity(preview.contracts)} contracts at the current price and leaves ${formatQuantity(preview.remainingQty)} still open.`;
-
-  const overviewBody = `
-    <div class="detail-disclosure-prose">
-      <p>${market.summary[appState.language]}</p>
-      <p>${market.why[appState.language]}</p>
-    </div>
-    <div class="detail-quiet-grid">
-      <div class="detail-quiet-row">
-        <span>${t('volume')}</span>
-        <strong>${formatCurrency(market.volume)}</strong>
-      </div>
-      <div class="detail-quiet-row">
-        <span>${t('dayChange')}</span>
-        <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
-      </div>
-      <div class="detail-quiet-row">
-        <span>${isGreek ? 'Σήμα αξιοπιστίας' : 'Trust signal'}</span>
-        <strong>${pack.credibilityBody}</strong>
-      </div>
-    </div>
-  `;
-
-  const rulesBody = `
-    <div class="detail-quiet-grid">
-      <div class="detail-quiet-row detail-quiet-row-wide">
-        <span>${t('trustOutcomeTest')}</span>
-        <strong>${market.resolution[appState.language]}</strong>
-      </div>
-    </div>
-    <div class="detail-source-grid">
-      <article class="detail-source-block primary">
-        <small>${t('primarySource')}</small>
-        <strong>${market.primarySource}</strong>
-        <p>${pack.primaryBody}</p>
+    <section class="detail-info-grid">
+      <article class="detail-info-card">
+        <div class="detail-info-head">
+          <h3>${t('detailOverview')}</h3>
+        </div>
+        <p class="detail-info-lead">${market.summary[appState.language]}</p>
+        <div class="detail-info-block">
+          <small>${t('whyItMatters')}</small>
+          <p>${market.why[appState.language]}</p>
+        </div>
       </article>
-      <article class="detail-source-block">
-        <small>${t('fallbackSource')}</small>
-        <strong>${market.fallbackSource}</strong>
-        <p>${pack.fallbackBody}</p>
-      </article>
-    </div>
-    <div class="detail-note-stack">
-      <div class="detail-note-line">
-        <small>${t('resolutionSourceRule')}</small>
-        <p>${pack.sourceRule}</p>
-      </div>
-      <div class="detail-note-line warning">
-        <small>${t('resolutionVoid')}</small>
-        <p>${pack.voidBody}</p>
-      </div>
-    </div>
-    <a class="secondary-link secondary-link-quiet" href="${market.sourceLink}" target="_blank" rel="noreferrer">${t('openOfficialSource')}</a>
-  `;
 
-  const timelineBody = `
-    <div class="detail-timeline-grid">
-      <article class="detail-timeline-item">
-        <small>${t('resolutionCutoff')}</small>
-        <strong>${formatDateTime(market.closeDate)}</strong>
-        <p>${pack.lockBody}</p>
+      <article class="detail-info-card">
+        <div class="detail-info-head">
+          <h3>${t('marketContext')}</h3>
+        </div>
+        <div class="detail-info-rows">
+          <div class="detail-info-row">
+            <span>${t('volume')}</span>
+            <strong>${formatCurrency(market.volume)}</strong>
+          </div>
+          <div class="detail-info-row">
+            <span>${t('dayChange')}</span>
+            <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
+          </div>
+          <div class="detail-info-row">
+            <span>${t('resolutionCutoff')}</span>
+            <strong>${formatDateTime(market.closeDate)}</strong>
+          </div>
+          <div class="detail-info-row">
+            <span>${t('resolutionSettleTarget')}</span>
+            <strong>${formatDateTime(market.resolveDate)}</strong>
+          </div>
+        </div>
       </article>
-      <article class="detail-timeline-item">
-        <small>${t('resolutionSettleTarget')}</small>
-        <strong>${formatDateTime(market.resolveDate)}</strong>
-        <p>${pack.settleBody}</p>
+
+      <article class="detail-info-card">
+        <div class="detail-info-head">
+          <h3>${t('resolutionRules')}</h3>
+        </div>
+        <div class="detail-info-block">
+          <small>${t('trustOutcomeTest')}</small>
+          <p>${market.resolution[appState.language]}</p>
+        </div>
+        <div class="detail-info-mini-grid">
+          <div class="detail-info-mini-item">
+            <small>${t('primarySource')}</small>
+            <strong>${market.primarySource}</strong>
+          </div>
+          <div class="detail-info-mini-item">
+            <small>${t('fallbackSource')}</small>
+            <strong>${market.fallbackSource}</strong>
+          </div>
+        </div>
       </article>
-    </div>
-    <p class="detail-disclosure-footnote">${pack.timingBody}</p>
-  `;
 
-  const payoutBody = `
-    <div class="detail-quiet-grid">
-      <div class="detail-quiet-row">
-        <span>${t('contractPrice')}</span>
-        <strong>${formatPrice(preview.price)} · ${formatPercent(getChance(market, preview.side))}</strong>
-      </div>
-      <div class="detail-quiet-row">
-        <span>${isGreek ? 'Settlement ανά σωστό contract' : 'Settlement per winning contract'}</span>
-        <strong>€1.00</strong>
-      </div>
-      <div class="detail-quiet-row">
-        <span>${preview.action === 'buy' ? t('tradePayout') : t('ticketReceiveNow')}</span>
-        <strong>${formatCurrency(preview.action === 'buy' ? preview.grossPayout : preview.total)}</strong>
-      </div>
-    </div>
-    <p class="detail-disclosure-footnote">${payoutNarrative}</p>
-  `;
-
-  return `
-    <section class="detail-disclosure-stack">
-      ${renderDetailDisclosure(t('detailOverview'), isGreek ? 'Γρήγορη ανάγνωση' : 'Quick read', overviewBody, true)}
-      ${renderDetailDisclosure(t('resolutionRules'), isGreek ? 'Έκβαση, πηγές, προστασία' : 'Outcome, sources, safeguard', rulesBody)}
-      ${renderDetailDisclosure(t('marketContext'), isGreek ? 'Κλείδωμα, settlement, timing' : 'Lock, settlement, timing', timelineBody)}
-      ${renderDetailDisclosure(isGreek ? 'Πληρωμές και μηχανική' : 'Payouts and mechanics', isGreek ? 'Πώς η τιμή δίνει το outcome' : 'How price maps to outcome', payoutBody)}
+      <article class="detail-info-card">
+        <div class="detail-info-head">
+          <h3>${t('resolutionIntegrity')}</h3>
+        </div>
+        <div class="detail-info-block">
+          <small>${pack.authorityLabel}</small>
+          <p>${pack.authorityBody}</p>
+        </div>
+        <div class="detail-info-block">
+          <small>${t('resolutionSourceRule')}</small>
+          <p>${pack.sourceRule}</p>
+        </div>
+        <div class="detail-info-block warning">
+          <small>${t('resolutionVoid')}</small>
+          <p>${pack.voidBody}</p>
+        </div>
+        <a class="secondary-link secondary-link-quiet" href="${market.sourceLink}" target="_blank" rel="noreferrer">${t('openOfficialSource')}</a>
+      </article>
     </section>
   `;
 }
 
 function renderTradeSideButton(market, side) {
   const active = uiState.tradeSide === side;
-  const price = getPrice(market, side);
   const chance = getChance(market, side);
+  const price = getPrice(market, side);
   return `
     <button
       type="button"
@@ -3377,8 +3282,8 @@ function renderTradeSideButton(market, side) {
       data-trade-side="${side}"
     >
       <span class="trade-side-label">${side === 'yes' ? t('yes') : t('no')}</span>
-      <strong>${formatPercent(chance)}</strong>
-      <small>${formatPrice(price)} ${t('quoteLabel')}</small>
+      <strong>${formatPrice(price)}</strong>
+      <small>${formatPercent(chance)}</small>
     </button>
   `;
 }
@@ -3387,12 +3292,12 @@ function renderOddsChartShell(market) {
   const series = buildIndicativeSeries(market);
   const timeline = buildIndicativeTimeline(series.length);
   const width = 760;
-  const height = 260;
-  const paddingLeft = 58;
-  const paddingRight = 20;
-  const paddingTop = 20;
-  const paddingBottom = 46;
-  const yTicks = [80, 50, 20];
+  const height = 280;
+  const paddingLeft = 54;
+  const paddingRight = 18;
+  const paddingTop = 18;
+  const paddingBottom = 42;
+  const yTicks = [75, 50, 25];
   const stepX = (width - paddingLeft - paddingRight) / (series.length - 1);
   const points = series.map((value, index) => {
     const x = paddingLeft + stepX * index;
@@ -3402,53 +3307,25 @@ function renderOddsChartShell(market) {
   const latestPoint = points[points.length - 1];
   const xTickIndexes = [...new Set([0, Math.floor((series.length - 1) / 3), Math.floor(((series.length - 1) * 2) / 3), series.length - 1])];
   const xTicks = xTickIndexes.map((index) => ({ x: points[index].x, label: formatDate(timeline[index]) }));
-  const polyline = points.map((point) => `${point.x},${point.y}`).join(' ');
-  const area = `${paddingLeft},${height - paddingBottom} ${polyline} ${width - paddingRight},${height - paddingBottom}`;
+  const linePath = buildSmoothPath(points);
   const slug = market.id.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  const areaGradientId = `chart-area-${slug}`;
-  const lineGradientId = `chart-line-${slug}`;
   const calloutY = Math.max(8, latestPoint.y - 34);
 
   return `
-    <section class="chart-shell chart-shell-primary">
-      <div class="chart-shell-head">
-        <div class="chart-head-copy">
-          <span class="chart-overline">${t('chartFrameLabel')}</span>
+    <section class="chart-shell detail-chart-shell">
+      <div class="detail-chart-head">
+        <div class="chart-head-copy detail-chart-copy">
           <h3>${t('chartTitle')}</h3>
-          <p>${t('chartCopy')}</p>
         </div>
-        <div class="chart-summary-grid chart-summary-grid-compact">
-          <div class="chart-summary-card chart-summary-card-compact">
-            <small>${t('chartCurrentLabel')}</small>
-            <strong>${formatPercent(getChance(market, 'yes'))}</strong>
-            <span>${t('no')} ${formatPercent(getChance(market, 'no'))}</span>
-          </div>
-          <div class="chart-summary-card chart-summary-card-compact">
-            <small>${t('dayChange')}</small>
-            <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong>
-            <span>${t('chartMoveSupport')}</span>
-          </div>
-          <div class="chart-summary-card chart-summary-card-compact">
-            <small>${t('chartWindowLabel')}</small>
-            <strong>${formatDate(timeline[0])} → ${formatDate(timeline[timeline.length - 1])}</strong>
-            <span>${t('chartWindowCopy')}</span>
-          </div>
+        <div class="detail-chart-stat-row">
+          <span class="detail-chart-stat"><small>${t('currentMark')}</small><strong>${formatPercent(market.probability)}</strong></span>
+          <span class="detail-chart-stat"><small>${t('dayChange')}</small><strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong></span>
+          <span class="detail-chart-stat"><small>${t('volume')}</small><strong>${formatCurrency(market.volume)}</strong></span>
         </div>
       </div>
-      <div class="chart-card chart-card-primary">
-        <div class="chart-frame">
-          <div class="chart-axis-caption">${t('chartAxisProbability')}</div>
+      <div class="detail-chart-card">
+        <div class="detail-chart-frame">
           <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${t('chartTitle')}">
-            <defs>
-              <linearGradient id="${areaGradientId}" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="rgba(37, 99, 235, 0.28)" />
-                <stop offset="100%" stop-color="rgba(37, 99, 235, 0.02)" />
-              </linearGradient>
-              <linearGradient id="${lineGradientId}" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#1d4ed8" />
-                <stop offset="100%" stop-color="#60a5fa" />
-              </linearGradient>
-            </defs>
             ${yTicks
               .map((tick) => {
                 const y = paddingTop + (height - paddingTop - paddingBottom) * (1 - tick / 100);
@@ -3466,26 +3343,16 @@ function renderOddsChartShell(market) {
                 `
               )
               .join('')}
-            <polygon class="chart-area" points="${area}" style="fill:url(#${areaGradientId});" />
-            <polyline class="chart-line" points="${polyline}" style="stroke:url(#${lineGradientId});" />
+            <path class="chart-line-shadow" d="${linePath}" />
+            <path class="chart-line" d="${linePath}" />
             <line class="chart-guide" x1="${latestPoint.x}" y1="${latestPoint.y}" x2="${latestPoint.x}" y2="${height - paddingBottom}" />
-            ${points
-              .map(
-                (point, index) => `
-                  <circle class="chart-dot ${index === points.length - 1 ? 'latest' : ''}" cx="${point.x}" cy="${point.y}" r="${index === points.length - 1 ? 6 : 3.5}" />
-                `
-              )
-              .join('')}
+            <circle class="chart-dot latest" cx="${latestPoint.x}" cy="${latestPoint.y}" r="5.5" />
             <rect class="chart-callout" x="${latestPoint.x - 27}" y="${calloutY}" rx="10" width="54" height="24" />
             <text class="chart-callout-text" x="${latestPoint.x}" y="${calloutY + 16}">${formatPercent(latestPoint.value)}</text>
           </svg>
-          <div class="chart-foot">
-            <div class="chart-legend-row">
-              <span class="chart-chip"><span class="legend-swatch"></span>${t('chartCurrentLabel')} <strong>${formatPercent(getChance(market, 'yes'))}</strong></span>
-              <span class="chart-chip">${t('dayChange')} <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market.change)}</strong></span>
-              <span class="chart-chip">${t('resolutionCutoff')} <strong>${formatDateTime(market.closeDate)}</strong></span>
-            </div>
-            <p class="chart-footnote">${t('chartFootnote')}</p>
+          <div class="detail-chart-footer">
+            <span>${formatDate(timeline[0])}</span>
+            <span>${t('resolutionCutoff')} ${formatDateTime(market.closeDate)}</span>
           </div>
         </div>
       </div>
@@ -3767,7 +3634,7 @@ function handleClick(event) {
 
   const navButton = event.target.closest('[data-nav]');
   if (navButton) {
-    window.location.hash = navButton.dataset.nav === 'portfolio' ? '#/portfolio' : '#/markets';
+    window.location.hash = `#/${navButton.dataset.nav}`;
     return;
   }
 
@@ -3819,6 +3686,14 @@ function handleClick(event) {
     showToast('success', t('toastResetTitle'), t('toastResetBody'));
     render();
   }
+}
+
+function handleKeydown(event) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  const openMarket = event.target.closest('.market-card-link[data-open-market]');
+  if (!openMarket) return;
+  event.preventDefault();
+  window.location.hash = `#/market/${openMarket.dataset.openMarket}`;
 }
 
 function handleInput(event) {
