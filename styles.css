@@ -5286,6 +5286,48 @@ h3,
   margin-top: 22px;
 }
 
+.board-about-clean {
+  margin-top: 16px;
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(8, 17, 33, 0.72), rgba(7, 14, 27, 0.9));
+  border: 1px solid rgba(148, 163, 184, 0.08);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+}
+
+.board-about-head {
+  margin-bottom: 14px;
+}
+
+.board-about-head h2 {
+  margin: 0;
+}
+
+.board-about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.board-about-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.board-about-card h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.board-about-card p {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.8);
+  line-height: 1.58;
+  font-size: 0.94rem;
+}
+
 @media (max-width: 1180px) {
   .hero-overlay {
     grid-template-columns: 1fr;
@@ -5297,7 +5339,8 @@ h3,
 
   .featured-lane-grid,
   .market-grid-clean,
-  .desk-grid {
+  .desk-grid,
+  .board-about-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -5327,7 +5370,8 @@ h3,
   .featured-lane-grid,
   .market-grid-clean,
   .desk-grid,
-  .desk-metric-grid {
+  .desk-metric-grid,
+  .board-about-grid {
     grid-template-columns: 1fr;
   }
 
@@ -5338,7 +5382,8 @@ h3,
 
   .board-surface-clean,
   .desk-surface,
-  .desk-panel {
+  .desk-panel,
+  .board-about-clean {
     padding: 18px;
   }
 }
@@ -6168,76 +6213,112 @@ body::before {
 
 .hero-feature-top {
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .hero-feature-label {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   color: rgba(223, 232, 247, 0.82);
-  font-size: 0.92rem;
-  letter-spacing: 0.05em;
+  font-size: 0.94rem;
+  letter-spacing: 0.04em;
 }
 
 .hero-feature-card h2 {
   max-width: 17ch;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   font-size: clamp(2.08rem, 2.7vw, 2.52rem);
-  line-height: 1.22;
+  line-height: 1.18;
 }
 
 .hero-feature-meta {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) repeat(2, minmax(132px, 1fr));
-  gap: 12px;
+  grid-template-columns: minmax(0, 1.7fr) repeat(2, minmax(138px, 0.82fr));
+  gap: 10px;
+  align-items: stretch;
   padding: 0;
   background: transparent;
   border: 0;
 }
 
 .hero-feature-meta > div {
-  padding: 14px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 13px 14px;
   border-radius: 16px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
   border: 1px solid rgba(148, 163, 184, 0.14);
 }
 
-.hero-feature-meta small {
-  font-size: 0.84rem;
-  color: rgba(223, 232, 247, 0.78);
+.hero-feature-card .odds-stat-block {
+  gap: 0;
+  justify-content: center;
 }
 
+.hero-feature-stat {
+  gap: 6px;
+}
+
+.hero-feature-stat-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: rgba(223, 232, 247, 0.8);
+}
+
+.hero-feature-stat-value,
 .hero-feature-meta strong {
+  display: block;
+  font-size: 1.12rem;
+  line-height: 1.18;
+  font-variant-numeric: tabular-nums;
   color: rgba(244, 248, 255, 0.96);
 }
 
 .hero-feature-card .probability-pair.compact {
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .hero-feature-card .probability-pair.compact .probability-pill {
-  min-width: 118px;
-  padding: 14px 16px;
-  border-radius: 18px;
+  min-width: 0;
+  padding: 13px 14px;
+  border-radius: 16px;
+  gap: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .hero-feature-card .probability-pair.compact .probability-pill span {
-  font-size: 0.88rem;
-  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
 }
 
 .hero-feature-card .probability-pair.compact .probability-pill strong {
-  font-size: 1.64rem;
+  font-size: 1.74rem;
+}
+
+.hero-feature-card .probability-pair.compact .probability-pill.yes {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.18), rgba(6, 78, 59, 0.22));
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+.hero-feature-card .probability-pair.compact .probability-pill.no {
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.16), rgba(127, 29, 29, 0.2));
+  border-color: rgba(239, 68, 68, 0.24);
 }
 
 .hero-feature-boardline {
-  margin-top: 14px;
-  gap: 10px;
+  margin-top: 12px;
+  gap: 8px;
 }
 
 .feature-stat-pill {
-  min-height: 36px;
-  padding: 0 13px;
-  font-size: 0.88rem;
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 0.84rem;
   font-weight: 700;
 }
 
@@ -6364,7 +6445,11 @@ body::before {
   }
 
   .hero-feature-meta {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-feature-meta > :first-child {
+    grid-column: 1 / -1;
   }
 
   .featured-strip-card-clean,
@@ -6428,13 +6513,13 @@ body::before {
 }
 
 .hero-feature-card {
-  padding: 26px;
+  padding: 24px;
   border-color: rgba(var(--category-rgb), 0.28);
   box-shadow: 0 22px 48px rgba(0, 0, 0, 0.24);
 }
 
 .hero-feature-label {
-  font-size: 0.98rem;
+  font-size: 0.94rem;
 }
 
 .hero-feature-card h2 {
@@ -6442,20 +6527,16 @@ body::before {
 }
 
 .hero-feature-meta > div {
-  padding: 15px 16px;
-}
-
-.hero-feature-meta small {
-  font-size: 0.86rem;
+  padding: 14px 15px;
 }
 
 .hero-feature-boardline {
-  gap: 12px;
+  gap: 10px;
 }
 
 .feature-stat-pill {
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: 36px;
+  padding: 0 13px;
 }
 
 .featured-lane-grid-clean,
@@ -7593,7 +7674,7 @@ body::before {
 
   .hero-feature-top {
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .hero-feature-top .pill-row {
@@ -7616,17 +7697,17 @@ body::before {
   }
 
   .hero-feature-card h2 {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     max-width: none;
-    font-size: 1.28rem;
-    line-height: 1.24;
+    font-size: 1.34rem;
+    line-height: 1.2;
     text-wrap: pretty;
     overflow-wrap: anywhere;
   }
 
   .hero-feature-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    gap: 7px;
   }
 
   .hero-feature-meta > :first-child {
@@ -7634,42 +7715,48 @@ body::before {
   }
 
   .hero-feature-meta > div {
-    padding: 10px 12px;
+    gap: 6px;
+    padding: 10px 11px;
     min-width: 0;
     border-radius: 14px;
   }
 
-  .hero-feature-meta small {
-    font-size: 0.78rem;
+  .hero-feature-stat-label {
+    font-size: 0.84rem;
+  }
+
+  .hero-feature-stat-value,
+  .hero-feature-meta strong {
+    font-size: 1rem;
   }
 
   .hero-feature-card .probability-pair.compact {
-    gap: 8px;
+    gap: 7px;
   }
 
   .hero-feature-card .probability-pair.compact .probability-pill {
     min-width: 0;
-    padding: 11px 12px;
+    padding: 10px 11px;
     border-radius: 16px;
   }
 
   .hero-feature-card .probability-pair.compact .probability-pill span {
-    font-size: 0.76rem;
+    font-size: 0.8rem;
   }
 
   .hero-feature-card .probability-pair.compact .probability-pill strong {
-    font-size: 1.34rem;
+    font-size: 1.42rem;
   }
 
   .hero-feature-boardline {
-    gap: 8px;
-    margin-top: 10px;
+    gap: 7px;
+    margin-top: 8px;
   }
 
   .feature-stat-pill {
     min-height: 32px;
     padding: 0 10px;
-    font-size: 0.75rem;
+    font-size: 0.78rem;
   }
 
   .featured-lane {

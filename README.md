@@ -1,10 +1,10 @@
-# xyz Labs Demo v0.8.6.6
+# xyz Labs Demo v0.8.6.7
 
 Current local/live version of the Greek-first prediction-market demo.
 
-## What changed in v0.8.6.6
+## What changed in v0.8.6.7
 
-This version completes the dedicated mobile polish sequence and brings the alpha into a cleaner, more reliable phone-first state.
+This version keeps the current alpha direction intact while polishing the homepage featured market card and hero readability.
 
 ### Mobile detail page
 
@@ -56,7 +56,7 @@ http://localhost:4173
 ## Quick review checklist
 
 1. Unlock the gate with `athens-alpha`
-2. Confirm the gate and top bar show **v0.8.6.6**
+2. Confirm the gate and top bar show **v0.8.6.7**
 3. Check the homepage hero, featured markets, and all-markets grid on mobile
 4. Open a market and confirm the chart/ticket/tabs feel clean on phone width
 5. Verify portfolio still matches the dark theme and renders cleanly

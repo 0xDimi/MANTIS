@@ -3,7 +3,7 @@ const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v85', 'xyz-labs-demo-state-v84
 const ONBOARDING_VERSION = 'v86';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
-const APP_VERSION = 'v0.8.6.6';
+const APP_VERSION = 'v0.8.6.7';
 
 const copy = {
   en: {
@@ -18,6 +18,13 @@ const copy = {
     liveBoard: 'Live board lane',
     heroEyebrow: 'A Greek prediction market, with event pricing across politics, economy, sports, culture, and more.',
     heroFeatured: 'Featured market',
+    aboutTitle: 'About xyz Labs',
+    aboutWhatTitle: 'What xyz Labs is',
+    aboutWhatBody: 'xyz Labs is a Greece-first prediction market concept where users express a view on real-world events through YES / NO pricing.',
+    aboutPredictionTitle: 'What prediction markets are',
+    aboutPredictionBody: 'Prediction markets turn public questions into tradable prices. A higher percentage means the market currently sees that outcome as more likely.',
+    aboutResolutionTitle: 'How market resolution works',
+    aboutResolutionBody: 'Each market names its source and resolution rule in advance. When trading closes, the result is checked against that source and the market settles YES, NO, or void if the wording cannot be applied cleanly.',
     heroPulse: 'Board pulse',
     heroPulseCopy: 'A staged but live-feeling tape for private tester walkthroughs.',
     heroLiveBadge: 'Live demo tape',
@@ -224,6 +231,13 @@ const copy = {
     liveBoard: 'Ζωντανό board lane',
     heroEyebrow: 'Μια ελληνική αγορά προβλέψεων, με τιμολόγηση γεγονότων σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και πολλά ακόμη.',
     heroFeatured: 'Κύρια αγορά',
+    aboutTitle: 'About xyz Labs',
+    aboutWhatTitle: 'Τι είναι το xyz Labs',
+    aboutWhatBody: 'Το xyz Labs είναι ένα Greece-first concept prediction market όπου οι χρήστες εκφράζουν άποψη πάνω σε πραγματικά γεγονότα μέσω YES / NO pricing.',
+    aboutPredictionTitle: 'Τι είναι τα prediction markets',
+    aboutPredictionBody: 'Τα prediction markets μετατρέπουν δημόσια ερωτήματα σε τιμές που αλλάζουν. Όσο υψηλότερο είναι το ποσοστό, τόσο πιο πιθανό θεωρεί αυτή τη στιγμή η αγορά το συγκεκριμένο αποτέλεσμα.',
+    aboutResolutionTitle: 'Πώς γίνεται το market resolution',
+    aboutResolutionBody: 'Κάθε αγορά ορίζει από πριν την πηγή και τον κανόνα resolution. Όταν κλείνει το trading, το αποτέλεσμα ελέγχεται απέναντι στην ορισμένη πηγή και η αγορά κλείνει σε YES, NO ή void αν η διατύπωση δεν μπορεί να εφαρμοστεί καθαρά.',
     heroPulse: 'Παλμός board',
     heroPulseCopy: 'Staged αλλά πιο live-feeling tape για private tester walkthroughs.',
     heroLiveBadge: 'Live demo tape',
@@ -2865,7 +2879,6 @@ function renderHero(portfolio) {
         <div class="hero-overlay">
           <div class="hero-copy-cluster">
             <div class="hero-copy hero-copy-clean">
-              <span class="eyebrow">${t('heroEyebrow')}</span>
               <h1>${t('productIdentity')}</h1>
             </div>
             <div class="live-ribbon">
@@ -2886,16 +2899,15 @@ function renderHero(portfolio) {
             <h2>${featured.question[appState.language]}</h2>
             <div class="hero-feature-meta">
               <div class="odds-stat-block">
-                <small>${t('statLiveOdds')}</small>
                 ${renderProbabilityPair(featured, 'compact on-dark')}
               </div>
-              <div>
-                <small>${t('volume')}</small>
-                <strong>${formatCurrency(featured.volume)}</strong>
+              <div class="hero-feature-stat">
+                <span class="hero-feature-stat-label">${t('volume')}</span>
+                <strong class="hero-feature-stat-value">${formatCurrency(featured.volume)}</strong>
               </div>
-              <div>
-                <small>${t('close')}</small>
-                <strong>${formatDate(featured.closeDate)}</strong>
+              <div class="hero-feature-stat">
+                <span class="hero-feature-stat-label">${t('close')}</span>
+                <strong class="hero-feature-stat-value">${formatDate(featured.closeDate)}</strong>
               </div>
             </div>
             <div class="hero-feature-boardline">
@@ -2962,6 +2974,30 @@ function renderFlagshipCard(market, index) {
   `;
 }
 
+function renderAboutSection() {
+  return `
+    <section class="surface board-about board-about-clean">
+      <div class="board-section-head board-about-head">
+        <h2>${t('aboutTitle')}</h2>
+      </div>
+      <div class="board-about-grid">
+        <article class="board-about-card">
+          <h3>${t('aboutWhatTitle')}</h3>
+          <p>${t('aboutWhatBody')}</p>
+        </article>
+        <article class="board-about-card">
+          <h3>${t('aboutPredictionTitle')}</h3>
+          <p>${t('aboutPredictionBody')}</p>
+        </article>
+        <article class="board-about-card">
+          <h3>${t('aboutResolutionTitle')}</h3>
+          <p>${t('aboutResolutionBody')}</p>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
 function renderBoardPage(portfolio) {
   const filteredMarkets = getFilteredMarkets();
   const flagshipMarkets = getFlagshipMarkets();
@@ -3009,6 +3045,7 @@ function renderBoardPage(portfolio) {
             }
           </div>
         </article>
+        ${renderAboutSection()}
       </div>
     </section>
   `;
