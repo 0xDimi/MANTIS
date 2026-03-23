@@ -8573,22 +8573,6 @@ body::before {
   gap: 7px;
 }
 
-.desk-row-code {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  min-height: 24px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(147, 197, 253, 0.16);
-  background: rgba(121, 170, 255, 0.12);
-  color: rgba(214, 231, 255, 0.88);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .desk-row-title,
 .desk-feed-title {
   color: rgba(241, 245, 255, 0.96);

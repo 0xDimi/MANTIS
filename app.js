@@ -3759,10 +3759,9 @@ function renderActivityList(limit, variant = 'default') {
   `;
 }
 
-function renderDeskFeedMeta(code, question) {
+function renderDeskFeedMeta(question) {
   return `
     <div class="desk-feed-meta">
-      <span class="desk-row-code">${code}</span>
       <span class="desk-feed-question">${question}</span>
     </div>
   `;
@@ -3776,7 +3775,7 @@ function renderHistoryItem(tx, variant = 'default') {
       <li class="desk-feed-item">
         <div class="desk-feed-main">
           <strong class="desk-feed-title">${tx.action === 'buy' ? t('activityBuy') : t('activitySell')} ${formatQuantity(tx.qty)} ${tx.side === 'yes' ? t('yes') : t('no')}</strong>
-          ${renderDeskFeedMeta(market.id, market.question[appState.language])}
+          ${renderDeskFeedMeta(market.question[appState.language])}
           <div class="mini-copy desk-feed-time">${formatActivityTimestamp(tx.ts)}</div>
         </div>
         <div class="activity-amount desk-feed-amount">
@@ -3811,7 +3810,6 @@ function renderMoversList() {
             <li>
               <button class="mover-item" data-open-market="${market.id}">
                 <div class="desk-row-main">
-                  <span class="desk-row-code">${market.id}</span>
                   <span class="desk-row-title">${market.question[appState.language]}</span>
                 </div>
                 <div class="mover-right desk-row-aside">
@@ -3845,7 +3843,7 @@ function renderTapeItem(item) {
     <li class="desk-feed-item">
       <div class="desk-feed-main">
         <strong class="desk-feed-title">${getTapeHeadline(item)}</strong>
-        ${renderDeskFeedMeta(item.market.id, item.market.question[appState.language])}
+        ${renderDeskFeedMeta(item.market.question[appState.language])}
         <div class="mini-copy desk-feed-time">${formatRelativeMinutes(Math.max(0, Math.round((Date.now() - item.ts) / 60000)))}</div>
       </div>
       <div class="activity-amount desk-feed-amount">
