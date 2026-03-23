@@ -43,7 +43,7 @@ const copy = {
     allMarketsTitle: 'All markets',
     allMarketsCopy: 'Browse the full board by category.',
     deskTitle: 'Desk',
-    deskCopy: 'Pulse, movers, and seeded activity live here instead of the main board.',
+    deskCopy: 'Live flow, price moves, and recent fills in one market-facing view.',
     boardLiveNote: 'Odds are demo, but the board now behaves like a private market room instead of a static prototype.',
     searchPlaceholder: 'Search markets, teams, cities, or sources',
     filtersLabel: 'Category',
@@ -55,10 +55,13 @@ const copy = {
     marketPulse: 'Board pulse',
     recentActivity: 'Recent activity',
     recentActivityCopy: 'Recent fills keep the tape and portfolio warm.',
+    deskRecentActivityCopy: 'Recent fills recorded on the desk.',
     liveTape: 'Live tape',
     liveTapeCopy: 'Recent board flow and seeded activity.',
+    deskLiveTapeCopy: 'Newest prints moving through the board.',
     moversTitle: 'Top movers',
     moversCopy: 'Contracts seeing the biggest price move right now.',
+    deskMoversCopy: 'Largest price moves across the active slate.',
     liveSlate: 'Markets live',
     closingSoon: 'Closing soon',
     testerLane: 'Tracked testers',
@@ -256,7 +259,7 @@ const copy = {
     allMarketsTitle: 'Όλες οι αγορές',
     allMarketsCopy: 'Δες όλο το board ανά κατηγορία.',
     deskTitle: 'Desk',
-    deskCopy: 'Pulse, movers και seeded activity μεταφέρονται εδώ και όχι στο κύριο board.',
+    deskCopy: 'Live ροή, price moves και πρόσφατα fills σε μία καθαρή market view.',
     boardLiveNote: 'Τα odds είναι demo, αλλά το board πλέον συμπεριφέρεται σαν private market room και όχι σαν στατικό prototype.',
     searchPlaceholder: 'Αναζήτηση αγορών, ομάδων, πόλεων ή πηγών',
     filtersLabel: 'Κατηγορία',
@@ -268,10 +271,13 @@ const copy = {
     marketPulse: 'Παλμός αγοράς',
     recentActivity: 'Πρόσφατη δραστηριότητα',
     recentActivityCopy: 'Οι πρόσφατες κινήσεις κρατούν ζωντανά το tape και το portfolio.',
+    deskRecentActivityCopy: 'Τα πιο πρόσφατα fills που γράφτηκαν στο desk.',
     liveTape: 'Live tape',
     liveTapeCopy: 'Πρόσφατη ροή board και seeded activity.',
+    deskLiveTapeCopy: 'Τα νεότερα prints που περνούν από το board.',
     moversTitle: 'Top movers',
     moversCopy: 'Τα contracts με τη μεγαλύτερη μεταβολή τιμής τώρα.',
+    deskMoversCopy: 'Οι μεγαλύτερες μεταβολές τιμής στο ενεργό slate.',
     liveSlate: 'Αγορές live',
     closingSoon: 'Κλείνουν σύντομα',
     testerLane: 'Tracked testers',
@@ -3121,57 +3127,63 @@ function renderDeskPage() {
   return `
     <section class="page-grid desk-layout">
       <article class="surface desk-surface">
-        <div class="board-intro">
-          <div>
+        <div class="board-intro desk-intro">
+          <div class="desk-intro-copy">
             <h1>${t('deskTitle')}</h1>
             <p>${t('deskCopy')}</p>
           </div>
         </div>
         <div class="desk-metric-grid">
           <article class="desk-metric-card">
-            <small>${t('liveSlate')}</small>
-            <strong>${metrics.totalMarkets}</strong>
+            <small class="desk-metric-label">${t('liveSlate')}</small>
+            <strong class="desk-metric-value">${metrics.totalMarkets}</strong>
           </article>
           <article class="desk-metric-card">
-            <small>${t('closingSoon')}</small>
-            <strong>${metrics.closingSoon}</strong>
+            <small class="desk-metric-label">${t('closingSoon')}</small>
+            <strong class="desk-metric-value">${metrics.closingSoon}</strong>
           </article>
           <article class="desk-metric-card">
-            <small>${t('flowLastHour')}</small>
-            <strong>${formatCurrency(metrics.recentFlow)}</strong>
+            <small class="desk-metric-label">${t('flowLastHour')}</small>
+            <strong class="desk-metric-value">${formatCurrency(metrics.recentFlow)}</strong>
           </article>
           <article class="desk-metric-card">
-            <small>${t('testerLane')}</small>
-            <strong>${metrics.testerCount}</strong>
+            <small class="desk-metric-label">${t('testerLane')}</small>
+            <strong class="desk-metric-value">${metrics.testerCount}</strong>
           </article>
         </div>
         <div class="desk-grid">
           <article class="surface desk-panel">
-            <div class="surface-header compact-header">
+            <div class="surface-header compact-header desk-panel-header">
               <div>
                 <h3>${t('moversTitle')}</h3>
-                <p>${t('moversCopy')}</p>
+                <p>${t('deskMoversCopy')}</p>
               </div>
             </div>
-            ${renderMoversList()}
+            <div class="desk-panel-body">
+              ${renderMoversList()}
+            </div>
           </article>
           <article class="surface desk-panel">
-            <div class="surface-header compact-header">
+            <div class="surface-header compact-header desk-panel-header">
               <div>
                 <h3>${t('liveTape')}</h3>
-                <p>${t('liveTapeCopy')}</p>
+                <p>${t('deskLiveTapeCopy')}</p>
               </div>
             </div>
-            ${renderLiveTapeList(buildLiveTape(10))}
+            <div class="desk-panel-body">
+              ${renderLiveTapeList(buildLiveTape(10))}
+            </div>
           </article>
           <article class="surface desk-panel">
-            <div class="surface-header compact-header">
+            <div class="surface-header compact-header desk-panel-header">
               <div>
                 <h3>${t('recentActivity')}</h3>
-                <p>${t('recentActivityCopy')}</p>
+                <p>${t('deskRecentActivityCopy')}</p>
               </div>
             </div>
-            ${renderActivityList(10)}
+            <div class="desk-panel-body">
+              ${renderActivityList(10, 'desk')}
+            </div>
           </article>
         </div>
       </article>
@@ -3737,19 +3749,43 @@ function renderPositionCard(row) {
   `;
 }
 
-function renderActivityList(limit) {
+function renderActivityList(limit, variant = 'default') {
   const items = [...appState.transactions].reverse().slice(0, limit);
   if (!items.length) return `<div class="empty-state compact-empty"><strong>${t('activityEmpty')}</strong></div>`;
   return `
-    <ul class="activity-list">
-      ${items.map((tx) => renderHistoryItem(tx)).join('')}
+    <ul class="activity-list ${variant === 'desk' ? 'desk-feed-list' : ''}">
+      ${items.map((tx) => renderHistoryItem(tx, variant)).join('')}
     </ul>
   `;
 }
 
-function renderHistoryItem(tx) {
+function renderDeskFeedMeta(code, question) {
+  return `
+    <div class="desk-feed-meta">
+      <span class="desk-row-code">${code}</span>
+      <span class="desk-feed-question">${question}</span>
+    </div>
+  `;
+}
+
+function renderHistoryItem(tx, variant = 'default') {
   const market = getMarket(tx.marketId);
   const total = roundMoney(tx.qty * tx.price);
+  if (variant === 'desk') {
+    return `
+      <li class="desk-feed-item">
+        <div class="desk-feed-main">
+          <strong class="desk-feed-title">${tx.action === 'buy' ? t('activityBuy') : t('activitySell')} ${formatQuantity(tx.qty)} ${tx.side === 'yes' ? t('yes') : t('no')}</strong>
+          ${renderDeskFeedMeta(market.id, market.question[appState.language])}
+          <div class="mini-copy desk-feed-time">${formatActivityTimestamp(tx.ts)}</div>
+        </div>
+        <div class="activity-amount desk-feed-amount">
+          <strong>${formatCurrency(total)}</strong>
+          <span>@ ${formatPrice(tx.price)}</span>
+        </div>
+      </li>
+    `;
+  }
   return `
     <li>
       <div>
@@ -3774,12 +3810,12 @@ function renderMoversList() {
           return `
             <li>
               <button class="mover-item" data-open-market="${market.id}">
-                <div>
-                  <strong>${market.id}</strong>
-                  <span>${market.question[appState.language]}</span>
+                <div class="desk-row-main">
+                  <span class="desk-row-code">${market.id}</span>
+                  <span class="desk-row-title">${market.question[appState.language]}</span>
                 </div>
-                <div class="mover-right">
-                  <strong class="${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market)}</strong>
+                <div class="mover-right desk-row-aside">
+                  <strong class="desk-row-value ${market.change >= 0 ? 'positive' : 'negative'}">${formatProbabilityDelta(market)}</strong>
                   <span class="mover-odds">${selectedSide === 'yes' ? t('yes') : t('no')} ${formatPercent(getChance(market, selectedSide))}</span>
                 </div>
               </button>
@@ -3806,13 +3842,13 @@ function getLiveTapeInline(item) {
 
 function renderTapeItem(item) {
   return `
-    <li>
-      <div>
-        <strong>${getTapeHeadline(item)}</strong>
-        <div class="mini-copy">${item.market.id} · ${item.market.question[appState.language]}</div>
-        <div class="mini-copy">${formatRelativeMinutes(Math.max(0, Math.round((Date.now() - item.ts) / 60000)))}</div>
+    <li class="desk-feed-item">
+      <div class="desk-feed-main">
+        <strong class="desk-feed-title">${getTapeHeadline(item)}</strong>
+        ${renderDeskFeedMeta(item.market.id, item.market.question[appState.language])}
+        <div class="mini-copy desk-feed-time">${formatRelativeMinutes(Math.max(0, Math.round((Date.now() - item.ts) / 60000)))}</div>
       </div>
-      <div class="activity-amount">
+      <div class="activity-amount desk-feed-amount">
         <strong>${formatCurrency(item.amount)}</strong>
         <span>@ ${formatPrice(item.price)}</span>
       </div>
