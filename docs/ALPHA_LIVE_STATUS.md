@@ -1,37 +1,33 @@
 # Alpha Live Status
 
-Last updated: 2026-04-11 23:23 (Athens)
+Last updated: 2026-04-11 23:46 (Athens)
 
 ## Current phase
-- Week 1 to Week 3 backend wiring (under existing polished demo UI surface)
+- Week 3 backend-live validation (under existing polished demo UI surface)
 
 ## Live build/run state
 - Branch: `alpha` (synced to origin)
 - Build: ✅ passing (`npm run build`)
-- Dev server: ✅ validated (`http://localhost:3000`)
+- Production deploy: ✅ `https://xyz-labs-demo.vercel.app` (aliased after fresh `--prod` deploy)
 - Health API: ✅ `/api/health`
-- Markets/quote/trade APIs: ⚠️ code-ready, waiting for Supabase env wiring
-- Root surface: ✅ now serves polished legacy UI shell (`/legacy/app.js`, `/legacy/styles.css`) instead of the interim alpha scaffold
+- Markets API: ✅ `/api/markets` returns 12 live seeded markets from Supabase
+- Root surface: ✅ polished legacy UI shell is active (`/legacy/app.js`, `/legacy/styles.css`)
+- Supabase project: ✅ `tvknjsemntrmaxwplgqu` status `ACTIVE_HEALTHY`
 
 ## Completed
-- Next.js + TS alpha shell scaffolding
-- Supabase schema foundation (`0001_alpha_foundation.sql`)
-- Auth bootstrap + first RLS (`0002_auth_rls_bootstrap.sql`)
-- AMM v0 quote engine foundation (`lib/amm-v0.ts`)
-- Quote preview API (`POST /api/quotes/preview`)
-- Trade execution API + atomic RPC path (`POST /api/trades/execute`, `0003_trade_execution_rpc.sql`)
-- Portfolio summary API (`GET /api/portfolio/summary`)
-- Trade history API (`GET /api/trades/history`)
-- Next upgraded to secure version (`15.5.15`)
-
-## In progress
-- End-to-end execution validation once Supabase env is connected
-- Apply `0004_user_read_policies.sql` in Supabase and validate auth reads for portfolio/trade history
-- Connect polished demo UI sections fully to live endpoints (markets/detail/portfolio wiring pass)
-- Keep deployment naming/versioning aligned to **Alpha Demo v1** on the canonical surface
-
-## Blockers / needs from Dimi
-- Supabase env values in `.env.local` when ready:
+- Vercel auth resumed and CLI linked to `0xdimis-projects/xyz-labs-demo`
+- Supabase project resumed from paused state
+- Vercel env wiring completed for `production`, `preview`, `development`:
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY`
+- Remote DB migrations applied (`0001` → `0004`)
+- Launch market seed applied via migration `0005_seed_launch_markets.sql`
+- Production redeploy completed and canonical alias verified
+
+## In progress
+- End-to-end auth trade path validation (`/api/quotes/preview` → `/api/trades/execute`) with tester account
+- Wire remaining polished UI actions to live portfolio/trade endpoints where needed
+
+## Blockers / needs from Dimi
+- None for infra wiring. Next checkpoint is product validation and tester onboarding flow.

@@ -12,3 +12,10 @@
 - [2026-04-11 16:19] Started route wiring pass: `/markets`, `/markets/[slug]`, and `/portfolio` now load live backend snapshots with graceful fallback when env/auth is missing.
 - [2026-04-11 16:21] Milestone checkpoint committed on `alpha` (`f4501c0`) and pushed to `origin/alpha`.
 - [2026-04-11 23:23] Root route switched to polished legacy demo shell (`/legacy/app.js` + `/legacy/styles.css`) so alpha backend wiring continues under the existing UI surface. Local app constants aligned for alpha naming/economics (`APP_VERSION: Alpha Demo v1`, starting balance: €1,000). Build revalidated green.
+- [2026-04-11 23:32] Vercel CLI device auth completed successfully; project linked to `0xdimis-projects/xyz-labs-demo`.
+- [2026-04-11 23:36] Supabase project `tvknjsemntrmaxwplgqu` restore triggered; status moved from `INACTIVE` to `COMING_UP`, then `ACTIVE_HEALTHY`.
+- [2026-04-11 23:39] Synced Vercel env vars across production/preview/development (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`).
+- [2026-04-11 23:43] Linked Supabase project and pushed migrations `0001` to `0004` to remote database.
+- [2026-04-11 23:44] Added and pushed migration `0005_seed_launch_markets.sql` to seed 12 launch markets and market state rows.
+- [2026-04-11 23:44] Ran fresh production deploy via Vercel; canonical alias `https://xyz-labs-demo.vercel.app` updated and healthy.
+- [2026-04-11 23:45] Verified live API path on production: `/api/health` OK and `/api/markets` returning 12 records from Supabase.
