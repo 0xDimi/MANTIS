@@ -1,9 +1,25 @@
 {
-  "name": "xyz-labs-demo",
-  "version": "0.8.6.7",
+  "name": "xyz-labs-alpha",
+  "version": "0.9.0-alpha.0",
   "private": true,
-  "description": "Third dedicated mobile polish pass focused on navigation flow, final consistency polish, and mobile QA cleanup",
+  "description": "Operational alpha foundation for xyz Labs",
   "scripts": {
-    "start": "node server.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.8",
+    "next": "15.5.15",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
+    "typescript": "^5.8.3"
   }
 }

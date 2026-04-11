@@ -1,71 +1,60 @@
-# xyz Labs Demo v0.8.6.7
+# xyz Labs Alpha (MANTIS branch)
 
-Current local/live version of the Greek-first prediction-market demo.
+Operational alpha foundation for the prediction-market build.
+UI parity with the existing live demo is mandatory while backend/alpha logic is wired underneath.
 
-## What changed in v0.8.6.7
+## Current status
 
-This version keeps the current alpha direction intact while polishing the homepage featured market card and hero readability.
+Kickoff is live.
 
-### Mobile detail page
+Completed in Week 0 foundation:
+- `alpha` branch created
+- Next.js + TypeScript app shell scaffolded
+- route map scaffolded (`/`, `/markets`, `/markets/[slug]`, `/portfolio`, `/profile`, `/rules`, `/admin/*`)
+- env map added (`.env.example`, `docs/ALPHA_ENV_MAP.md`)
+- Supabase schema migration foundation added (`supabase/migrations/0001_alpha_foundation.sql`)
+- auth bootstrap + first RLS migration added (`supabase/migrations/0002_auth_rls_bootstrap.sql`)
+- atomic trade execution RPC migration added (`supabase/migrations/0003_trade_execution_rpc.sql`)
+- initial market seed candidate pack added (`supabase/seed/001_launch_markets.sql`, currently 12 candidates; final 12-15 selected near launch)
+- API scaffolds added (`/api/health`, `/api/markets`, `/api/me`)
+- market detail + quote/trade foundation APIs added (`/api/markets/[slug]`, `/api/quotes/preview`, `/api/trades/execute`)
 
-- tightened the market-detail hierarchy for narrow screens
-- improved chart, ticket, and tabs readability on phones
-- cleaned up tap targets, spacing, and trade-ticket flow on mobile
-- kept the dark integrated chart and simplified ticket direction intact
-
-### Mobile homepage and cards
-
-- compressed the hero so the slogan and featured contract appear faster
-- improved featured-market flow on phones
-- made market cards denser and easier to scan on mobile
-- improved filter/category controls for touch and horizontal scrolling
-
-### Mobile nav and final QA
-
-- smoother board -> market -> back flow
-- clearer active states and mobile action hierarchy
-- tighter consistency across spacing, pills, buttons, and sections
-- final cleanup for overflow, wrapping, and rough mobile edges
-
-### Core product state
-
-- homepage, market detail, and portfolio all render cleanly
-- current alpha UI direction remains the same
-- routes, market data, and trade logic are unchanged
-- version metadata is updated to **v0.8.6.6**
-
-## Access code for local testing
-
-```text
-athens-alpha
-```
-
-## Run locally
+## Local run
 
 ```bash
 cd side-project-os/prediction-market/demo
-npm start
+npm install
+npm run dev
 ```
 
-Then open:
+Open:
+- <http://localhost:3000>
 
-```text
-http://localhost:4173
+## API quick checks
+
+```bash
+curl http://127.0.0.1:3000/api/health
+curl http://127.0.0.1:3000/api/markets
+curl http://127.0.0.1:3000/api/markets/<slug>
+curl -X POST http://127.0.0.1:3000/api/quotes/preview -H 'content-type: application/json' -d '{"marketSlug":"gre-politics-election-seat-majority","side":"yes","action":"buy","amountEur":50}'
+# auth-required examples
+curl http://127.0.0.1:3000/api/portfolio/summary
+curl http://127.0.0.1:3000/api/trades/history?limit=50
 ```
 
-## Quick review checklist
+If Supabase env vars are not wired yet, `/api/markets` intentionally returns an env wiring error.
 
-1. Unlock the gate with `athens-alpha`
-2. Confirm the gate and top bar show **v0.8.6.7**
-3. Check the homepage hero, featured markets, and all-markets grid on mobile
-4. Open a market and confirm the chart/ticket/tabs feel clean on phone width
-5. Verify portfolio still matches the dark theme and renders cleanly
-6. Confirm mobile navigation across board, market, and portfolio feels consistent
+## Key docs
 
-## Files
+- `docs/WEEK0_KICKOFF_NOTES.md`
+- `docs/ALPHA_ENV_MAP.md`
+- `docs/ALPHA_ROUTE_MAP.md`
+- `docs/DELIVERY_PLAN_6_WEEKS.md`
+- `docs/ALPHA_API_WORKFLOW.md`
+- `docs/ALPHA_LIVE_STATUS.md`
+- `docs/ALPHA_RUN_LOG.md`
 
-- `app.js` - app structure, routes, market data, ticket logic, and detail-page rendering
-- `styles.css` - theme, layout, board styling, detail-page styling, and mobile polish
-- `index.html` - app metadata
-- `server.js` - zero-dependency local server
-- `package.json` - local start script and version metadata
+## Notes
+
+- Existing demo UI is the surface reference. Backend and wiring are now being built under that same product look/flow.
+- Legacy static-demo files remain in repo for parity checks during migration.
