@@ -56,5 +56,6 @@ If Supabase env vars are not wired yet, `/api/markets` intentionally returns an 
 
 ## Notes
 
-- Existing demo UI is the surface reference. Backend and wiring are now being built under that same product look/flow.
+- Existing polished demo UI is now mounted as the root alpha surface (`/legacy/app.js` + `/legacy/styles.css`) so backend wiring continues under the same product look/flow.
+- Alpha naming target is **Alpha Demo v1**.
 - Legacy static-demo files remain in repo for parity checks during migration.

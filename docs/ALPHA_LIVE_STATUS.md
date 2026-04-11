@@ -1,16 +1,17 @@
 # Alpha Live Status
 
-Last updated: 2026-04-11 16:19 (Athens)
+Last updated: 2026-04-11 23:23 (Athens)
 
 ## Current phase
-- Week 1 to Week 3 backend wiring (under existing demo UI surface)
+- Week 1 to Week 3 backend wiring (under existing polished demo UI surface)
 
 ## Live build/run state
-- Branch: `alpha`
+- Branch: `alpha` (synced to origin)
 - Build: ✅ passing (`npm run build`)
-- Dev server: ✅ running (`http://localhost:3000`)
+- Dev server: ✅ validated (`http://localhost:3000`)
 - Health API: ✅ `/api/health`
 - Markets/quote/trade APIs: ⚠️ code-ready, waiting for Supabase env wiring
+- Root surface: ✅ now serves polished legacy UI shell (`/legacy/app.js`, `/legacy/styles.css`) instead of the interim alpha scaffold
 
 ## Completed
 - Next.js + TS alpha shell scaffolding
@@ -26,7 +27,8 @@ Last updated: 2026-04-11 16:19 (Athens)
 ## In progress
 - End-to-end execution validation once Supabase env is connected
 - Apply `0004_user_read_policies.sql` in Supabase and validate auth reads for portfolio/trade history
-- Connect current demo UI sections fully to live endpoints (markets/detail/portfolio wiring pass started)
+- Connect polished demo UI sections fully to live endpoints (markets/detail/portfolio wiring pass)
+- Keep deployment naming/versioning aligned to **Alpha Demo v1** on the canonical surface
 
 ## Blockers / needs from Dimi
 - Supabase env values in `.env.local` when ready:

@@ -17,3 +17,9 @@
 ## Resend
 - Keep test sender identity first
 - Move to domain setup after core trading/admin flows are stable
+
+## Deployment and naming
+- Keep `https://xyz-labs-demo.vercel.app` as the single canonical demo surface
+- Treat `*-git-alpha-*` URLs as internal preview links only (not user-facing)
+- Continue alpha plan by wiring backend operations into the polished existing UI
+- Final public naming target when ready: **Alpha Demo v1**

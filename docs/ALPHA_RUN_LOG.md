@@ -10,3 +10,5 @@
 - [2026-04-11 16:00] Added user-facing read policies migration (`0004_user_read_policies.sql`) for positions/trades/quotes/ledger.
 - [2026-04-11 16:01] Added `GET /api/portfolio/summary` and `GET /api/trades/history` endpoints for live portfolio and trade tracking.
 - [2026-04-11 16:19] Started route wiring pass: `/markets`, `/markets/[slug]`, and `/portfolio` now load live backend snapshots with graceful fallback when env/auth is missing.
+- [2026-04-11 16:21] Milestone checkpoint committed on `alpha` (`f4501c0`) and pushed to `origin/alpha`.
+- [2026-04-11 23:23] Root route switched to polished legacy demo shell (`/legacy/app.js` + `/legacy/styles.css`) so alpha backend wiring continues under the existing UI surface. Local app constants aligned for alpha naming/economics (`APP_VERSION: Alpha Demo v1`, starting balance: €1,000). Build revalidated green.
