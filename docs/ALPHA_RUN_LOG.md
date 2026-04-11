@@ -23,3 +23,7 @@
 - [2026-04-12 00:10] Activated hosted live Mission Control at `https://xyz-labs-mission-control.vercel.app` (Vercel project `xyz-labs-mission-control`) with 10-second auto-refresh UI.
 - [2026-04-12 00:12] Started local runtime bridge daemon on Mac mini to push live worker/repo/deployment snapshots into Supabase (`mission_control_runtime`) continuously.
 - [2026-04-12 00:13] Wired mission-control API/state persistence to Supabase (`mission_control_state`) so hosted dashboard edits persist and reflect live without filesystem writes.
+- [2026-04-12 00:34] Identified and fixed trade execution blocker during production auth-path test: SQL RPC `execute_alpha_trade` failed with `column reference "yes_shares" is ambiguous`.
+- [2026-04-12 00:35] Added and applied migration `0008_fix_execute_trade_rpc_ambiguity.sql` (qualified position column refs in function updates).
+- [2026-04-12 00:36] Re-ran full authenticated trade path on production with tester account: quote preview succeeded, trade executed, wallet debited correctly, position created, and trade history endpoint returned executed trade.
+- [2026-04-12 00:37] Stage transition: Week 3 backend-live validation checkpoint closed; moved into Week 4 UI integration pass.

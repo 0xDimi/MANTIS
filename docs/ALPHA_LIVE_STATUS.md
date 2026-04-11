@@ -1,9 +1,9 @@
 # Alpha Live Status
 
-Last updated: 2026-04-12 00:15 (Athens)
+Last updated: 2026-04-12 00:38 (Athens)
 
 ## Current phase
-- Week 3 backend-live validation (under existing polished demo UI surface)
+- Week 4 integration kickoff (backend trade path validated on production, UI flow wiring in progress)
 
 ## Live build/run state
 - Branch: `alpha` (synced to origin)
@@ -21,13 +21,14 @@ Last updated: 2026-04-12 00:15 (Athens)
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY`
-- Remote DB migrations applied (`0001` → `0004`)
+- Remote DB migrations applied (`0001` → `0008`)
 - Launch market seed applied via migration `0005_seed_launch_markets.sql`
 - Production redeploy completed and canonical alias verified
+- End-to-end authenticated trade path validated on production (`/api/quotes/preview` → `/api/trades/execute` → `/api/portfolio/summary` + `/api/trades/history`) using tester account
 
 ## In progress
-- End-to-end auth trade path validation (`/api/quotes/preview` → `/api/trades/execute`) with tester account
 - Wire remaining polished UI actions to live portfolio/trade endpoints where needed
+- Stage 4 UI integration pass for detail ticket, execution confirmation, and portfolio refresh loops
 - Mission Control live operations room now active at `https://xyz-labs-mission-control.vercel.app` with 10s refresh cycle
 
 ## Blockers / needs from Dimi
