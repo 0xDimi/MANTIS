@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-11 23:46 (Athens)
+Last updated: 2026-04-12 00:15 (Athens)
 
 ## Current phase
 - Week 3 backend-live validation (under existing polished demo UI surface)
@@ -28,6 +28,8 @@ Last updated: 2026-04-11 23:46 (Athens)
 ## In progress
 - End-to-end auth trade path validation (`/api/quotes/preview` → `/api/trades/execute`) with tester account
 - Wire remaining polished UI actions to live portfolio/trade endpoints where needed
+- Mission Control live operations room now active at `https://xyz-labs-mission-control.vercel.app` with 10s refresh cycle
 
 ## Blockers / needs from Dimi
 - None for infra wiring. Next checkpoint is product validation and tester onboarding flow.
+- If needed later: tune the runtime worker filter to include/exclude extra process classes in mission control.

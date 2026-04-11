@@ -19,3 +19,7 @@
 - [2026-04-11 23:44] Added and pushed migration `0005_seed_launch_markets.sql` to seed 12 launch markets and market state rows.
 - [2026-04-11 23:44] Ran fresh production deploy via Vercel; canonical alias `https://xyz-labs-demo.vercel.app` updated and healthy.
 - [2026-04-11 23:45] Verified live API path on production: `/api/health` OK and `/api/markets` returning 12 records from Supabase.
+- [2026-04-12 00:08] Added Supabase migrations `0006_mission_control_runtime.sql` + `0007_mission_control_state.sql` to support hosted mission-control telemetry + persistent state.
+- [2026-04-12 00:10] Activated hosted live Mission Control at `https://xyz-labs-mission-control.vercel.app` (Vercel project `xyz-labs-mission-control`) with 10-second auto-refresh UI.
+- [2026-04-12 00:12] Started local runtime bridge daemon on Mac mini to push live worker/repo/deployment snapshots into Supabase (`mission_control_runtime`) continuously.
+- [2026-04-12 00:13] Wired mission-control API/state persistence to Supabase (`mission_control_state`) so hosted dashboard edits persist and reflect live without filesystem writes.
