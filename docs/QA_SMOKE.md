@@ -13,6 +13,12 @@
    - `POST /api/trades/execute`
    - `GET /api/portfolio/summary` after execution
    - `GET /api/trades/history`
+4. AMM behavior stays aligned with the `xyz_amm_package_v0` assumptions:
+   - YES/NO prices remain complementary
+   - quote state matches LMSR-style derivation from `qYes`, `qNo`, and `depth`
+   - buy/sell direction moves probability the correct way
+   - average fill stays between pre-trade and post-trade side price
+   - fee-on-gross math still reconciles through execute, wallet delta, and trade history
 
 The script exits non-zero on the first failure and prints concise `PASS` / `FAIL` checkpoints.
 
@@ -92,8 +98,35 @@ SMOKE_COOKIE_HEADER='sb-...=...; sb-....0=...' \
 ./scripts/qa-smoke-alpha.sh
 ```
 
+## AMM drift detection notes
+
+Reference package:
+
+- `/Users/dpechli/Desktop/xyz Labs/xyz_amm_package_v0/08_AMM_V0_BUILD_READY_SPEC.md`
+- `/Users/dpechli/Desktop/xyz Labs/xyz_amm_package_v0/02_XYZ_Labs_AMM_Calibration_Summary.md`
+- `/Users/dpechli/Desktop/xyz Labs/xyz_amm_package_v0/03_xyz_amm_reference/golden_vectors.json`
+
+The smoke script is not just checking endpoint availability. It is also trying to catch product drift quickly.
+
+If the script starts failing on AMM checkpoints, operators should suspect one of these first:
+
+- quote math changed away from the expected LMSR-style model
+- `depth` / `qYes` / `qNo` no longer reconcile with returned prices
+- fee handling changed and wallet/history accounting no longer matches preview economics
+- trade direction is moving the wrong side of the market
+
+Quick manual smell test from the package calibration summary:
+
+- for a standard market (`b ≈ 288.539`) starting near 50/50,
+  - `€10` gross YES buy should move toward `51.70%`
+  - `€50` gross YES buy should move toward `57.96%`
+  - `€100` gross YES buy should move toward `64.64%`
+
 ## Notes
 
 - The script picks the first open market returned by `/api/markets`.
 - The default smoke trade is a small buy so the run stays cheap and deterministic.
 - Current app behavior bootstraps the tester wallet through `/api/me`, which helps keep repeated smoke runs stable.
+- Optional tolerances:
+  - `DRIFT_TOLERANCE` default `0.0025`
+  - `MONEY_TOLERANCE` default `0.05`
