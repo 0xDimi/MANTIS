@@ -143,16 +143,28 @@ export async function POST(request: Request) {
       p_total_amount: quote.totalAmountEur,
       p_post_yes_price: quote.postYesPrice,
       p_post_no_price: quote.postNoPrice,
-      p_quote_hash: body.quoteHash
+      p_quote_hash: body.quoteHash,
+      p_expected_yes_price: Number(stateRow.yes_price),
+      p_expected_no_price: Number(stateRow.no_price)
     });
 
     if (executionError) {
+      const detail = executionError.message ?? 'unknown';
+      const normalized = detail.toLowerCase();
+      const status = normalized.includes('market not found')
+        ? 404
+        : normalized.includes('stale quote') ||
+            normalized.includes('insufficient') ||
+            normalized.includes('market is not open')
+          ? 409
+          : 500;
+
       return NextResponse.json(
         {
           error: 'atomic trade execution failed',
-          detail: executionError.message
+          detail
         },
-        { status: 500 }
+        { status }
       );
     }
 
