@@ -3,13 +3,13 @@ import { AlphaShell } from '@/components/alpha-shell';
 
 const links = [
   ['/admin/markets', 'Lifecycle controls live on rebuilt routes'],
-  ['/admin/resolution', 'Resolution queue live, settlement still pending'],
+  ['/admin/resolution', 'Resolution queue plus settlement closeout live'],
   ['/admin/users', 'Tester lookup and audit view']
 ] as const;
 
 export default function AdminPage() {
   return (
-    <AlphaShell title="Admin console foundation" eyebrow="Week 5 lifecycle and resolution surfaces are now live behind admin access. Settlement remains the next closure step.">
+    <AlphaShell title="Admin console foundation" eyebrow="Week 5 lifecycle, resolution, and settlement surfaces are now live behind admin access.">
       <section className="card statusList">
         {links.map(([href, label]) => (
           <div className="statusRow" key={href}>

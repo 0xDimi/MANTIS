@@ -4,6 +4,11 @@ import { requireAdminAccess } from '@/lib/admin-access';
 
 export const dynamic = 'force-dynamic';
 
+function isMissingSettlementTableError(message: string) {
+  const normalized = message.toLowerCase();
+  return normalized.includes('market_settlements') && normalized.includes('does not exist');
+}
+
 function queueRank(status: string) {
   switch (status) {
     case 'closed':
@@ -35,16 +40,21 @@ export default async function AdminResolutionPage() {
     );
   }
 
-  const [{ data: markets, error: marketsError }, { data: resolutions, error: resolutionsError }] = await Promise.all([
-    access.supabase
-      .from('markets')
-      .select('id,slug,question,status,close_time,resolution_time')
-      .in('status', ['closed', 'resolved', 'void', 'settled'])
-      .order('close_time', { ascending: true }),
-    access.supabase.from('resolutions').select('id,market_id,outcome,evidence_summary,evidence_url,created_at')
-  ]);
+  const [{ data: markets, error: marketsError }, { data: resolutions, error: resolutionsError }, { data: settlements, error: settlementsError }] =
+    await Promise.all([
+      access.supabase
+        .from('markets')
+        .select('id,slug,question,status,close_time,resolution_time')
+        .in('status', ['closed', 'resolved', 'void', 'settled'])
+        .order('close_time', { ascending: true }),
+      access.supabase.from('resolutions').select('id,market_id,outcome,evidence_summary,evidence_url,created_at'),
+      access.supabase
+        .from('market_settlements')
+        .select('id,market_id,outcome,affected_accounts,total_payout,total_refund,total_realized_pnl,created_at')
+    ]);
 
   const resolutionRows = (resolutions as any[]) ?? [];
+  const settlementRows = settlementsError && isMissingSettlementTableError(settlementsError.message ?? '') ? [] : ((settlements as any[]) ?? []);
   const marketRows = (markets as any[]) ?? [];
 
   const resolutionByMarketId = new Map(
@@ -60,6 +70,21 @@ export default async function AdminResolutionPage() {
     ])
   );
 
+  const settlementByMarketId = new Map(
+    settlementRows.map((settlement) => [
+      settlement.market_id,
+      {
+        id: settlement.id,
+        outcome: settlement.outcome,
+        affectedAccounts: Number(settlement.affected_accounts ?? 0),
+        totalPayout: Number(settlement.total_payout ?? 0),
+        totalRefund: Number(settlement.total_refund ?? 0),
+        totalRealizedPnl: Number(settlement.total_realized_pnl ?? 0),
+        createdAt: settlement.created_at
+      }
+    ])
+  );
+
   const records = marketRows
     .map((market) => ({
       id: market.id,
@@ -68,7 +93,8 @@ export default async function AdminResolutionPage() {
       status: market.status,
       closeTime: market.close_time,
       resolutionTime: market.resolution_time,
-      resolution: resolutionByMarketId.get(market.id) ?? null
+      resolution: resolutionByMarketId.get(market.id) ?? null,
+      settlement: settlementByMarketId.get(market.id) ?? null
     }))
     .sort((left, right) => {
       const rankDiff = queueRank(left.status) - queueRank(right.status);
@@ -77,9 +103,12 @@ export default async function AdminResolutionPage() {
     });
 
   return (
-    <AlphaShell title="Admin resolution" eyebrow="YES / NO / VOID resolution can now be recorded from rebuilt routes with evidence capture and server-side admin checks.">
+    <AlphaShell title="Admin resolution" eyebrow="Week 5 closeout now covers resolution capture plus one-shot settlement execution with payout and void-refund readback.">
       {marketsError ? <div className="notice noticeError">Unable to load resolution queue: {marketsError.message}</div> : null}
       {resolutionsError ? <div className="notice noticeError">Unable to load resolution history: {resolutionsError.message}</div> : null}
+      {settlementsError && !isMissingSettlementTableError(settlementsError.message ?? '') ? (
+        <div className="notice noticeError">Unable to load settlement history: {settlementsError.message}</div>
+      ) : null}
       <AdminResolutionPanel markets={records} />
     </AlphaShell>
   );

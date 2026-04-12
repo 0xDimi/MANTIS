@@ -43,6 +43,15 @@ export type MarketDetailRead = {
     evidenceUrl: string | null;
     createdAt: string;
   } | null;
+  settlement: {
+    id: string;
+    outcome: 'yes' | 'no' | 'void';
+    affectedAccounts: number;
+    totalPayout: number;
+    totalRefund: number;
+    totalRealizedPnl: number;
+    createdAt: string;
+  } | null;
 };
 
 export type MarketStateRead = {
@@ -111,6 +120,15 @@ type MarketDetailApiResponse = {
     outcome: 'yes' | 'no' | 'void';
     evidence_summary: string;
     evidence_url: string | null;
+    created_at: string;
+  } | null;
+  settlement: {
+    id: string;
+    outcome: 'yes' | 'no' | 'void';
+    affected_accounts: number;
+    total_payout: number;
+    total_refund: number;
+    total_realized_pnl: number;
     created_at: string;
   } | null;
 };
@@ -214,6 +232,17 @@ export async function loadMarketDetail(slug: string) {
                   evidenceUrl: payload.resolution.evidence_url,
                   createdAt: payload.resolution.created_at
                 }
+              : null,
+            settlement: payload.settlement
+              ? {
+                  id: payload.settlement.id,
+                  outcome: payload.settlement.outcome,
+                  affectedAccounts: Number(payload.settlement.affected_accounts ?? 0),
+                  totalPayout: Number(payload.settlement.total_payout ?? 0),
+                  totalRefund: Number(payload.settlement.total_refund ?? 0),
+                  totalRealizedPnl: Number(payload.settlement.total_realized_pnl ?? 0),
+                  createdAt: payload.settlement.created_at
+                }
               : null
           } satisfies MarketDetailRead)
         : null,
@@ -264,7 +293,10 @@ export async function loadPortfolioOverview() {
         .eq('user_id', user.id)
         .limit(1)
         .maybeSingle(),
-      supabase.from('positions').select('id').eq('user_id', user.id),
+      supabase
+        .from('positions')
+        .select('id,yes_shares,no_shares,yes_cost_basis,no_cost_basis')
+        .eq('user_id', user.id),
       supabase.from('trades').select('id').eq('user_id', user.id)
     ]);
 
@@ -272,10 +304,19 @@ export async function loadPortfolioOverview() {
       return { auth: true, wallet: null, positionsCount: 0, tradesCount: 0, error: walletError.message };
     }
 
+    const activePositions = ((positions ?? []) as any[]).filter((position) => {
+      const yesShares = Number(position.yes_shares ?? 0);
+      const noShares = Number(position.no_shares ?? 0);
+      const yesCostBasis = Number(position.yes_cost_basis ?? 0);
+      const noCostBasis = Number(position.no_cost_basis ?? 0);
+
+      return yesShares > 0 || noShares > 0 || yesCostBasis > 0 || noCostBasis > 0;
+    });
+
     return {
       auth: true,
       wallet: wallet as any,
-      positionsCount: (positions ?? []).length,
+      positionsCount: activePositions.length,
       tradesCount: (trades ?? []).length,
       error: null
     };

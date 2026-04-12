@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
+function isMissingSettlementTableError(message: string) {
+  const normalized = message.toLowerCase();
+  return normalized.includes('market_settlements') && normalized.includes('does not exist');
+}
+
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
@@ -25,20 +30,27 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
 
     const marketRow = market as any;
 
-    const [{ data: state, error: stateError }, { data: resolution, error: resolutionError }] = await Promise.all([
-      supabase
-        .from('market_state')
-        .select('market_id,q_yes,q_no,yes_price,no_price,last_trade_at,volume_total,open_interest,participants_count')
-        .eq('market_id', marketRow.id)
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from('resolutions')
-        .select('id,outcome,evidence_summary,evidence_url,created_at')
-        .eq('market_id', marketRow.id)
-        .limit(1)
-        .maybeSingle()
-    ]);
+    const [{ data: state, error: stateError }, { data: resolution, error: resolutionError }, { data: settlement, error: settlementError }] =
+      await Promise.all([
+        supabase
+          .from('market_state')
+          .select('market_id,q_yes,q_no,yes_price,no_price,last_trade_at,volume_total,open_interest,participants_count')
+          .eq('market_id', marketRow.id)
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from('resolutions')
+          .select('id,outcome,evidence_summary,evidence_url,created_at')
+          .eq('market_id', marketRow.id)
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from('market_settlements')
+          .select('id,outcome,affected_accounts,total_payout,total_refund,total_realized_pnl,created_at')
+          .eq('market_id', marketRow.id)
+          .limit(1)
+          .maybeSingle()
+      ]);
 
     if (stateError) {
       return NextResponse.json({ error: stateError.message }, { status: 500 });
@@ -46,6 +58,10 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
 
     if (resolutionError) {
       return NextResponse.json({ error: resolutionError.message }, { status: 500 });
+    }
+
+    if (settlementError && !isMissingSettlementTableError(settlementError.message ?? '')) {
+      return NextResponse.json({ error: settlementError.message }, { status: 500 });
     }
 
     const stateRow = state as any;
@@ -73,6 +89,19 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
               evidence_summary: (resolution as any).evidence_summary,
               evidence_url: (resolution as any).evidence_url,
               created_at: (resolution as any).created_at
+            }
+          : null,
+        settlement: settlementError && isMissingSettlementTableError(settlementError.message ?? '')
+          ? null
+          : settlement
+          ? {
+              id: (settlement as any).id,
+              outcome: (settlement as any).outcome,
+              affected_accounts: Number((settlement as any).affected_accounts ?? 0),
+              total_payout: Number((settlement as any).total_payout ?? 0),
+              total_refund: Number((settlement as any).total_refund ?? 0),
+              total_realized_pnl: Number((settlement as any).total_realized_pnl ?? 0),
+              created_at: (settlement as any).created_at
             }
           : null
       },

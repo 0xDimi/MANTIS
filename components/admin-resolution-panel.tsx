@@ -20,6 +20,15 @@ type ResolutionQueueRecord = {
     evidenceUrl: string | null;
     createdAt: string;
   } | null;
+  settlement: {
+    id: string;
+    outcome: ResolutionOutcome;
+    affectedAccounts: number;
+    totalPayout: number;
+    totalRefund: number;
+    totalRealizedPnl: number;
+    createdAt: string;
+  } | null;
 };
 
 type DraftState = {
@@ -44,10 +53,14 @@ function outcomeBadge(outcome: ResolutionOutcome) {
   return outcome === 'yes' ? 'badgeYes' : outcome === 'no' || outcome === 'void' ? 'badgeNo' : 'badgeNeutral';
 }
 
+function fmtMoney(value: number) {
+  return `€${value.toFixed(2)}`;
+}
+
 export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueRecord[] }) {
   const router = useRouter();
   const [drafts, setDrafts] = useState<Record<string, DraftState>>({});
-  const [pendingMarketId, setPendingMarketId] = useState<string | null>(null);
+  const [pendingKey, setPendingKey] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,13 +68,15 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
     return markets.reduce(
       (acc, market) => {
         acc.total += 1;
-        if (market.status === 'closed' && !market.resolution) acc.pending += 1;
+        if (market.status === 'closed' && !market.resolution) acc.pendingResolution += 1;
+        if (market.resolution && !market.settlement) acc.pendingSettlement += 1;
+        if (market.settlement) acc.settled += 1;
         if (market.resolution?.outcome === 'yes') acc.yes += 1;
         if (market.resolution?.outcome === 'no') acc.no += 1;
         if (market.resolution?.outcome === 'void') acc.void += 1;
         return acc;
       },
-      { total: 0, pending: 0, yes: 0, no: 0, void: 0 }
+      { total: 0, pendingResolution: 0, pendingSettlement: 0, settled: 0, yes: 0, no: 0, void: 0 }
     );
   }, [markets]);
 
@@ -91,9 +106,9 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
     });
   }
 
-  async function handleSubmit(market: ResolutionQueueRecord) {
+  async function handleResolutionSubmit(market: ResolutionQueueRecord) {
     const draft = readDraft(market.id);
-    setPendingMarketId(market.id);
+    setPendingKey(`resolve:${market.id}`);
     setMessage(null);
     setError(null);
 
@@ -122,7 +137,38 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to record resolution');
     } finally {
-      setPendingMarketId(null);
+      setPendingKey(null);
+    }
+  }
+
+  async function handleSettlement(market: ResolutionQueueRecord) {
+    setPendingKey(`settle:${market.id}`);
+    setMessage(null);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/admin/settlement', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ marketId: market.id })
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(typeof payload.error === 'string' ? payload.error : 'Unable to settle market');
+      }
+
+      setMessage(
+        `${payload.settlement?.question ?? market.question} settled. Payout ${fmtMoney(Number(payload.settlement?.totalPayout ?? 0))}, refund ${fmtMoney(Number(payload.settlement?.totalRefund ?? 0))}.`
+      );
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to settle market');
+    } finally {
+      setPendingKey(null);
     }
   }
 
@@ -131,8 +177,8 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
       <section className="card stackSm">
         <div>
           <p className="eyebrow">Resolution queue</p>
-          <h3>YES / NO / VOID operator flow</h3>
-          <p className="subtle">Closed markets can now be resolved from rebuilt routes with evidence summary and optional source URL. Settlement remains a later Week 5 step.</p>
+          <h3>YES / NO / VOID plus settlement closeout</h3>
+          <p className="subtle">Closed markets resolve here first, then resolved or void markets move through a one-shot settlement pass with payout or refund totals.</p>
         </div>
         <div className="metricGridCompact">
           <div className="metricTile">
@@ -140,9 +186,19 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
             <div className="metricTileValue">{summary.total}</div>
           </div>
           <div className="metricTile">
-            <div className="metricTileLabel">Pending closeouts</div>
-            <div className="metricTileValue">{summary.pending}</div>
+            <div className="metricTileLabel">Pending resolution</div>
+            <div className="metricTileValue">{summary.pendingResolution}</div>
           </div>
+          <div className="metricTile">
+            <div className="metricTileLabel">Pending settlement</div>
+            <div className="metricTileValue">{summary.pendingSettlement}</div>
+          </div>
+          <div className="metricTile">
+            <div className="metricTileLabel">Settled</div>
+            <div className="metricTileValue">{summary.settled}</div>
+          </div>
+        </div>
+        <div className="metricGridCompact">
           <div className="metricTile">
             <div className="metricTileLabel">YES / NO / VOID</div>
             <div className="metricTileValue metricTileValueSmall">
@@ -157,8 +213,8 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
       <section className="marketBoard">
         {markets.map((market) => {
           const draft = readDraft(market.id);
-          const pending = pendingMarketId === market.id;
-          const resolutionRecorded = Boolean(market.resolution);
+          const resolving = pendingKey === `resolve:${market.id}`;
+          const settling = pendingKey === `settle:${market.id}`;
 
           return (
             <article className="card marketCard" key={market.id}>
@@ -189,6 +245,10 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
                     {market.resolution ? market.resolution.outcome : 'pending'}
                   </span>
                 </div>
+                <div className="statusRow">
+                  <span>Settlement state</span>
+                  <span className={market.settlement ? 'badgeYes' : 'badgeNeutral'}>{market.settlement ? 'settled' : 'pending'}</span>
+                </div>
               </div>
 
               {market.resolution ? (
@@ -208,12 +268,44 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
                     </div>
                   </div>
                 </div>
-              ) : market.status === 'closed' ? (
+              ) : null}
+
+              {market.settlement ? (
+                <div className="stackSm">
+                  <div className="panelBlock">
+                    <div className="splitSectionLabel">Settlement summary</div>
+                    <p className="panelText">
+                      {market.settlement.outcome.toUpperCase()} closeout across {market.settlement.affectedAccounts} account
+                      {market.settlement.affectedAccounts === 1 ? '' : 's'}.
+                    </p>
+                  </div>
+                  <div className="metricGridCompact">
+                    <div className="metricTile">
+                      <div className="metricTileLabel">Payout</div>
+                      <div className="metricTileValue metricTileValueSmall">{fmtMoney(market.settlement.totalPayout)}</div>
+                    </div>
+                    <div className="metricTile">
+                      <div className="metricTileLabel">Refund</div>
+                      <div className="metricTileValue metricTileValueSmall">{fmtMoney(market.settlement.totalRefund)}</div>
+                    </div>
+                    <div className="metricTile">
+                      <div className="metricTileLabel">Realized PnL</div>
+                      <div className="metricTileValue metricTileValueSmall">{fmtMoney(market.settlement.totalRealizedPnl)}</div>
+                    </div>
+                    <div className="metricTile">
+                      <div className="metricTileLabel">Settled at</div>
+                      <div className="metricTileValue metricTileValueSmall">{formatDateTime(market.settlement.createdAt)}</div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {!market.resolution && market.status === 'closed' ? (
                 <form
                   className="stackSm"
                   onSubmit={(event) => {
                     event.preventDefault();
-                    void handleSubmit(market);
+                    void handleResolutionSubmit(market);
                   }}
                 >
                   <div className="stackXs">
@@ -261,19 +353,30 @@ export function AdminResolutionPanel({ markets }: { markets: ResolutionQueueReco
                   </div>
 
                   <div className="buttonRow">
-                    <button className="button buttonPrimary" disabled={pendingMarketId !== null} type="submit">
-                      {pending ? 'Recording…' : 'Record resolution'}
+                    <button className="button buttonPrimary" disabled={pendingKey !== null} type="submit">
+                      {resolving ? 'Recording…' : 'Record resolution'}
                     </button>
                   </div>
                 </form>
-              ) : (
+              ) : null}
+
+              {market.resolution && !market.settlement && (market.status === 'resolved' || market.status === 'void') ? (
+                <div className="stackSm">
+                  <div className="notice noticeWarn">
+                    Resolution is recorded. Run settlement to write wallet credits or void refunds, zero remaining position basis, and move the market into <code>settled</code>.
+                  </div>
+                  <div className="buttonRow">
+                    <button className="button buttonPrimary" disabled={pendingKey !== null} type="button" onClick={() => handleSettlement(market)}>
+                      {settling ? 'Settling…' : 'Run settlement'}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+
+              {!market.resolution && market.status !== 'closed' ? (
                 <div className="notice noticeWarn">
                   Resolution form only opens once the market is in <code>closed</code>. Current status stays read-only here.
                 </div>
-              )}
-
-              {!resolutionRecorded && market.status !== 'closed' ? (
-                <p className="subtle">Use the lifecycle screen first if this market still needs to move into a closable state.</p>
               ) : null}
             </article>
           );

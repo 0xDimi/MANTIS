@@ -39,7 +39,14 @@ export async function GET() {
       return NextResponse.json({ error: positionsError.message }, { status: 500 });
     }
 
-    const positionRows = (positions ?? []) as any[];
+    const positionRows = ((positions ?? []) as any[]).filter((position) => {
+      const yesShares = Number(position.yes_shares ?? 0);
+      const noShares = Number(position.no_shares ?? 0);
+      const yesCostBasis = Number(position.yes_cost_basis ?? 0);
+      const noCostBasis = Number(position.no_cost_basis ?? 0);
+
+      return yesShares > 0 || noShares > 0 || yesCostBasis > 0 || noCostBasis > 0;
+    });
     const marketIds = [...new Set(positionRows.map((p) => p.market_id).filter(Boolean))];
 
     const [marketsResult, statesResult] = await Promise.all([

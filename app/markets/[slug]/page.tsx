@@ -108,6 +108,18 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
                     </div>
                   </>
                 ) : null}
+                {market.settlement ? (
+                  <>
+                    <div className="statusRow">
+                      <span>Settlement recorded</span>
+                      <span className="badgeNeutral">{formatDateTime(market.settlement.createdAt)}</span>
+                    </div>
+                    <div className="statusRow">
+                      <span>Affected accounts</span>
+                      <span className="badgeNeutral">{formatCompact(market.settlement.affectedAccounts)}</span>
+                    </div>
+                  </>
+                ) : null}
               </div>
             </article>
           </section>
@@ -194,6 +206,15 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
                     <div className="splitSectionLabel">Resolution evidence</div>
                     <p className="panelText">{market.resolution.evidenceSummary}</p>
                     <p className="panelText">{market.resolution.evidenceUrl ?? 'No evidence URL recorded.'}</p>
+                  </div>
+                ) : null}
+                {market.settlement ? (
+                  <div className="panelBlock">
+                    <div className="splitSectionLabel">Settlement closeout</div>
+                    <p className="panelText">
+                      Final payout {`€${formatCompact(market.settlement.totalPayout)}`} · refund {`€${formatCompact(market.settlement.totalRefund)}`} · realized PnL {`€${formatCompact(market.settlement.totalRealizedPnl)}`}.
+                    </p>
+                    <p className="panelText">Affected accounts: {market.settlement.affectedAccounts}. Settled at {formatDateTime(market.settlement.createdAt)}.</p>
                   </div>
                 ) : null}
               </div>

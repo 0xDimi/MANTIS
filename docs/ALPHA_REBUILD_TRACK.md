@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-13 00:40 (Athens)
+Last updated: 2026-04-13 00:51 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -60,16 +60,20 @@ Last updated: 2026-04-13 00:40 (Athens)
   - [x] deterministic Week 5 guardrail coverage added via `npm run test:week5`
   - [x] migration `0014_week5_admin_resolution_ops.sql` applied on active runtime
   - [x] production admin smoke verified for status transitions + VOID resolution + readback metadata
-  - [ ] settlement engine + ledger payout / void-refund path
-  - [ ] settled-state verification + operator smoke on a migrated runtime
+  - [x] secure settlement write route added at `POST /api/admin/settlement`
+  - [x] repo migration `0016_week5_settlement_engine.sql` added for one-shot settlement writes, wallet/ledger adjustments, idempotent `market_settlements`, and audit-safe `market_settlement_entries`
+  - [x] payout / void-refund ledger path implemented for resolved and void markets with settled-state readback on rebuilt admin/public surfaces
+  - [x] deterministic settlement coverage added to `npm run test:week5`
+  - [ ] runtime migration `0016_week5_settlement_engine.sql` application + operator smoke on migrated runtime
+  - [ ] settled-state verification on deployed runtime after migration apply
 - [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
 
 ## Active week
 Week 5
 
 ## Active week remaining items
-1. Implement settlement path and settled-state UI / ledger verification.
-2. Add post-settlement operator checks and audit/readback coverage.
+1. Apply `0016_week5_settlement_engine.sql` on the active runtime.
+2. Run operator smoke for resolved payout and VOID refund paths against the migrated runtime.
 3. Keep markets unchanged until launch-readiness gate.
 
 ## Locked final-product requirement

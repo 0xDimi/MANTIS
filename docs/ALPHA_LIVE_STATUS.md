@@ -1,12 +1,12 @@
 # Alpha Live Status
 
-Last updated: 2026-04-13 00:40 (Athens)
+Last updated: 2026-04-13 00:51 (Athens)
 
 ## Current phase
 - Week 2 markets rebuild is complete
 - Week 3 gate is fully closed (API hardening + rebuilt preview surface + authenticated smoke rerun)
 - Week 4 execution/ledger/portfolio/realtime gate is closed
-- Week 5 admin/resolution/settlement pass is now active
+- Week 5 admin/resolution/settlement pass is in code, with runtime migration apply + operator smoke still pending
 
 ## Live build/run state
 - Branch: `alpha`
@@ -43,12 +43,16 @@ Last updated: 2026-04-13 00:40 (Athens)
 - Market-state LMSR drift corrected on remote DB (`0013_realign_market_state_prices_with_lmsr.sql`)
 - Rebuilt `/admin/markets` now exposes live lifecycle controls for `draft` / `open` / `paused` / `closed`
 - Rebuilt `/admin/resolution` now exposes a YES / NO / VOID queue with evidence capture
+- Rebuilt `/admin/resolution` now also exposes one-shot settlement execution with payout / refund summary readback
+- Secure settlement write route added at `POST /api/admin/settlement`
+- Repo migration added for settlement idempotency + audit trail (`0016_week5_settlement_engine.sql`)
+- Public market detail read model now includes recorded resolution metadata when present
+- Public/admin read models now include settlement summary when a market is settled
 - Week 5 runtime migration applied on active Supabase (`0014_week5_admin_resolution_ops.sql`)
 - Admin write-path smoke pass completed on production (status transitions + VOID resolution + public readback)
-- Public market detail read model now includes recorded resolution metadata when present
 
 ## In progress
-- Week 5 gate: first admin lifecycle + resolution increment is in code, with settlement/settled-state still open
+- Week 5 gate: settlement engine increment is now in repo and locally verified, with migrated-runtime apply/smoke still open
 - Final-product requirement locked: users can set/update nickname
 - Build-plan-first execution: market-content changes paused until pre-launch readiness gate
 - Week 4 rebuilt-surface pass now includes live execute interaction on `/markets/[slug]` and live portfolio/trade reflection on `/portfolio`
@@ -56,14 +60,14 @@ Last updated: 2026-04-13 00:40 (Athens)
 ## Deferred by plan discipline
 - Quote/trade ticket UI rebuild
 - Portfolio live UI rebuild
-- Settlement engine + settled-state UI work
+- Runtime apply + smoke for the new settlement migration
 
 ## Latest verification result
 - PASS `npm run typecheck`
 - PASS `npm run test:week3`
-- PASS `npm run test:week5`
+- PASS `npm run test:week5` (now includes deterministic settlement + VOID refund coverage)
 - PASS `npm run build`
-- PASS rebuilt Week 5 surfaces in code: `/admin/markets` lifecycle controls, `/admin/resolution` YES/NO/VOID queue, public `/markets/[slug]` resolution readback
+- PASS rebuilt Week 5 surfaces in code: `/admin/markets` lifecycle controls, `/admin/resolution` YES/NO/VOID queue plus settlement closeout, public `/markets/[slug]` resolution + settlement readback
 - PASS production admin write-path smoke: `POST /api/admin/markets/[marketId]/status` and `POST /api/admin/resolution` (VOID path) with resolved readback on `/api/markets/[slug]`
 - PASS deployed no-auth smoke for `/api/health`, `/api/markets`, `/api/quotes/preview`
 - PASS deployed auth smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, `/api/trades/history`
@@ -76,5 +80,6 @@ Last updated: 2026-04-13 00:40 (Athens)
 - No active blocker on Week 3 closure criteria
 - No active blocker on Week 4 closure criteria
 - Week 5 admin lifecycle/resolution increment is operational on runtime
-- Settlement engine and settled-state payout/void-refund verification are still open
+- Settlement engine, settled-state readback, and deterministic tests are in repo and locally green
+- Active blocker: runtime application of `0016_week5_settlement_engine.sql` and post-migration operator smoke for payout + VOID refund paths
 - Primary focus remains operational stability and launch readiness without stage-skipping

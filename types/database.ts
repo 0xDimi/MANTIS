@@ -74,6 +74,38 @@ export type Database = {
           created_at: string;
         };
       };
+      market_settlements: {
+        Row: {
+          id: string;
+          market_id: string;
+          resolution_id: string;
+          settled_by: string;
+          outcome: 'yes' | 'no' | 'void';
+          affected_accounts: number;
+          total_payout: number;
+          total_refund: number;
+          total_realized_pnl: number;
+          created_at: string;
+        };
+      };
+      market_settlement_entries: {
+        Row: {
+          id: string;
+          settlement_id: string;
+          market_id: string;
+          user_id: string;
+          wallet_account_id: string;
+          ledger_entry_id: string | null;
+          payout_amount: number;
+          refund_amount: number;
+          realized_delta: number;
+          yes_shares_closed: number;
+          no_shares_closed: number;
+          yes_cost_basis_closed: number;
+          no_cost_basis_closed: number;
+          created_at: string;
+        };
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
