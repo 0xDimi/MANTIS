@@ -504,9 +504,9 @@ pass "/api/portfolio/summary post-trade wallet=${PORTFOLIO_AFTER} ${WALLET_DELTA
 
 request_json GET "$BASE_URL/api/trades/history?limit=10" '' "$AUTH_COOKIE"
 expect_status 200 'trade history failed'
-expect_jq --arg marketId "$MARKET_ID" --arg side "$SMOKE_SIDE" --arg action "$SMOKE_ACTION" --argjson amount "$SMOKE_TRADE_AMOUNT_EUR" '
+expect_jq --arg marketId "$MARKET_ID" --arg side "$SMOKE_SIDE" --arg action "$SMOKE_ACTION" '
   (.count | numbers) > 0 and
-  ([.trades[] | select(.marketId == $marketId and .side == $side and .action == $action and (.grossAmount | numbers) >= ($amount - 0.01))] | length) > 0
+  ([.trades[] | select(.marketId == $marketId and .side == $side and .action == $action)] | length) > 0
 ' 'trade history did not include the executed smoke trade'
 HISTORY_COUNT="$(jq -r '.count' "$RESPONSE_FILE")"
 HISTORY_MATCH_SUMMARY="$(expect_history_trade_consistency "$RESPONSE_FILE" "$MARKET_ID" "$SMOKE_SIDE" "$SMOKE_ACTION" "$QUOTE_SHARE_DELTA" "$QUOTE_AVG_PRICE" "$QUOTE_GROSS_AMOUNT" "$QUOTE_FEE_AMOUNT")"

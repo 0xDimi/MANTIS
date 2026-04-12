@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-12 14:52 (Athens)
+Last updated: 2026-04-12 23:29 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -34,7 +34,7 @@ Last updated: 2026-04-12 14:52 (Athens)
   - [x] `/markets/[slug]` rebuilt against `GET /api/markets/[slug]`
   - [x] rules/source panels now DB-backed (`source_primary`, `source_fallback`, `void_rule`)
   - [x] initial live state/chart presentation added from market state fields
-- [ ] Week 3, AMM v0 quote engine, slippage/depth, preview/expiry
+- [x] Week 3, AMM v0 quote engine, slippage/depth, preview/expiry
   - [x] quote preview remains SoT-aligned with `xyz_amm_package_v0`
   - [x] preview/execute now reject invalid trade enums before repricing or execution
   - [x] quote expiry is capped by market `close_time`
@@ -42,8 +42,8 @@ Last updated: 2026-04-12 14:52 (Athens)
   - [x] execute mirrors exposure/share-availability checks before the SQL RPC
   - [x] deterministic guardrail coverage added via `npm run test:week3`
   - [x] deployed no-auth smoke verified for `/api/health`, `/api/markets`, `/api/quotes/preview`
-  - [ ] rebuilt `/markets/[slug]` still does not expose a Week 3 quote preview/ticket interaction
-  - [ ] authenticated execute/portfolio/history smoke needs tester credentials or cookie injection to rerun from this session
+  - [x] rebuilt `/markets/[slug]` now exposes Week 3 quote preview + expiry interaction (`POST /api/quotes/preview`)
+  - [x] authenticated execute/portfolio/history smoke rerun passes on production via temporary smoke tester provisioning
 - [ ] Week 4, execute/ledger/portfolio/realtime
   - backend pieces exist
   - out-of-sequence UI work paused
@@ -51,12 +51,12 @@ Last updated: 2026-04-12 14:52 (Athens)
 - [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
 
 ## Active week
-Week 3
+Week 4
 
 ## Active week remaining items
-1. Decide whether Week 3 closure requires a minimal rebuilt quote preview/ticket on `/markets/[slug]`; the API layer is ready, but the rebuilt route is still read-only.
-2. Rerun authenticated smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, and `/api/trades/history` once tester credentials or a valid auth cookie are injected.
-3. Keep Week 4 execution/UI scope paused until Week 3 route-surface closure is explicitly accepted.
+1. Keep trade execution/ledger path stable while wiring Week 4 rebuilt-surface execution touchpoints.
+2. Verify position/portfolio updates are reflected end-to-end on rebuilt routes.
+3. Validate realtime state update path on live routes.
 4. Keep markets unchanged until launch-readiness gate.
 
 ## Locked final-product requirement

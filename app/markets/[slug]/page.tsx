@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { AlphaShell } from '@/components/alpha-shell';
+import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { ProbabilitySplit } from '@/components/probability-split';
 import { loadMarketDetail } from '@/lib/alpha-read-model';
 import { formatCompact, formatDateTime, formatPercent, formatRelativeHours } from '@/lib/format';
@@ -175,6 +176,16 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
                 </div>
               </div>
             </article>
+          </section>
+
+          <section>
+            <MarketQuotePreviewCard
+              marketId={market.id}
+              marketStatus={market.status}
+              closeTime={market.closeTime}
+              yesLabel={market.yesLabel}
+              noLabel={market.noLabel}
+            />
           </section>
         </>
       ) : (

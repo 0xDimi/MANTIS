@@ -1,11 +1,11 @@
 # Alpha Live Status
 
-Last updated: 2026-04-12 14:52 (Athens)
+Last updated: 2026-04-12 23:29 (Athens)
 
 ## Current phase
 - Week 2 markets rebuild is complete
-- Week 3 API hardening and deterministic verification are complete
-- Week 3 rebuilt-surface closure is still open because `/markets/[slug]` does not yet expose a rebuilt quote preview/ticket flow
+- Week 3 gate is fully closed (API hardening + rebuilt preview surface + authenticated smoke rerun)
+- Week 4 execution/ledger/portfolio/realtime validation is now active
 
 ## Live build/run state
 - Branch: `alpha`
@@ -33,13 +33,16 @@ Last updated: 2026-04-12 14:52 (Athens)
   - preview + execute both reject trading after `close_time` even if status has not flipped yet
   - execute now mirrors exposure/share-availability checks before the SQL RPC
 - Deterministic Week 3 guardrail tests added and passing via `npm run test:week3`
+- Rebuilt market detail now includes live quote preview + expiry interaction card (client flow on `/markets/[slug]`)
 - `npm run typecheck` passes
 - `npm run build` passes
 - Canonical no-auth smoke passes on deployed app for `/api/health`, `/api/markets`, and `/api/quotes/preview`
+- Authenticated production smoke passes for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, and `/api/trades/history`
+- Trade execution RPC parity restored on remote DB by applying idempotent signature migration (`0011_trade_execution_idempotency.sql`)
+- Market-state LMSR drift corrected on remote DB (`0013_realign_market_state_prices_with_lmsr.sql`)
 
 ## In progress
-- Week 3 rebuilt-surface closure on `/markets/[slug]` (the page is still read-only and does not yet render a rebuilt quote preview/ticket flow)
-- Authenticated execution smoke re-run for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, and `/api/trades/history`
+- Week 4 gate: execution/ledger/portfolio/realtime path validation on rebuilt surfaces
 - Final-product requirement locked: users can set/update nickname
 - Build-plan-first execution: market-content changes paused until pre-launch readiness gate
 
@@ -53,10 +56,10 @@ Last updated: 2026-04-12 14:52 (Athens)
 - PASS `npm run test:week3`
 - PASS `npm run build`
 - PASS deployed no-auth smoke for `/api/health`, `/api/markets`, `/api/quotes/preview`
+- PASS deployed auth smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, `/api/trades/history`
 - Historical PASS remains on first-login bootstrap: fresh tester record receives both `profiles` and `wallet_accounts` rows with expected default values
 
 ## Current blockers / needs
 - No blocking issue on Week 1 auth path
-- Full auth-only smoke was not rerun from this session because no smoke tester credentials or prebuilt auth cookie were injected
-- Week 3 cannot be called fully closed on rebuilt product surfaces until `/markets/[slug]` exposes the rebuilt quote preview/expiry interaction
+- No active blocker on Week 3 closure criteria
 - Primary focus remains operational stability and launch readiness without stage-skipping
