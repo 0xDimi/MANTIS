@@ -1,9 +1,11 @@
 # Alpha Live Status
 
-Last updated: 2026-04-12 14:41 (Athens)
+Last updated: 2026-04-12 14:52 (Athens)
 
 ## Current phase
-- Week 2 markets rebuild complete, Week 3 verification pass started
+- Week 2 markets rebuild is complete
+- Week 3 API hardening and deterministic verification are complete
+- Week 3 rebuilt-surface closure is still open because `/markets/[slug]` does not yet expose a rebuilt quote preview/ticket flow
 
 ## Live build/run state
 - Branch: `alpha`
@@ -23,13 +25,21 @@ Last updated: 2026-04-12 14:41 (Athens)
 - Signed-in profile and wallet visibility added to `/profile`
 - Fresh tester bootstrap verified: new auth user received `profiles` + `wallet_accounts` rows with the default `PAPER_EUR` €1,000 balance
 - Missing profile/wallet rows now self-heal from server-side bootstrap fallback in `/profile` and `/api/me`
-- `npm run build` passes after the Week 1 verification hardening
 - Rebuild tracking doc added: `docs/ALPHA_REBUILD_TRACK.md`
 - Week 2 lane committed: board/detail rebuilt on internal API read model (`a7667ff`)
+- Week 3 API hardening landed on `POST /api/quotes/preview` and `POST /api/trades/execute`
+  - invalid `side` / `action` values now fail before repricing or execution
+  - quote expiry is capped by market `close_time`
+  - preview + execute both reject trading after `close_time` even if status has not flipped yet
+  - execute now mirrors exposure/share-availability checks before the SQL RPC
+- Deterministic Week 3 guardrail tests added and passing via `npm run test:week3`
+- `npm run typecheck` passes
+- `npm run build` passes
+- Canonical no-auth smoke passes on deployed app for `/api/health`, `/api/markets`, and `/api/quotes/preview`
 
 ## In progress
-- Week 3 gate validation on rebuilt surfaces (quote/preview/expiry behavior)
-- Slippage/depth and exposure-check verification against AMM source-of-truth
+- Week 3 rebuilt-surface closure on `/markets/[slug]` (the page is still read-only and does not yet render a rebuilt quote preview/ticket flow)
+- Authenticated execution smoke re-run for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, and `/api/trades/history`
 - Final-product requirement locked: users can set/update nickname
 - Build-plan-first execution: market-content changes paused until pre-launch readiness gate
 
@@ -39,9 +49,14 @@ Last updated: 2026-04-12 14:41 (Athens)
 - Admin/resolution/settlement UI work
 
 ## Latest verification result
-- PASS for deployed magic-link flow after config fix
-- PASS for first-login bootstrap: fresh tester record receives both `profiles` and `wallet_accounts` rows with expected default values
+- PASS `npm run typecheck`
+- PASS `npm run test:week3`
+- PASS `npm run build`
+- PASS deployed no-auth smoke for `/api/health`, `/api/markets`, `/api/quotes/preview`
+- Historical PASS remains on first-login bootstrap: fresh tester record receives both `profiles` and `wallet_accounts` rows with expected default values
 
 ## Current blockers / needs
 - No blocking issue on Week 1 auth path
-- Primary focus is Week 3-6 operational stability and launch readiness without stage-skipping
+- Full auth-only smoke was not rerun from this session because no smoke tester credentials or prebuilt auth cookie were injected
+- Week 3 cannot be called fully closed on rebuilt product surfaces until `/markets/[slug]` exposes the rebuilt quote preview/expiry interaction
+- Primary focus remains operational stability and launch readiness without stage-skipping

@@ -2,6 +2,15 @@ import { NextResponse } from 'next/server';
 import { buildAmmV0Quote, type TradeAction, type TradeInputMode, type TradeSide } from '@/lib/amm-v0';
 import { alphaGuardrails } from '@/lib/alpha-guardrails';
 import { buildQuoteHash } from '@/lib/quote-hash';
+import {
+  TradeRequestError,
+  assertMarketOpenForTrading,
+  evaluateUserTradeLimits,
+  parseTradeAction,
+  parseTradeSide,
+  resolveQuoteExpiry,
+  resolveTradeInputMode
+} from '@/lib/trade-guards';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 type PreviewBody = {
@@ -16,20 +25,11 @@ type PreviewBody = {
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as PreviewBody;
-    const side = body.side;
-    const action = body.action ?? 'buy';
+    const side = parseTradeSide(body.side);
+    const action = parseTradeAction(body.action, 'buy');
     const amountEur = Number(body.amountEur ?? 0);
     const shareAmount = Number(body.shareAmount ?? 0);
-
-    if (!side || (side !== 'yes' && side !== 'no')) {
-      return NextResponse.json({ error: 'side must be yes or no' }, { status: 400 });
-    }
-
-    if (action !== 'buy' && action !== 'sell') {
-      return NextResponse.json({ error: 'action must be buy or sell' }, { status: 400 });
-    }
-
-    const inputMode: TradeInputMode = action === 'buy' ? 'total_cash' : body.shareAmount ? 'shares' : 'gross_cash';
+    const inputMode: TradeInputMode = resolveTradeInputMode(action, body.shareAmount);
     const sizeValue = inputMode === 'shares' ? shareAmount : amountEur;
 
     if (!Number.isFinite(sizeValue) || sizeValue <= 0) {
@@ -73,9 +73,10 @@ export async function POST(request: Request) {
 
     const marketRow = market as any;
 
-    if (marketRow.status !== 'open') {
-      return NextResponse.json({ error: `market is ${marketRow.status}, not open` }, { status: 409 });
-    }
+    assertMarketOpenForTrading({
+      status: marketRow.status,
+      closeTime: marketRow.close_time
+    });
 
     const { data: state, error: stateError } = await supabase
       .from('market_state')
@@ -150,38 +151,29 @@ export async function POST(request: Request) {
       }
 
       const positionRow = (position as any) ?? null;
-      const currentExposure = Number(positionRow?.yes_cost_basis ?? 0) + Number(positionRow?.no_cost_basis ?? 0);
-      const availableShares =
-        action === 'sell' ? Number(side === 'yes' ? positionRow?.yes_shares ?? 0 : positionRow?.no_shares ?? 0) : null;
-      const exposureAfter = action === 'buy' ? currentExposure + quote.totalAmountEur : null;
-
-      if (action === 'buy' && exposureAfter !== null && exposureAfter > alphaGuardrails.maxUserExposurePerMarketEur) {
-        return NextResponse.json(
-          {
-            error: `trade exceeds max user exposure per market (${alphaGuardrails.maxUserExposurePerMarketEur})`
-          },
-          { status: 400 }
-        );
-      }
-
-      if (action === 'sell' && availableShares != null && availableShares + 1e-8 < quote.shareDelta) {
-        return NextResponse.json(
-          {
-            error: `insufficient ${side} shares for requested sell size`
-          },
-          { status: 400 }
-        );
-      }
+      const userLimitState = evaluateUserTradeLimits({
+        action,
+        side,
+        shareDelta: quote.shareDelta,
+        totalAmountEur: quote.totalAmountEur,
+        currentExposureEur: Number(positionRow?.yes_cost_basis ?? 0) + Number(positionRow?.no_cost_basis ?? 0),
+        availableShares: action === 'sell' ? Number(side === 'yes' ? positionRow?.yes_shares ?? 0 : positionRow?.no_shares ?? 0) : null,
+        maxUserExposureEur: alphaGuardrails.maxUserExposurePerMarketEur
+      });
 
       userLimits = {
-        openExposureEur: currentExposure,
-        exposureAfterEur: exposureAfter,
-        availableShares
+        openExposureEur: userLimitState.openExposureEur,
+        exposureAfterEur: userLimitState.exposureAfterEur,
+        availableShares: userLimitState.availableShares
       };
     }
 
     const issuedAt = new Date();
-    const expiresAt = new Date(issuedAt.getTime() + alphaGuardrails.quoteTtlSeconds * 1000);
+    const expiresAt = resolveQuoteExpiry({
+      closeTime: marketRow.close_time,
+      now: issuedAt,
+      ttlSeconds: alphaGuardrails.quoteTtlSeconds
+    });
 
     const quoteHash = buildQuoteHash({
       marketId: marketRow.id,
@@ -232,6 +224,10 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
+    if (error instanceof TradeRequestError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
+
     return NextResponse.json(
       {
         error: 'quote preview unavailable',

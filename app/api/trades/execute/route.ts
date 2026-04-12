@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { buildAmmV0Quote } from '@/lib/amm-v0';
 import { alphaGuardrails } from '@/lib/alpha-guardrails';
 import { buildQuoteHash } from '@/lib/quote-hash';
+import {
+  TradeRequestError,
+  assertMarketOpenForTrading,
+  evaluateUserTradeLimits,
+  parseTradeAction,
+  parseTradeSide,
+  resolveTradeInputMode
+} from '@/lib/trade-guards';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -28,9 +36,11 @@ export async function POST(request: Request) {
       );
     }
 
+    const side = parseTradeSide(body.side);
+    const action = parseTradeAction(body.action);
     const amountEur = Number(body.amountEur);
     const shareAmount = Number(body.shareAmount ?? 0);
-    const inputMode = body.action === 'buy' ? 'total_cash' : body.shareAmount ? 'shares' : 'gross_cash';
+    const inputMode = resolveTradeInputMode(action, body.shareAmount);
 
     if (inputMode === 'shares') {
       if (!Number.isFinite(shareAmount) || shareAmount <= 0) {
@@ -70,7 +80,7 @@ export async function POST(request: Request) {
 
     const { data: market, error: marketError } = await supabase
       .from('markets')
-      .select('id,status,b_liquidity,fee_bps')
+      .select('id,status,b_liquidity,fee_bps,close_time')
       .eq('id', body.marketId)
       .limit(1)
       .maybeSingle();
@@ -84,9 +94,13 @@ export async function POST(request: Request) {
     }
 
     const marketRow = market as any;
+    const closeTime = assertMarketOpenForTrading({
+      status: marketRow.status,
+      closeTime: marketRow.close_time
+    });
 
-    if (marketRow.status !== 'open') {
-      return NextResponse.json({ error: `market is ${marketRow.status}, not open` }, { status: 409 });
+    if (closeTime && expiresAtMs > closeTime.getTime()) {
+      return NextResponse.json({ error: 'quote expiry exceeds market close, request a fresh quote' }, { status: 409 });
     }
 
     const { data: state, error: stateError } = await supabase
@@ -110,8 +124,8 @@ export async function POST(request: Request) {
 
     try {
       quote = buildAmmV0Quote({
-        side: body.side,
-        action: body.action,
+        side,
+        action,
         amountEur: inputMode === 'shares' ? undefined : amountEur,
         shareAmount: inputMode === 'shares' ? shareAmount : undefined,
         inputMode,
@@ -140,8 +154,8 @@ export async function POST(request: Request) {
 
     const serverQuoteHash = buildQuoteHash({
       marketId: marketRow.id,
-      side: body.side,
-      action: body.action,
+      side,
+      action,
       inputMode,
       amountEur: inputMode === 'shares' ? null : amountEur,
       shareAmount: inputMode === 'shares' ? shareAmount : null,
@@ -163,13 +177,37 @@ export async function POST(request: Request) {
       );
     }
 
+    const { data: position, error: positionError } = await supabase
+      .from('positions')
+      .select('yes_shares,no_shares,yes_cost_basis,no_cost_basis')
+      .eq('user_id', user.id)
+      .eq('market_id', marketRow.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (positionError) {
+      return NextResponse.json({ error: positionError.message }, { status: 500 });
+    }
+
+    const positionRow = (position as any) ?? null;
+
+    evaluateUserTradeLimits({
+      action,
+      side,
+      shareDelta: quote.shareDelta,
+      totalAmountEur: quote.totalAmountEur,
+      currentExposureEur: Number(positionRow?.yes_cost_basis ?? 0) + Number(positionRow?.no_cost_basis ?? 0),
+      availableShares: action === 'sell' ? Number(side === 'yes' ? positionRow?.yes_shares ?? 0 : positionRow?.no_shares ?? 0) : null,
+      maxUserExposureEur: alphaGuardrails.maxUserExposurePerMarketEur
+    });
+
     const admin = getSupabaseAdminClient();
 
     const { data: executionData, error: executionError } = await (admin as any).rpc('execute_alpha_trade', {
       p_user_id: user.id,
       p_market_id: marketRow.id,
-      p_side: body.side,
-      p_action: body.action,
+      p_side: side,
+      p_action: action,
       p_amount: quote.amountEur,
       p_avg_price: quote.averagePrice,
       p_share_delta: quote.shareDelta,
@@ -220,6 +258,10 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
+    if (error instanceof TradeRequestError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
+
     return NextResponse.json(
       {
         error: 'trade execution unavailable',

@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-12 13:46 (Athens)
+Last updated: 2026-04-12 14:52 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -35,8 +35,15 @@ Last updated: 2026-04-12 13:46 (Athens)
   - [x] rules/source panels now DB-backed (`source_primary`, `source_fallback`, `void_rule`)
   - [x] initial live state/chart presentation added from market state fields
 - [ ] Week 3, AMM v0 quote engine, slippage/depth, preview/expiry
-  - backend exists and is SoT-aligned
-  - active week is now formal Week 3 closure on rebuilt surfaces
+  - [x] quote preview remains SoT-aligned with `xyz_amm_package_v0`
+  - [x] preview/execute now reject invalid trade enums before repricing or execution
+  - [x] quote expiry is capped by market `close_time`
+  - [x] preview/execute reject trading after `close_time` even if market status lags
+  - [x] execute mirrors exposure/share-availability checks before the SQL RPC
+  - [x] deterministic guardrail coverage added via `npm run test:week3`
+  - [x] deployed no-auth smoke verified for `/api/health`, `/api/markets`, `/api/quotes/preview`
+  - [ ] rebuilt `/markets/[slug]` still does not expose a Week 3 quote preview/ticket interaction
+  - [ ] authenticated execute/portfolio/history smoke needs tester credentials or cookie injection to rerun from this session
 - [ ] Week 4, execute/ledger/portfolio/realtime
   - backend pieces exist
   - out-of-sequence UI work paused
@@ -47,11 +54,10 @@ Last updated: 2026-04-12 13:46 (Athens)
 Week 3
 
 ## Active week remaining items
-1. Validate AMM v0 quote behavior end-to-end on rebuilt routes using `xyz_amm_package_v0` expectations.
-2. Verify slippage/depth and exposure checks at Week 3 gate level.
-3. Confirm quote preview + expiry behavior on the rebuilt product surfaces.
-4. Close Week 3 without pulling Week 4 execution/UI scope early.
-5. Keep markets unchanged until launch-readiness gate.
+1. Decide whether Week 3 closure requires a minimal rebuilt quote preview/ticket on `/markets/[slug]`; the API layer is ready, but the rebuilt route is still read-only.
+2. Rerun authenticated smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, and `/api/trades/history` once tester credentials or a valid auth cookie are injected.
+3. Keep Week 4 execution/UI scope paused until Week 3 route-surface closure is explicitly accepted.
+4. Keep markets unchanged until launch-readiness gate.
 
 ## Locked final-product requirement
 - Users must be able to set and update their own nickname (profile display name).
@@ -62,3 +68,4 @@ Week 3
 2. Ledger writes + wallet updates verification.
 3. Position updates + portfolio summary integration on rebuilt surfaces.
 4. Realtime state update path verification.
+5. Preserve the market-slate freeze while moving into Week 4 verification.

@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:week3": "node --experimental-strip-types --loader ./tests/alias-loader.mjs --test tests/week3-quote-guards.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
