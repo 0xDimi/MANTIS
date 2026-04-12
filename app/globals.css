@@ -166,12 +166,15 @@ code {
 .statusList,
 .stackXs,
 .stackSm,
-.stackMd {
+.stackMd,
+.marketBoard,
+.metricGridCompact {
   display: grid;
 }
 
 .statusList,
-.stackSm {
+.stackSm,
+.marketBoard {
   gap: 12px;
 }
 
@@ -179,7 +182,8 @@ code {
   gap: 8px;
 }
 
-.stackMd {
+.stackMd,
+.metricGridCompact {
   gap: 16px;
 }
 
@@ -234,6 +238,108 @@ code {
   border: 1px solid rgba(148, 163, 184, 0.12);
   color: #dce9ff;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+}
+
+.marketBoard {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.marketCard {
+  display: grid;
+  gap: 18px;
+}
+
+.marketCardHeader,
+.marketCardMeta,
+.detailTitleRow,
+.splitLegend {
+  display: flex;
+  gap: 12px;
+}
+
+.marketCardHeader,
+.detailTitleRow,
+.splitLegend {
+  justify-content: space-between;
+}
+
+.marketCardHeader,
+.detailTitleRow {
+  align-items: flex-start;
+}
+
+.marketCardMeta {
+  flex-wrap: wrap;
+}
+
+.marketQuestion {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.metricGridCompact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.metricTile,
+.panelBlock {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(3, 10, 20, 0.42);
+}
+
+.metricTileLabel,
+.splitSectionLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7fb0ff;
+}
+
+.metricTileValue {
+  margin-top: 8px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.metricTileValueSmall {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.panelText {
+  margin: 8px 0 0;
+  line-height: 1.6;
+  color: #dce9ff;
+}
+
+.splitBar {
+  display: flex;
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.splitBarCompact {
+  height: 12px;
+}
+
+.splitBarYes {
+  background: linear-gradient(90deg, rgba(20, 184, 106, 0.9), rgba(61, 214, 136, 0.78));
+}
+
+.splitBarNo {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.72), rgba(248, 113, 113, 0.92));
+}
+
+.splitLegend {
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -342,8 +448,15 @@ code {
     justify-content: flex-start;
   }
 
-  .statusRow {
+  .statusRow,
+  .marketCardHeader,
+  .detailTitleRow,
+  .splitLegend {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .metricGridCompact {
+    grid-template-columns: 1fr;
   }
 }

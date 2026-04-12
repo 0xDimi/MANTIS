@@ -34,6 +34,10 @@
 - Invite-only alpha operations prep
 - Runbook + closed-alpha launch readiness
 
+## Final product note
+- Users must be able to set and update their own nickname (profile display name).
+- Keep that requirement sequenced into the real product track without derailing the active week.
+
 ## Principle
 Compress timeline, not quality.
 No stage skipped. No fake core logic.

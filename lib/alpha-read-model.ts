@@ -1,48 +1,170 @@
+import { unstable_noStore as noStore } from 'next/cache';
+import { headers } from 'next/headers';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+
+export type BoardMarket = {
+  id: string;
+  slug: string;
+  question: string;
+  category: string;
+  status: string;
+  feeBps: number;
+  liquidity: number;
+  closeTime: string;
+  state: {
+    yesPrice: number;
+    noPrice: number;
+    volumeTotal: number;
+    participantsCount: number;
+    lastTradeAt: string | null;
+  } | null;
+};
+
+export type MarketDetailRead = {
+  id: string;
+  slug: string;
+  question: string;
+  description: string | null;
+  category: string;
+  status: string;
+  closeTime: string;
+  resolutionTime: string | null;
+  sourcePrimary: string;
+  sourceFallback: string | null;
+  voidRule: string;
+  yesLabel: string;
+  noLabel: string;
+  liquidity: number;
+  feeBps: number;
+};
+
+export type MarketStateRead = {
+  marketId: string;
+  qYes: number;
+  qNo: number;
+  yesPrice: number;
+  noPrice: number;
+  lastTradeAt: string | null;
+  volumeTotal: number;
+  openInterest: number;
+  participantsCount: number;
+} | null;
+
+type MarketsApiResponse = {
+  markets: Array<{
+    id: string;
+    slug: string;
+    question: string;
+    category: string;
+    status: string;
+    close_time: string;
+    fee_bps: number;
+    b_liquidity: number;
+    state: {
+      yes_price: number;
+      no_price: number;
+      volume_total: number;
+      participants_count: number;
+      last_trade_at: string | null;
+    } | null;
+  }>;
+};
+
+type MarketDetailApiResponse = {
+  market: {
+    id: string;
+    slug: string;
+    question: string;
+    description: string | null;
+    category: string;
+    status: string;
+    close_time: string;
+    resolution_time: string | null;
+    source_primary: string;
+    source_fallback: string | null;
+    void_rule: string;
+    yes_label: string;
+    no_label: string;
+    b_liquidity: number;
+    fee_bps: number;
+  } | null;
+  state: {
+    market_id: string;
+    q_yes: number;
+    q_no: number;
+    yes_price: number;
+    no_price: number;
+    last_trade_at: string | null;
+    volume_total: number;
+    open_interest: number;
+    participants_count: number;
+  } | null;
+};
+
+async function getRequestBaseUrl() {
+  const headerStore = await headers();
+  const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host');
+
+  if (!host) {
+    throw new Error('request host unavailable for internal API read');
+  }
+
+  const protocol =
+    headerStore.get('x-forwarded-proto') ?? (host.includes('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https');
+
+  return `${protocol}://${host}`;
+}
+
+async function readJson<T>(path: string) {
+  noStore();
+
+  const baseUrl = await getRequestBaseUrl();
+  const response = await fetch(`${baseUrl}${path}`, {
+    cache: 'no-store'
+  });
+
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const errorMessage =
+      payload && typeof payload === 'object' && 'error' in payload && typeof payload.error === 'string'
+        ? payload.error
+        : `request failed (${response.status})`;
+
+    throw new Error(errorMessage);
+  }
+
+  return payload as T;
+}
 
 export async function loadMarketsBoard() {
   try {
-    const supabase = await getSupabaseServerClient();
+    const payload = await readJson<MarketsApiResponse>('/api/markets');
 
-    const { data, error } = await supabase
-      .from('markets')
-      .select(
-        'id,slug,question,category,status,b_liquidity,close_time,market_state(yes_price,no_price,volume_total,participants_count,last_trade_at)'
-      )
-      .order('close_time', { ascending: true })
-      .limit(30);
-
-    if (error) {
-      return { markets: [], error: error.message };
-    }
-
-    const markets = ((data ?? []) as any[]).map((market) => {
-      const state = Array.isArray(market.market_state) ? market.market_state[0] : market.market_state;
-
-      return {
-        id: market.id as string,
-        slug: market.slug as string,
-        question: market.question as string,
-        category: market.category as string,
-        status: market.status as string,
-        depth: Number(market.b_liquidity ?? 0),
-        closeTime: market.close_time as string,
-        state: state
-          ? {
-              yesPrice: Number(state.yes_price ?? 0),
-              noPrice: Number(state.no_price ?? 0),
-              volumeTotal: Number(state.volume_total ?? 0),
-              participantsCount: Number(state.participants_count ?? 0),
-              lastTradeAt: state.last_trade_at as string | null
-            }
-          : null
-      };
-    });
+    const markets: BoardMarket[] = (payload.markets ?? []).map((market) => ({
+      id: market.id,
+      slug: market.slug,
+      question: market.question,
+      category: market.category,
+      status: market.status,
+      feeBps: Number(market.fee_bps ?? 0),
+      liquidity: Number(market.b_liquidity ?? 0),
+      closeTime: market.close_time,
+      state: market.state
+        ? {
+            yesPrice: Number(market.state.yes_price ?? 0),
+            noPrice: Number(market.state.no_price ?? 0),
+            volumeTotal: Number(market.state.volume_total ?? 0),
+            participantsCount: Number(market.state.participants_count ?? 0),
+            lastTradeAt: market.state.last_trade_at ?? null
+          }
+        : null
+    }));
 
     return { markets, error: null };
   } catch (error) {
     return {
-      markets: [],
+      markets: [] as BoardMarket[],
       error: error instanceof Error ? error.message : 'unknown error'
     };
   }
@@ -50,57 +172,47 @@ export async function loadMarketsBoard() {
 
 export async function loadMarketDetail(slug: string) {
   try {
-    const supabase = await getSupabaseServerClient();
-
-    const { data: market, error: marketError } = await supabase
-      .from('markets')
-      .select(
-        'id,slug,question,description,category,status,close_time,resolution_time,source_primary,source_fallback,void_rule,yes_label,no_label,b_liquidity,fee_bps'
-      )
-      .eq('slug', slug)
-      .limit(1)
-      .maybeSingle();
-
-    if (marketError) {
-      return { market: null, state: null, error: marketError.message };
-    }
-
-    if (!market) {
-      return { market: null, state: null, error: null };
-    }
-
-    const marketRow = market as any;
-
-    const { data: state, error: stateError } = await supabase
-      .from('market_state')
-      .select('market_id,yes_price,no_price,volume_total,participants_count,last_trade_at')
-      .eq('market_id', marketRow.id)
-      .limit(1)
-      .maybeSingle();
-
-    if (stateError) {
-      return { market: marketRow, state: null, error: stateError.message };
-    }
-
-    const stateRow = state as any;
+    const payload = await readJson<MarketDetailApiResponse>(`/api/markets/${slug}`);
 
     return {
-      market: marketRow,
-      state: stateRow
-        ? {
-            yesPrice: Number(stateRow.yes_price ?? 0),
-            noPrice: Number(stateRow.no_price ?? 0),
-            volumeTotal: Number(stateRow.volume_total ?? 0),
-            participantsCount: Number(stateRow.participants_count ?? 0),
-            lastTradeAt: stateRow.last_trade_at as string | null
-          }
+      market: payload.market
+        ? ({
+            id: payload.market.id,
+            slug: payload.market.slug,
+            question: payload.market.question,
+            description: payload.market.description,
+            category: payload.market.category,
+            status: payload.market.status,
+            closeTime: payload.market.close_time,
+            resolutionTime: payload.market.resolution_time,
+            sourcePrimary: payload.market.source_primary,
+            sourceFallback: payload.market.source_fallback,
+            voidRule: payload.market.void_rule,
+            yesLabel: payload.market.yes_label,
+            noLabel: payload.market.no_label,
+            liquidity: Number(payload.market.b_liquidity ?? 0),
+            feeBps: Number(payload.market.fee_bps ?? 0)
+          } satisfies MarketDetailRead)
+        : null,
+      state: payload.state
+        ? ({
+            marketId: payload.state.market_id,
+            qYes: Number(payload.state.q_yes ?? 0),
+            qNo: Number(payload.state.q_no ?? 0),
+            yesPrice: Number(payload.state.yes_price ?? 0),
+            noPrice: Number(payload.state.no_price ?? 0),
+            lastTradeAt: payload.state.last_trade_at ?? null,
+            volumeTotal: Number(payload.state.volume_total ?? 0),
+            openInterest: Number(payload.state.open_interest ?? 0),
+            participantsCount: Number(payload.state.participants_count ?? 0)
+          } satisfies NonNullable<MarketStateRead>)
         : null,
       error: null
     };
   } catch (error) {
     return {
       market: null,
-      state: null,
+      state: null as MarketStateRead,
       error: error instanceof Error ? error.message : 'unknown error'
     };
   }
@@ -154,4 +266,3 @@ export async function loadPortfolioOverview() {
     };
   }
 }
-
