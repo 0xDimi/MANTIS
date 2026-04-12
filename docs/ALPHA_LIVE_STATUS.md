@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-12 23:29 (Athens)
+Last updated: 2026-04-13 00:16 (Athens)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -45,6 +45,7 @@ Last updated: 2026-04-12 23:29 (Athens)
 - Week 4 gate: execution/ledger/portfolio/realtime path validation on rebuilt surfaces
 - Final-product requirement locked: users can set/update nickname
 - Build-plan-first execution: market-content changes paused until pre-launch readiness gate
+- Week 4 rebuilt-surface pass now includes live execute interaction on `/markets/[slug]` and live portfolio/trade reflection on `/portfolio`
 
 ## Deferred by plan discipline
 - Quote/trade ticket UI rebuild
@@ -57,9 +58,11 @@ Last updated: 2026-04-12 23:29 (Athens)
 - PASS `npm run build`
 - PASS deployed no-auth smoke for `/api/health`, `/api/markets`, `/api/quotes/preview`
 - PASS deployed auth smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, `/api/trades/history`
+- PASS rebuilt route integration: quote preview + execute touchpoint visible on `/markets/[slug]`, live portfolio panel wired on `/portfolio`
 - Historical PASS remains on first-login bootstrap: fresh tester record receives both `profiles` and `wallet_accounts` rows with expected default values
 
 ## Current blockers / needs
 - No blocking issue on Week 1 auth path
 - No active blocker on Week 3 closure criteria
+- Remaining Week 4 item: one manual multi-trade UI loop before formal Week 4 close
 - Primary focus remains operational stability and launch readiness without stage-skipping

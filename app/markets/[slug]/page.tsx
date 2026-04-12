@@ -181,6 +181,7 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
           <section>
             <MarketQuotePreviewCard
               marketId={market.id}
+              marketSlug={market.slug}
               marketStatus={market.status}
               closeTime={market.closeTime}
               yesLabel={market.yesLabel}
