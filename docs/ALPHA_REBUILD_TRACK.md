@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-12 12:30 (Athens)
+Last updated: 2026-04-12 13:11 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -17,7 +17,7 @@ Last updated: 2026-04-12 12:30 (Athens)
 
 ## Week-by-week status
 - [x] Week 0, foundation shell, repo prep, baseline migrations
-- [ ] Week 1, auth foundation is **active**
+- [ ] Week 1, auth foundation is **active but blocked on live auth redirect config**
   - [x] core schema + first migrations in repo
   - [x] seed market candidates + wallet model defined
   - [x] app shell + route foundation exists in Next app
@@ -25,7 +25,9 @@ Last updated: 2026-04-12 12:30 (Athens)
   - [x] email magic-link request UI added
   - [x] auth callback/session exchange route added
   - [x] signed-in profile + wallet visibility page added
-  - [ ] live verification with real invited tester session still pending
+  - [x] first-login profile + wallet bootstrap verified against a fresh tester record
+  - [x] missing profile/wallet rows now self-heal via server-side bootstrap fallback (`/profile`, `/api/me`)
+  - [ ] live invited tester session still does not land in deployed Next app because Supabase magic links are redirecting to `http://localhost:3000`
 - [ ] Week 2, markets list/detail DB-backed, rules/source panels, state wiring
   - APIs exist
   - product-grade route rebuild still intentionally blocked until Week 1 is closed
@@ -42,9 +44,9 @@ Last updated: 2026-04-12 12:30 (Athens)
 Week 1
 
 ## Active week remaining items
-1. Validate real invited-email magic-link flow end to end in the deployed app.
-2. Confirm profile + wallet bootstrap land correctly after first session creation.
-3. Close any auth callback/session persistence bugs found in that verification.
+1. Fix Supabase Auth redirect configuration so magic links resolve to `https://xyz-labs-demo.vercel.app/auth/callback?next=%2Fprofile` instead of `http://localhost:3000`.
+2. Re-run the invited-email magic-link flow on the canonical app and confirm it lands on `/profile?auth=ok` with a persisted session.
+3. Keep Week 2 blocked until that live retest passes.
 
 ## Next week tasks, once Week 1 is fully green
 1. Rebuild the market board route against `GET /api/markets`.

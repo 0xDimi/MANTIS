@@ -1,9 +1,9 @@
 # Alpha Live Status
 
-Last updated: 2026-04-12 12:30 (Athens)
+Last updated: 2026-04-12 13:11 (Athens)
 
 ## Current phase
-- Week 1 completion pass, closing auth foundation before any Week 2+ route rebuild work continues
+- Week 1 verification pass is still active, but formal close is blocked until live magic links stop redirecting to localhost and land back in the deployed Next app
 
 ## Live build/run state
 - Branch: `alpha`
@@ -21,11 +21,13 @@ Last updated: 2026-04-12 12:30 (Athens)
 - Email magic-link request UI added to `/profile`
 - Auth callback/session exchange route added at `/auth/callback`
 - Signed-in profile and wallet visibility added to `/profile`
+- Fresh tester bootstrap verified: new auth user received `profiles` + `wallet_accounts` rows with the default `PAPER_EUR` €1,000 balance
+- Missing profile/wallet rows now self-heal from server-side bootstrap fallback in `/profile` and `/api/me`
+- `npm run build` passes after the Week 1 verification hardening
 - Rebuild tracking doc added: `docs/ALPHA_REBUILD_TRACK.md`
 
 ## In progress
-- End-to-end tester-session verification for Week 1
-- Confirm wallet/profile bootstrap on first successful invite login
+- Re-test live invited-email magic-link flow after auth redirect config is corrected in Supabase
 - Keep Week 2 market rebuild work paused until Week 1 is fully green
 
 ## Deferred by plan discipline
@@ -35,6 +37,10 @@ Last updated: 2026-04-12 12:30 (Athens)
 - Portfolio live UI rebuild
 - Admin/resolution/settlement UI work
 
+## Latest verification result
+- FAIL for deployed magic-link landing path: fresh tester magic link resolved to `http://localhost:3000/#access_token=...` instead of the deployed callback/app surface, so the live Next session callback path did not complete on `xyz-labs-demo.vercel.app`
+- PASS for first-login bootstrap: the same fresh tester record was created/confirmed in Supabase and had both `profiles` and `wallet_accounts` rows present with the expected default values
+
 ## Current blockers / needs
-- Need live invited tester-session verification to formally close Week 1
-- If wallet bootstrap is missing for newly authenticated users, inspect Supabase trigger/policy behavior before moving on
+- Supabase Auth redirect/site URL configuration still points live magic-link landings at localhost, which blocks formal Week 1 closure
+- After that config fix, rerun the invited tester flow on `https://xyz-labs-demo.vercel.app/profile` and confirm `/profile?auth=ok`

@@ -1,5 +1,27 @@
 import { NextResponse } from 'next/server';
+import { ensureViewerBootstrap } from '@/lib/supabase/bootstrap';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+
+async function readViewerBootstrap(supabase: Awaited<ReturnType<typeof getSupabaseServerClient>>, userId: string) {
+  const [{ data: profile, error: profileError }, { data: wallet, error: walletError }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('id,user_id,display_name,username,role,locale,created_at')
+      .eq('user_id', userId)
+      .maybeSingle(),
+    supabase
+      .from('wallet_accounts')
+      .select('id,user_id,currency,starting_balance,available_balance,realized_pnl,updated_at')
+      .eq('user_id', userId)
+      .maybeSingle()
+  ]);
+
+  return {
+    profile,
+    wallet,
+    error: profileError?.message ?? walletError?.message ?? null
+  };
+}
 
 export async function GET() {
   try {
@@ -17,18 +39,12 @@ export async function GET() {
       return NextResponse.json({ user: null }, { status: 200 });
     }
 
-    const [{ data: profile }, { data: wallet }] = await Promise.all([
-      supabase
-        .from('profiles')
-        .select('id,user_id,display_name,username,role,locale,created_at')
-        .eq('user_id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('wallet_accounts')
-        .select('id,user_id,currency,starting_balance,available_balance,realized_pnl,updated_at')
-        .eq('user_id', user.id)
-        .maybeSingle()
-    ]);
+    let { profile, wallet, error: bootstrapError } = await readViewerBootstrap(supabase, user.id);
+
+    if (!bootstrapError && (!profile || !wallet)) {
+      await ensureViewerBootstrap(user);
+      ({ profile, wallet, error: bootstrapError } = await readViewerBootstrap(supabase, user.id));
+    }
 
     return NextResponse.json(
       {
@@ -37,7 +53,8 @@ export async function GET() {
           email: user.email,
           profile,
           wallet
-        }
+        },
+        bootstrapError
       },
       { status: 200 }
     );

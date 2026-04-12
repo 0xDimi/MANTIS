@@ -2,6 +2,7 @@ import { AuthEmailForm } from '@/components/auth-email-form';
 import { SignOutButton } from '@/components/sign-out-button';
 import { AlphaShell } from '@/components/alpha-shell';
 import { formatDateTime, formatEur } from '@/lib/format';
+import { ensureViewerBootstrap } from '@/lib/supabase/bootstrap';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 type ViewerAccess = {
@@ -26,6 +27,29 @@ type ViewerAccess = {
   error: string | null;
 };
 
+async function readViewerBootstrap(supabase: Awaited<ReturnType<typeof getSupabaseServerClient>>, userId: string) {
+  const [{ data: profile, error: profileError }, { data: wallet, error: walletError }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('display_name,username,role,locale,created_at')
+      .eq('user_id', userId)
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from('wallet_accounts')
+      .select('currency,starting_balance,available_balance,realized_pnl,updated_at')
+      .eq('user_id', userId)
+      .limit(1)
+      .maybeSingle()
+  ]);
+
+  return {
+    profile: (profile as ViewerAccess['profile']) ?? null,
+    wallet: (wallet as ViewerAccess['wallet']) ?? null,
+    error: profileError?.message ?? walletError?.message ?? null
+  };
+}
+
 async function loadViewerAccess(): Promise<ViewerAccess> {
   try {
     const supabase = await getSupabaseServerClient();
@@ -42,31 +66,25 @@ async function loadViewerAccess(): Promise<ViewerAccess> {
       return { user: null, profile: null, wallet: null, error: null };
     }
 
-    const [{ data: profile, error: profileError }, { data: wallet, error: walletError }] = await Promise.all([
-      supabase
-        .from('profiles')
-        .select('display_name,username,role,locale,created_at')
-        .eq('user_id', user.id)
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from('wallet_accounts')
-        .select('currency,starting_balance,available_balance,realized_pnl,updated_at')
-        .eq('user_id', user.id)
-        .limit(1)
-        .maybeSingle()
-    ]);
+    let { profile, wallet, error } = await readViewerBootstrap(supabase, user.id);
+
+    if (!error && (!profile || !wallet)) {
+      try {
+        await ensureViewerBootstrap(user);
+        ({ profile, wallet, error } = await readViewerBootstrap(supabase, user.id));
+      } catch (bootstrapError) {
+        error = bootstrapError instanceof Error ? bootstrapError.message : 'viewer bootstrap failed';
+      }
+    }
 
     return {
-      user: user
-        ? {
-            id: user.id,
-            email: user.email
-          }
-        : null,
-      profile: (profile as ViewerAccess['profile']) ?? null,
-      wallet: (wallet as ViewerAccess['wallet']) ?? null,
-      error: profileError?.message ?? walletError?.message ?? null
+      user: {
+        id: user.id,
+        email: user.email
+      },
+      profile,
+      wallet,
+      error
     };
   } catch (error) {
     return {
