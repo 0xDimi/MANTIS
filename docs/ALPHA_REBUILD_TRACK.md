@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-13 00:51 (Athens)
+Last updated: 2026-04-13 01:06 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -50,7 +50,7 @@ Last updated: 2026-04-13 00:51 (Athens)
   - [x] rebuilt `/portfolio` now consumes live `/api/portfolio/summary` + `/api/trades/history`
   - [x] realtime update path added on rebuilt surfaces via 10s live polling
   - [x] multi-trade execution loop (buy + sell) verified with expected wallet/position/trade-history reflections
-- [ ] Week 5, admin lifecycle/resolution/settlement/audit
+- [x] Week 5, admin lifecycle/resolution/settlement/audit
   - [x] rebuilt `/admin/markets` now reads live market rows and exposes admin-only lifecycle controls for `draft` / `open` / `paused` / `closed`
   - [x] secure lifecycle write route added at `POST /api/admin/markets/[marketId]/status`
   - [x] lifecycle writes now validate allowed transitions before mutating and record audit-safe status changes via new SQL helper migration `0014_week5_admin_resolution_ops.sql`
@@ -64,16 +64,17 @@ Last updated: 2026-04-13 00:51 (Athens)
   - [x] repo migration `0016_week5_settlement_engine.sql` added for one-shot settlement writes, wallet/ledger adjustments, idempotent `market_settlements`, and audit-safe `market_settlement_entries`
   - [x] payout / void-refund ledger path implemented for resolved and void markets with settled-state readback on rebuilt admin/public surfaces
   - [x] deterministic settlement coverage added to `npm run test:week5`
-  - [ ] runtime migration `0016_week5_settlement_engine.sql` application + operator smoke on migrated runtime
-  - [ ] settled-state verification on deployed runtime after migration apply
+  - [x] runtime migration `0016_week5_settlement_engine.sql` application on active runtime
+  - [x] runtime fix migration `0017_fix_admin_settlement_market_id_ambiguity.sql` applied after production smoke surfaced PL/pgSQL ambiguity
+  - [x] operator smoke passed on migrated runtime for resolved payout + VOID refund paths (wallet/ledger/position reflections + settled readback)
 - [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
 
 ## Active week
-Week 5
+Week 6
 
 ## Active week remaining items
-1. Apply `0016_week5_settlement_engine.sql` on the active runtime.
-2. Run operator smoke for resolved payout and VOID refund paths against the migrated runtime.
+1. Add launch-readiness QA + telemetry checks and finalize operator runbook for incident/rollback handling.
+2. Execute full production smoke pack covering auth, markets, quote, execute, portfolio, admin lifecycle, resolution, and settlement paths.
 3. Keep markets unchanged until launch-readiness gate.
 
 ## Locked final-product requirement

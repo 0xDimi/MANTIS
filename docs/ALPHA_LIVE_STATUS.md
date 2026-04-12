@@ -1,12 +1,13 @@
 # Alpha Live Status
 
-Last updated: 2026-04-13 00:51 (Athens)
+Last updated: 2026-04-13 01:06 (Athens)
 
 ## Current phase
 - Week 2 markets rebuild is complete
 - Week 3 gate is fully closed (API hardening + rebuilt preview surface + authenticated smoke rerun)
 - Week 4 execution/ledger/portfolio/realtime gate is closed
-- Week 5 admin/resolution/settlement pass is in code, with runtime migration apply + operator smoke still pending
+- Week 5 admin/resolution/settlement gate is closed
+- Week 6 QA/telemetry/ops/runbook/launch-readiness pass is now active
 
 ## Live build/run state
 - Branch: `alpha`
@@ -46,13 +47,16 @@ Last updated: 2026-04-13 00:51 (Athens)
 - Rebuilt `/admin/resolution` now also exposes one-shot settlement execution with payout / refund summary readback
 - Secure settlement write route added at `POST /api/admin/settlement`
 - Repo migration added for settlement idempotency + audit trail (`0016_week5_settlement_engine.sql`)
+- Runtime migration applied on active Supabase (`0016_week5_settlement_engine.sql`)
+- Follow-up runtime fix applied for settlement RPC ambiguity (`0017_fix_admin_settlement_market_id_ambiguity.sql`)
 - Public market detail read model now includes recorded resolution metadata when present
 - Public/admin read models now include settlement summary when a market is settled
 - Week 5 runtime migration applied on active Supabase (`0014_week5_admin_resolution_ops.sql`)
 - Admin write-path smoke pass completed on production (status transitions + VOID resolution + public readback)
+- Settlement operator smoke pass completed on production (resolved payout + VOID refund + settled readback)
 
 ## In progress
-- Week 5 gate: settlement engine increment is now in repo and locally verified, with migrated-runtime apply/smoke still open
+- Week 6 quality/ops readiness increment (telemetry + runbook + launch checks)
 - Final-product requirement locked: users can set/update nickname
 - Build-plan-first execution: market-content changes paused until pre-launch readiness gate
 - Week 4 rebuilt-surface pass now includes live execute interaction on `/markets/[slug]` and live portfolio/trade reflection on `/portfolio`
@@ -60,7 +64,6 @@ Last updated: 2026-04-13 00:51 (Athens)
 ## Deferred by plan discipline
 - Quote/trade ticket UI rebuild
 - Portfolio live UI rebuild
-- Runtime apply + smoke for the new settlement migration
 
 ## Latest verification result
 - PASS `npm run typecheck`
@@ -69,6 +72,7 @@ Last updated: 2026-04-13 00:51 (Athens)
 - PASS `npm run build`
 - PASS rebuilt Week 5 surfaces in code: `/admin/markets` lifecycle controls, `/admin/resolution` YES/NO/VOID queue plus settlement closeout, public `/markets/[slug]` resolution + settlement readback
 - PASS production admin write-path smoke: `POST /api/admin/markets/[marketId]/status` and `POST /api/admin/resolution` (VOID path) with resolved readback on `/api/markets/[slug]`
+- PASS production settlement smoke: `POST /api/admin/settlement` for both resolved payout and VOID refund paths with wallet/ledger/position reflections and settled-state readback
 - PASS deployed no-auth smoke for `/api/health`, `/api/markets`, `/api/quotes/preview`
 - PASS deployed auth smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, `/api/trades/history`
 - PASS rebuilt route integration: quote preview + execute touchpoint visible on `/markets/[slug]`, live portfolio panel wired on `/portfolio`
@@ -80,6 +84,6 @@ Last updated: 2026-04-13 00:51 (Athens)
 - No active blocker on Week 3 closure criteria
 - No active blocker on Week 4 closure criteria
 - Week 5 admin lifecycle/resolution increment is operational on runtime
-- Settlement engine, settled-state readback, and deterministic tests are in repo and locally green
-- Active blocker: runtime application of `0016_week5_settlement_engine.sql` and post-migration operator smoke for payout + VOID refund paths
+- Week 5 settlement engine is operational on runtime (`0016` + `0017` applied)
+- No active blocker on Week 5 closure criteria
 - Primary focus remains operational stability and launch readiness without stage-skipping
