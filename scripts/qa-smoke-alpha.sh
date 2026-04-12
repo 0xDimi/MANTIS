@@ -17,8 +17,12 @@ RESPONSE_STATUS=""
 cleanup() {
   local file
   for file in "${TMP_FILES[@]:-}"; do
-    [ -n "$file" ] && [ -e "$file" ] && rm -f "$file"
+    if [ -n "$file" ] && [ -e "$file" ]; then
+      rm -f "$file" || true
+    fi
   done
+
+  return 0
 }
 trap cleanup EXIT
 
