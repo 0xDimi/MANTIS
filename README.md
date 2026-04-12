@@ -36,7 +36,7 @@ Open:
 curl http://127.0.0.1:3000/api/health
 curl http://127.0.0.1:3000/api/markets
 curl http://127.0.0.1:3000/api/markets/<slug>
-curl -X POST http://127.0.0.1:3000/api/quotes/preview -H 'content-type: application/json' -d '{"marketSlug":"gre-politics-election-seat-majority","side":"yes","action":"buy","amountEur":50}'
+curl -X POST http://127.0.0.1:3000/api/quotes/preview -H 'content-type: application/json' -d '{"marketSlug":"gre-economy-inflation-below-2","side":"yes","action":"buy","amountEur":50}'
 # auth-required examples
 curl http://127.0.0.1:3000/api/portfolio/summary
 curl http://127.0.0.1:3000/api/trades/history?limit=50

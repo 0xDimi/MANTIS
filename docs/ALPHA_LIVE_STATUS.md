@@ -31,6 +31,7 @@ Last updated: 2026-04-12 13:46 (Athens)
 - Week 3 gate validation on rebuilt surfaces (quote/preview/expiry behavior)
 - Slippage/depth and exposure-check verification against AMM source-of-truth
 - Final-product requirement locked: users can set/update nickname
+- Launch slate refresh complete: simplified 12-market set with no crypto at initial launch
 
 ## Deferred by plan discipline
 - Quote/trade ticket UI rebuild

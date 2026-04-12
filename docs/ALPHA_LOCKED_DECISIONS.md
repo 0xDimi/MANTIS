@@ -10,6 +10,8 @@
 ## Launch market slate
 - Target launch set: **12-15 markets**
 - Final market selection happens close to alpha launch for freshness
+- Launch-first slate must stay simple and mainstream (clear YES/NO, easy-to-understand resolution)
+- No crypto markets in the initial alpha launch set
 
 ## Access and onboarding
 - Access mode: email invite + auth

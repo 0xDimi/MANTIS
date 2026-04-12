@@ -10,6 +10,7 @@ export async function GET() {
       .select(
         'id,slug,question,category,status,close_time,fee_bps,b_liquidity,market_state(yes_price,no_price,volume_total,participants_count,last_trade_at)'
       )
+      .eq('status', 'open')
       .order('close_time', { ascending: true })
       .limit(25);
 
