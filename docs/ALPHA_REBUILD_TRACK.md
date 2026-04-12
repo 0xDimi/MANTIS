@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-12 13:11 (Athens)
+Last updated: 2026-04-12 13:46 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -17,7 +17,7 @@ Last updated: 2026-04-12 13:11 (Athens)
 
 ## Week-by-week status
 - [x] Week 0, foundation shell, repo prep, baseline migrations
-- [ ] Week 1, auth foundation is **active but blocked on live auth redirect config**
+- [x] Week 1, auth foundation
   - [x] core schema + first migrations in repo
   - [x] seed market candidates + wallet model defined
   - [x] app shell + route foundation exists in Next app
@@ -27,13 +27,15 @@ Last updated: 2026-04-12 13:11 (Athens)
   - [x] signed-in profile + wallet visibility page added
   - [x] first-login profile + wallet bootstrap verified against a fresh tester record
   - [x] missing profile/wallet rows now self-heal via server-side bootstrap fallback (`/profile`, `/api/me`)
-  - [ ] live invited tester session still does not land in deployed Next app because Supabase magic links are redirecting to `http://localhost:3000`
-- [ ] Week 2, markets list/detail DB-backed, rules/source panels, state wiring
-  - APIs exist
-  - product-grade route rebuild still intentionally blocked until Week 1 is closed
+  - [x] live invited tester magic-link flow verified on deployed app
+- [x] Week 2, markets list/detail DB-backed, rules/source panels, state wiring
+  - [x] `/markets` rebuilt against `GET /api/markets`
+  - [x] `/markets/[slug]` rebuilt against `GET /api/markets/[slug]`
+  - [x] rules/source panels now DB-backed (`source_primary`, `source_fallback`, `void_rule`)
+  - [x] initial live state/chart presentation added from market state fields
 - [ ] Week 3, AMM v0 quote engine, slippage/depth, preview/expiry
-  - backend largely present
-  - no further UI execution until Weeks 1-2 are formally complete
+  - backend exists and is SoT-aligned
+  - active week is now formal Week 3 closure on rebuilt surfaces
 - [ ] Week 4, execute/ledger/portfolio/realtime
   - backend pieces exist
   - out-of-sequence UI work paused
@@ -41,15 +43,20 @@ Last updated: 2026-04-12 13:11 (Athens)
 - [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
 
 ## Active week
-Week 1
+Week 3
 
 ## Active week remaining items
-1. Fix Supabase Auth redirect configuration so magic links resolve to `https://xyz-labs-demo.vercel.app/auth/callback?next=%2Fprofile` instead of `http://localhost:3000`.
-2. Re-run the invited-email magic-link flow on the canonical app and confirm it lands on `/profile?auth=ok` with a persisted session.
-3. Keep Week 2 blocked until that live retest passes.
+1. Validate AMM v0 quote behavior end-to-end on rebuilt routes using `xyz_amm_package_v0` expectations.
+2. Verify slippage/depth and exposure checks at Week 3 gate level.
+3. Confirm quote preview + expiry behavior on the rebuilt product surfaces.
+4. Close Week 3 without pulling Week 4 execution/UI scope early.
 
-## Next week tasks, once Week 1 is fully green
-1. Rebuild the market board route against `GET /api/markets`.
-2. Rebuild market detail against `GET /api/markets/[slug]`.
-3. Pull rules/source panels from DB-backed market data.
-4. Add initial state/chart presentation from live market-state fields.
+## Locked final-product requirement
+- Users must be able to set and update their own nickname (profile display name).
+- Keep this requirement in the product track and implement without breaking weekly plan sequencing.
+
+## Next week tasks, once Week 3 is fully green
+1. Trade execution endpoint closure on rebuilt flows.
+2. Ledger writes + wallet updates verification.
+3. Position updates + portfolio summary integration on rebuilt surfaces.
+4. Realtime state update path verification.
