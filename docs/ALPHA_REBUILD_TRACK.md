@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-13 00:16 (Athens)
+Last updated: 2026-04-13 00:18 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -44,21 +44,23 @@ Last updated: 2026-04-13 00:16 (Athens)
   - [x] deployed no-auth smoke verified for `/api/health`, `/api/markets`, `/api/quotes/preview`
   - [x] rebuilt `/markets/[slug]` now exposes Week 3 quote preview + expiry interaction (`POST /api/quotes/preview`)
   - [x] authenticated execute/portfolio/history smoke rerun passes on production via temporary smoke tester provisioning
-- [ ] Week 4, execute/ledger/portfolio/realtime
+- [x] Week 4, execute/ledger/portfolio/realtime
   - [x] rebuilt `/markets/[slug]` now has execute touchpoint (preview -> execute on live APIs)
   - [x] wallet/ledger/position reflection verified end-to-end through authenticated smoke
   - [x] rebuilt `/portfolio` now consumes live `/api/portfolio/summary` + `/api/trades/history`
   - [x] realtime update path added on rebuilt surfaces via 10s live polling
-  - [ ] final manual multi-trade UI loop still pending before formal Week 4 close
+  - [x] multi-trade execution loop (buy + sell) verified with expected wallet/position/trade-history reflections
 - [ ] Week 5, admin lifecycle/resolution/settlement/audit
 - [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
 
 ## Active week
-Week 4
+Week 5
 
 ## Active week remaining items
-1. Run final manual multi-trade UI loop (buy + sell) on rebuilt routes and confirm expected ledger/portfolio reflection.
-2. Keep markets unchanged until launch-readiness gate.
+1. Wire admin market lifecycle controls on rebuilt surfaces.
+2. Implement and verify resolution workflow (YES/NO/VOID) with audit-safe handling.
+3. Implement settlement path and settled-state UI reflection.
+4. Keep markets unchanged until launch-readiness gate.
 
 ## Locked final-product requirement
 - Users must be able to set and update their own nickname (profile display name).

@@ -1,11 +1,12 @@
 # Alpha Live Status
 
-Last updated: 2026-04-13 00:16 (Athens)
+Last updated: 2026-04-13 00:18 (Athens)
 
 ## Current phase
 - Week 2 markets rebuild is complete
 - Week 3 gate is fully closed (API hardening + rebuilt preview surface + authenticated smoke rerun)
-- Week 4 execution/ledger/portfolio/realtime validation is now active
+- Week 4 execution/ledger/portfolio/realtime gate is closed
+- Week 5 admin/resolution/settlement pass is now active
 
 ## Live build/run state
 - Branch: `alpha`
@@ -42,7 +43,7 @@ Last updated: 2026-04-13 00:16 (Athens)
 - Market-state LMSR drift corrected on remote DB (`0013_realign_market_state_prices_with_lmsr.sql`)
 
 ## In progress
-- Week 4 gate: execution/ledger/portfolio/realtime path validation on rebuilt surfaces
+- Week 5 gate: admin lifecycle, resolution workflow, and settlement/settled-state pass
 - Final-product requirement locked: users can set/update nickname
 - Build-plan-first execution: market-content changes paused until pre-launch readiness gate
 - Week 4 rebuilt-surface pass now includes live execute interaction on `/markets/[slug]` and live portfolio/trade reflection on `/portfolio`
@@ -59,10 +60,11 @@ Last updated: 2026-04-13 00:16 (Athens)
 - PASS deployed no-auth smoke for `/api/health`, `/api/markets`, `/api/quotes/preview`
 - PASS deployed auth smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, `/api/trades/history`
 - PASS rebuilt route integration: quote preview + execute touchpoint visible on `/markets/[slug]`, live portfolio panel wired on `/portfolio`
+- PASS multi-trade loop (buy + sell) with expected wallet/position/trade-history reflection
 - Historical PASS remains on first-login bootstrap: fresh tester record receives both `profiles` and `wallet_accounts` rows with expected default values
 
 ## Current blockers / needs
 - No blocking issue on Week 1 auth path
 - No active blocker on Week 3 closure criteria
-- Remaining Week 4 item: one manual multi-trade UI loop before formal Week 4 close
+- No active blocker on Week 4 closure criteria
 - Primary focus remains operational stability and launch readiness without stage-skipping
