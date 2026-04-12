@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-13 00:30 (Athens)
+Last updated: 2026-04-13 00:40 (Athens)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -43,6 +43,8 @@ Last updated: 2026-04-13 00:30 (Athens)
 - Market-state LMSR drift corrected on remote DB (`0013_realign_market_state_prices_with_lmsr.sql`)
 - Rebuilt `/admin/markets` now exposes live lifecycle controls for `draft` / `open` / `paused` / `closed`
 - Rebuilt `/admin/resolution` now exposes a YES / NO / VOID queue with evidence capture
+- Week 5 runtime migration applied on active Supabase (`0014_week5_admin_resolution_ops.sql`)
+- Admin write-path smoke pass completed on production (status transitions + VOID resolution + public readback)
 - Public market detail read model now includes recorded resolution metadata when present
 
 ## In progress
@@ -55,7 +57,6 @@ Last updated: 2026-04-13 00:30 (Athens)
 - Quote/trade ticket UI rebuild
 - Portfolio live UI rebuild
 - Settlement engine + settled-state UI work
-- Runtime application and smoke verification of migration `0014_week5_admin_resolution_ops.sql`
 
 ## Latest verification result
 - PASS `npm run typecheck`
@@ -63,6 +64,7 @@ Last updated: 2026-04-13 00:30 (Athens)
 - PASS `npm run test:week5`
 - PASS `npm run build`
 - PASS rebuilt Week 5 surfaces in code: `/admin/markets` lifecycle controls, `/admin/resolution` YES/NO/VOID queue, public `/markets/[slug]` resolution readback
+- PASS production admin write-path smoke: `POST /api/admin/markets/[marketId]/status` and `POST /api/admin/resolution` (VOID path) with resolved readback on `/api/markets/[slug]`
 - PASS deployed no-auth smoke for `/api/health`, `/api/markets`, `/api/quotes/preview`
 - PASS deployed auth smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, `/api/trades/history`
 - PASS rebuilt route integration: quote preview + execute touchpoint visible on `/markets/[slug]`, live portfolio panel wired on `/portfolio`
@@ -73,7 +75,6 @@ Last updated: 2026-04-13 00:30 (Athens)
 - No blocking issue on Week 1 auth path
 - No active blocker on Week 3 closure criteria
 - No active blocker on Week 4 closure criteria
-- New Week 5 write paths depend on SQL migration `0014_week5_admin_resolution_ops.sql`; runtime apply + smoke is still pending
-- `supabase migration list` could not verify remote state from this session because DB login setup requested `SUPABASE_DB_PASSWORD`
+- Week 5 admin lifecycle/resolution increment is operational on runtime
 - Settlement engine and settled-state payout/void-refund verification are still open
 - Primary focus remains operational stability and launch readiness without stage-skipping

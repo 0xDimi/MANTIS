@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-13 00:30 (Athens)
+Last updated: 2026-04-13 00:40 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -58,6 +58,8 @@ Last updated: 2026-04-13 00:30 (Athens)
   - [x] secure resolution write route added at `POST /api/admin/resolution`
   - [x] public market detail route now returns recorded resolution metadata so rebuilt `/markets/[slug]` can reflect outcome/evidence once a market is resolved
   - [x] deterministic Week 5 guardrail coverage added via `npm run test:week5`
+  - [x] migration `0014_week5_admin_resolution_ops.sql` applied on active runtime
+  - [x] production admin smoke verified for status transitions + VOID resolution + readback metadata
   - [ ] settlement engine + ledger payout / void-refund path
   - [ ] settled-state verification + operator smoke on a migrated runtime
 - [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
@@ -66,10 +68,9 @@ Last updated: 2026-04-13 00:30 (Athens)
 Week 5
 
 ## Active week remaining items
-1. Apply and verify migration `0014_week5_admin_resolution_ops.sql` on the active Supabase runtime, then smoke the new admin write paths end to end.
-2. Implement settlement path and settled-state UI / ledger verification.
-3. Add post-settlement operator checks and audit/readback coverage.
-4. Keep markets unchanged until launch-readiness gate.
+1. Implement settlement path and settled-state UI / ledger verification.
+2. Add post-settlement operator checks and audit/readback coverage.
+3. Keep markets unchanged until launch-readiness gate.
 
 ## Locked final-product requirement
 - Users must be able to set and update their own nickname (profile display name).
