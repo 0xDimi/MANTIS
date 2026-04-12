@@ -25,15 +25,27 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
 
     const marketRow = market as any;
 
-    const { data: state, error: stateError } = await supabase
-      .from('market_state')
-      .select('market_id,q_yes,q_no,yes_price,no_price,last_trade_at,volume_total,open_interest,participants_count')
-      .eq('market_id', marketRow.id)
-      .limit(1)
-      .maybeSingle();
+    const [{ data: state, error: stateError }, { data: resolution, error: resolutionError }] = await Promise.all([
+      supabase
+        .from('market_state')
+        .select('market_id,q_yes,q_no,yes_price,no_price,last_trade_at,volume_total,open_interest,participants_count')
+        .eq('market_id', marketRow.id)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('resolutions')
+        .select('id,outcome,evidence_summary,evidence_url,created_at')
+        .eq('market_id', marketRow.id)
+        .limit(1)
+        .maybeSingle()
+    ]);
 
     if (stateError) {
       return NextResponse.json({ error: stateError.message }, { status: 500 });
+    }
+
+    if (resolutionError) {
+      return NextResponse.json({ error: resolutionError.message }, { status: 500 });
     }
 
     const stateRow = state as any;
@@ -52,6 +64,15 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
               volume_total: Number(stateRow.volume_total),
               open_interest: Number(stateRow.open_interest),
               participants_count: Number(stateRow.participants_count)
+            }
+          : null,
+        resolution: resolution
+          ? {
+              id: (resolution as any).id,
+              outcome: (resolution as any).outcome,
+              evidence_summary: (resolution as any).evidence_summary,
+              evidence_url: (resolution as any).evidence_url,
+              created_at: (resolution as any).created_at
             }
           : null
       },

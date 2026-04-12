@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-13 00:18 (Athens)
+Last updated: 2026-04-13 00:30 (Athens)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -51,15 +51,24 @@ Last updated: 2026-04-13 00:18 (Athens)
   - [x] realtime update path added on rebuilt surfaces via 10s live polling
   - [x] multi-trade execution loop (buy + sell) verified with expected wallet/position/trade-history reflections
 - [ ] Week 5, admin lifecycle/resolution/settlement/audit
+  - [x] rebuilt `/admin/markets` now reads live market rows and exposes admin-only lifecycle controls for `draft` / `open` / `paused` / `closed`
+  - [x] secure lifecycle write route added at `POST /api/admin/markets/[marketId]/status`
+  - [x] lifecycle writes now validate allowed transitions before mutating and record audit-safe status changes via new SQL helper migration `0014_week5_admin_resolution_ops.sql`
+  - [x] rebuilt `/admin/resolution` now shows the closeout queue and records `YES` / `NO` / `VOID` with evidence summary + optional source URL
+  - [x] secure resolution write route added at `POST /api/admin/resolution`
+  - [x] public market detail route now returns recorded resolution metadata so rebuilt `/markets/[slug]` can reflect outcome/evidence once a market is resolved
+  - [x] deterministic Week 5 guardrail coverage added via `npm run test:week5`
+  - [ ] settlement engine + ledger payout / void-refund path
+  - [ ] settled-state verification + operator smoke on a migrated runtime
 - [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
 
 ## Active week
 Week 5
 
 ## Active week remaining items
-1. Wire admin market lifecycle controls on rebuilt surfaces.
-2. Implement and verify resolution workflow (YES/NO/VOID) with audit-safe handling.
-3. Implement settlement path and settled-state UI reflection.
+1. Apply and verify migration `0014_week5_admin_resolution_ops.sql` on the active Supabase runtime, then smoke the new admin write paths end to end.
+2. Implement settlement path and settled-state UI / ledger verification.
+3. Add post-settlement operator checks and audit/readback coverage.
 4. Keep markets unchanged until launch-readiness gate.
 
 ## Locked final-product requirement

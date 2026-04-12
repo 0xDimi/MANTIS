@@ -62,6 +62,18 @@ export type Database = {
           updated_at: string;
         };
       };
+      resolutions: {
+        Row: {
+          id: string;
+          market_id: string;
+          outcome: 'yes' | 'no' | 'void';
+          evidence_summary: string;
+          evidence_url: string | null;
+          resolved_by: string;
+          approved_by: string | null;
+          created_at: string;
+        };
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

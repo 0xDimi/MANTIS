@@ -8,9 +8,12 @@ import { formatCompact, formatDateTime, formatPercent, formatRelativeHours } fro
 function statusClass(status: string) {
   switch (status) {
     case 'open':
+    case 'resolved':
+    case 'settled':
       return 'badgeYes';
     case 'paused':
     case 'closed':
+    case 'void':
       return 'badgeNo';
     default:
       return 'badgeNeutral';
@@ -93,6 +96,18 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
                   <span>Window status</span>
                   <span className="badgeNeutral">closes {formatRelativeHours(market.closeTime)}</span>
                 </div>
+                {market.resolution ? (
+                  <>
+                    <div className="statusRow">
+                      <span>Resolution outcome</span>
+                      <span className={market.resolution.outcome === 'yes' ? 'badgeYes' : 'badgeNo'}>{market.resolution.outcome}</span>
+                    </div>
+                    <div className="statusRow">
+                      <span>Resolution recorded</span>
+                      <span className="badgeNeutral">{formatDateTime(market.resolution.createdAt)}</span>
+                    </div>
+                  </>
+                ) : null}
               </div>
             </article>
           </section>
@@ -174,6 +189,13 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
                   <div className="splitSectionLabel">Void rule</div>
                   <p className="panelText">{market.voidRule}</p>
                 </div>
+                {market.resolution ? (
+                  <div className="panelBlock">
+                    <div className="splitSectionLabel">Resolution evidence</div>
+                    <p className="panelText">{market.resolution.evidenceSummary}</p>
+                    <p className="panelText">{market.resolution.evidenceUrl ?? 'No evidence URL recorded.'}</p>
+                  </div>
+                ) : null}
               </div>
             </article>
           </section>

@@ -36,6 +36,13 @@ export type MarketDetailRead = {
   noLabel: string;
   liquidity: number;
   feeBps: number;
+  resolution: {
+    id: string;
+    outcome: 'yes' | 'no' | 'void';
+    evidenceSummary: string;
+    evidenceUrl: string | null;
+    createdAt: string;
+  } | null;
 };
 
 export type MarketStateRead = {
@@ -98,6 +105,13 @@ type MarketDetailApiResponse = {
     volume_total: number;
     open_interest: number;
     participants_count: number;
+  } | null;
+  resolution: {
+    id: string;
+    outcome: 'yes' | 'no' | 'void';
+    evidence_summary: string;
+    evidence_url: string | null;
+    created_at: string;
   } | null;
 };
 
@@ -191,7 +205,16 @@ export async function loadMarketDetail(slug: string) {
             yesLabel: payload.market.yes_label,
             noLabel: payload.market.no_label,
             liquidity: Number(payload.market.b_liquidity ?? 0),
-            feeBps: Number(payload.market.fee_bps ?? 0)
+            feeBps: Number(payload.market.fee_bps ?? 0),
+            resolution: payload.resolution
+              ? {
+                  id: payload.resolution.id,
+                  outcome: payload.resolution.outcome,
+                  evidenceSummary: payload.resolution.evidence_summary,
+                  evidenceUrl: payload.resolution.evidence_url,
+                  createdAt: payload.resolution.created_at
+                }
+              : null
           } satisfies MarketDetailRead)
         : null,
       state: payload.state

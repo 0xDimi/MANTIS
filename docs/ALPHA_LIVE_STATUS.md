@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-13 00:18 (Athens)
+Last updated: 2026-04-13 00:30 (Athens)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -41,9 +41,12 @@ Last updated: 2026-04-13 00:18 (Athens)
 - Authenticated production smoke passes for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, and `/api/trades/history`
 - Trade execution RPC parity restored on remote DB by applying idempotent signature migration (`0011_trade_execution_idempotency.sql`)
 - Market-state LMSR drift corrected on remote DB (`0013_realign_market_state_prices_with_lmsr.sql`)
+- Rebuilt `/admin/markets` now exposes live lifecycle controls for `draft` / `open` / `paused` / `closed`
+- Rebuilt `/admin/resolution` now exposes a YES / NO / VOID queue with evidence capture
+- Public market detail read model now includes recorded resolution metadata when present
 
 ## In progress
-- Week 5 gate: admin lifecycle, resolution workflow, and settlement/settled-state pass
+- Week 5 gate: first admin lifecycle + resolution increment is in code, with settlement/settled-state still open
 - Final-product requirement locked: users can set/update nickname
 - Build-plan-first execution: market-content changes paused until pre-launch readiness gate
 - Week 4 rebuilt-surface pass now includes live execute interaction on `/markets/[slug]` and live portfolio/trade reflection on `/portfolio`
@@ -51,12 +54,15 @@ Last updated: 2026-04-13 00:18 (Athens)
 ## Deferred by plan discipline
 - Quote/trade ticket UI rebuild
 - Portfolio live UI rebuild
-- Admin/resolution/settlement UI work
+- Settlement engine + settled-state UI work
+- Runtime application and smoke verification of migration `0014_week5_admin_resolution_ops.sql`
 
 ## Latest verification result
 - PASS `npm run typecheck`
 - PASS `npm run test:week3`
+- PASS `npm run test:week5`
 - PASS `npm run build`
+- PASS rebuilt Week 5 surfaces in code: `/admin/markets` lifecycle controls, `/admin/resolution` YES/NO/VOID queue, public `/markets/[slug]` resolution readback
 - PASS deployed no-auth smoke for `/api/health`, `/api/markets`, `/api/quotes/preview`
 - PASS deployed auth smoke for `/api/me`, `/api/portfolio/summary`, `/api/trades/execute`, `/api/trades/history`
 - PASS rebuilt route integration: quote preview + execute touchpoint visible on `/markets/[slug]`, live portfolio panel wired on `/portfolio`
@@ -67,4 +73,7 @@ Last updated: 2026-04-13 00:18 (Athens)
 - No blocking issue on Week 1 auth path
 - No active blocker on Week 3 closure criteria
 - No active blocker on Week 4 closure criteria
+- New Week 5 write paths depend on SQL migration `0014_week5_admin_resolution_ops.sql`; runtime apply + smoke is still pending
+- `supabase migration list` could not verify remote state from this session because DB login setup requested `SUPABASE_DB_PASSWORD`
+- Settlement engine and settled-state payout/void-refund verification are still open
 - Primary focus remains operational stability and launch readiness without stage-skipping
