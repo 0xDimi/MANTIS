@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-12 13:46 (Athens)
+Last updated: 2026-04-12 14:41 (Athens)
 
 ## Current phase
 - Week 2 markets rebuild complete, Week 3 verification pass started
@@ -31,7 +31,7 @@ Last updated: 2026-04-12 13:46 (Athens)
 - Week 3 gate validation on rebuilt surfaces (quote/preview/expiry behavior)
 - Slippage/depth and exposure-check verification against AMM source-of-truth
 - Final-product requirement locked: users can set/update nickname
-- Launch slate refresh complete: simplified 12-market set with no crypto at initial launch
+- Build-plan-first execution: market-content changes paused until pre-launch readiness gate
 
 ## Deferred by plan discipline
 - Quote/trade ticket UI rebuild
@@ -44,4 +44,4 @@ Last updated: 2026-04-12 13:46 (Athens)
 
 ## Current blockers / needs
 - No blocking issue on Week 1 auth path
-- Primary focus is clean Week 2 execution without stage-skipping
+- Primary focus is Week 3-6 operational stability and launch readiness without stage-skipping

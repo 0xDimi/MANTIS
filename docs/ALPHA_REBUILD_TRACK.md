@@ -8,6 +8,7 @@ Last updated: 2026-04-12 13:46 (Athens)
 - Server is authoritative for auth, wallet, market state, quotes, trades, and portfolio.
 - `xyz_amm_package_v0` remains the AMM source of truth.
 - Production-safe, incremental changes only.
+- Market content/slate decisions are frozen during build weeks and only finalized at pre-launch readiness.
 
 ## Architecture stance
 - Next app routes become the real product surface.
@@ -50,6 +51,7 @@ Week 3
 2. Verify slippage/depth and exposure checks at Week 3 gate level.
 3. Confirm quote preview + expiry behavior on the rebuilt product surfaces.
 4. Close Week 3 without pulling Week 4 execution/UI scope early.
+5. Keep markets unchanged until launch-readiness gate.
 
 ## Locked final-product requirement
 - Users must be able to set and update their own nickname (profile display name).

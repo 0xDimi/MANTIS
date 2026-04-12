@@ -12,6 +12,7 @@
 - Final market selection happens close to alpha launch for freshness
 - Launch-first slate must stay simple and mainstream (clear YES/NO, easy-to-understand resolution)
 - No crypto markets in the initial alpha launch set
+- Freeze market-content iteration now; revisit and finalize the launch slate only at pre-launch readiness gate
 
 ## Access and onboarding
 - Access mode: email invite + auth

@@ -38,6 +38,7 @@
 - Users must be able to set and update their own nickname (profile display name).
 - Keep that requirement sequenced into the real product track without derailing the active week.
 - Alpha launch market slate must start simple (clear, mainstream YES/NO markets) and exclude crypto at initial launch.
+- Do not keep iterating market content during active build weeks; finalize launch markets at the pre-launch gate only.
 
 ## Principle
 Compress timeline, not quality.
