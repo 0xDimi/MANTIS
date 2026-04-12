@@ -52,10 +52,12 @@ If Supabase env vars are not wired yet, `/api/markets` intentionally returns an 
 - `docs/DELIVERY_PLAN_6_WEEKS.md`
 - `docs/ALPHA_API_WORKFLOW.md`
 - `docs/ALPHA_LIVE_STATUS.md`
+- `docs/ALPHA_REBUILD_TRACK.md`
 - `docs/ALPHA_RUN_LOG.md`
 
 ## Notes
 
-- Existing polished demo UI is now mounted as the root alpha surface (`/legacy/app.js` + `/legacy/styles.css`) so backend wiring continues under the same product look/flow.
+- The Next app is back to being the live surface for in-sequence rebuild work.
+- `public/legacy/*` is frozen as UX reference only. Do not add new behavior there.
 - Alpha naming target is **Alpha Demo v1**.
 - Legacy static-demo files remain in repo for parity checks during migration.

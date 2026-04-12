@@ -17,29 +17,6 @@ export async function GET() {
       return NextResponse.json({ user: null }, { status: 200 });
     }
 
-    await Promise.all([
-      supabase.from('profiles').upsert(
-        {
-          user_id: user.id,
-          display_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
-          avatar_url: user.user_metadata?.avatar_url ?? null,
-          role: 'tester',
-          locale: 'en'
-        } as any,
-        { onConflict: 'user_id', ignoreDuplicates: false }
-      ),
-      supabase.from('wallet_accounts').upsert(
-        {
-          user_id: user.id,
-          currency: 'PAPER_EUR',
-          starting_balance: 1000,
-          available_balance: 1000,
-          realized_pnl: 0
-        } as any,
-        { onConflict: 'user_id', ignoreDuplicates: false }
-      )
-    ]);
-
     const [{ data: profile }, { data: wallet }] = await Promise.all([
       supabase
         .from('profiles')

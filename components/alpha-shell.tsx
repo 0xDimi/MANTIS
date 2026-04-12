@@ -4,8 +4,10 @@ import { appConfig } from '@/lib/app-config';
 
 const nav = [
   { href: '/', label: 'Overview' },
+  { href: '/profile', label: 'Access' },
   { href: '/markets', label: 'Markets' },
   { href: '/portfolio', label: 'Portfolio' },
+  { href: '/rules', label: 'Rules' },
   { href: '/admin', label: 'Admin' }
 ];
 
