@@ -1,19 +1,19 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-13 01:06 (Athens)
+Last updated: 2026-04-14 01:08 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
 - `public/legacy/*` is frozen as UX reference only. Do not keep shipping product behavior from it.
-- Server is authoritative for auth, wallet, market state, quotes, trades, and portfolio.
+- Server is authoritative for auth, wallet, market state, quotes, trades, portfolio, and admin actions.
 - `xyz_amm_package_v0` remains the AMM source of truth.
 - Production-safe, incremental changes only.
-- Market content/slate decisions are frozen during build weeks and only finalized at pre-launch readiness.
+- Market content/slate decisions stay frozen until launch-readiness is explicitly closed.
 
 ## Architecture stance
-- Next app routes become the real product surface.
-- Supabase auth/session is the Week 1 foundation gate.
-- Market, quote, trade, and portfolio APIs stay as server contracts, but later-week UI work is blocked until earlier weeks are fully closed.
+- Next app routes are the real product surface.
+- Supabase auth/session is the foundation gate.
+- Market, quote, trade, portfolio, lifecycle, resolution, and settlement APIs remain server contracts.
 - Legacy assets remain untouched for parity/reference checks during migration.
 
 ## Week-by-week status
@@ -49,41 +49,47 @@ Last updated: 2026-04-13 01:06 (Athens)
   - [x] wallet/ledger/position reflection verified end-to-end through authenticated smoke
   - [x] rebuilt `/portfolio` now consumes live `/api/portfolio/summary` + `/api/trades/history`
   - [x] realtime update path added on rebuilt surfaces via 10s live polling
-  - [x] multi-trade execution loop (buy + sell) verified with expected wallet/position/trade-history reflections
+  - [x] multi-trade execution loop verified with expected wallet/position/trade-history reflections
 - [x] Week 5, admin lifecycle/resolution/settlement/audit
-  - [x] rebuilt `/admin/markets` now reads live market rows and exposes admin-only lifecycle controls for `draft` / `open` / `paused` / `closed`
-  - [x] secure lifecycle write route added at `POST /api/admin/markets/[marketId]/status`
-  - [x] lifecycle writes now validate allowed transitions before mutating and record audit-safe status changes via new SQL helper migration `0014_week5_admin_resolution_ops.sql`
-  - [x] rebuilt `/admin/resolution` now shows the closeout queue and records `YES` / `NO` / `VOID` with evidence summary + optional source URL
-  - [x] secure resolution write route added at `POST /api/admin/resolution`
-  - [x] public market detail route now returns recorded resolution metadata so rebuilt `/markets/[slug]` can reflect outcome/evidence once a market is resolved
+  - [x] rebuilt `/admin/markets` reads live market rows and exposes admin-only lifecycle controls for `draft` / `open` / `paused` / `closed`
+  - [x] secure lifecycle write route exists at `POST /api/admin/markets/[marketId]/status`
+  - [x] lifecycle writes validate transitions and record audit-safe status changes through `0014_week5_admin_resolution_ops.sql`
+  - [x] rebuilt `/admin/resolution` records `YES` / `NO` / `VOID` with evidence summary + optional source URL
+  - [x] secure resolution write route exists at `POST /api/admin/resolution`
+  - [x] public market detail returns recorded resolution metadata for rebuilt `/markets/[slug]`
   - [x] deterministic Week 5 guardrail coverage added via `npm run test:week5`
-  - [x] migration `0014_week5_admin_resolution_ops.sql` applied on active runtime
-  - [x] production admin smoke verified for status transitions + VOID resolution + readback metadata
-  - [x] secure settlement write route added at `POST /api/admin/settlement`
-  - [x] repo migration `0016_week5_settlement_engine.sql` added for one-shot settlement writes, wallet/ledger adjustments, idempotent `market_settlements`, and audit-safe `market_settlement_entries`
-  - [x] payout / void-refund ledger path implemented for resolved and void markets with settled-state readback on rebuilt admin/public surfaces
-  - [x] deterministic settlement coverage added to `npm run test:week5`
-  - [x] runtime migration `0016_week5_settlement_engine.sql` application on active runtime
-  - [x] runtime fix migration `0017_fix_admin_settlement_market_id_ambiguity.sql` applied after production smoke surfaced PL/pgSQL ambiguity
-  - [x] operator smoke passed on migrated runtime for resolved payout + VOID refund paths (wallet/ledger/position reflections + settled readback)
+  - [x] runtime migrations `0014`, `0016`, and `0017` applied on active Supabase
+  - [x] production admin smoke verified for status transitions, resolution, settlement, and readback metadata
 - [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
+  - [x] Full production smoke pack automated in `scripts/qa-smoke-alpha.sh`
+  - [x] Week 6 admin helper added in `scripts/qa-smoke-admin-pack.mjs`
+  - [x] Production smoke rerun completed on the canonical app for auth, markets, quote, execute, portfolio, admin lifecycle, resolution, and settlement
+  - [x] Smoke pack docs updated in `docs/QA_SMOKE.md`
+  - [x] Repo readiness visibility improved in `app/api/health/route.ts`
+  - [x] Repo security hardening added in `supabase/migrations/0018_profile_update_guardrails.sql`
+  - [x] Production telemetry/readiness audit completed
+  - [ ] Apply `0018_profile_update_guardrails.sql` on live Supabase and rerun the RLS escalation probe
+  - [ ] Add real Sentry SDK wiring plus production envs
+  - [ ] Add real PostHog SDK wiring plus production envs
+  - [ ] Deploy and verify the richer Week 6 `/api/health` readiness payload on the canonical app
 
 ## Active week
 Week 6
 
 ## Active week remaining items
-1. Add launch-readiness QA + telemetry checks and finalize operator runbook for incident/rollback handling.
-2. Execute full production smoke pack covering auth, markets, quote, execute, portfolio, admin lifecycle, resolution, and settlement paths.
-3. Keep markets unchanged until launch-readiness gate.
+1. Apply `0018_profile_update_guardrails.sql` on the live Supabase runtime and confirm self-promotion is blocked.
+2. Wire Sentry in code and set the required production env.
+3. Wire PostHog in code and set the required production env.
+4. Redeploy and verify the readiness-enhanced `GET /api/health` payload on the canonical app.
+5. Close Week 6 only after the security + telemetry blockers are cleared.
 
 ## Locked final-product requirement
 - Users must be able to set and update their own nickname (profile display name).
-- Keep this requirement in the product track and implement without breaking weekly plan sequencing.
+- Keep this requirement in the product track and implement without breaking week-order discipline.
 
-## Next week tasks, once Week 3 is fully green
-1. Trade execution endpoint closure on rebuilt flows.
-2. Ledger writes + wallet updates verification.
-3. Position updates + portfolio summary integration on rebuilt surfaces.
-4. Realtime state update path verification.
-5. Preserve the market-slate freeze while moving into Week 4 verification.
+## Immediate next actions after this pass
+1. Apply the profile guardrail migration to runtime.
+2. Re-run the disposable RLS escalation probe and full production smoke pack.
+3. Land telemetry wiring and envs.
+4. Re-check the canonical app health/readiness payload.
+5. Only then close Week 6.

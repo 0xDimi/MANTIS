@@ -7,6 +7,7 @@ CURL_TIMEOUT="${CURL_TIMEOUT:-30}"
 SMOKE_TRADE_AMOUNT_EUR="${SMOKE_TRADE_AMOUNT_EUR:-5}"
 SMOKE_SIDE="${SMOKE_SIDE:-yes}"
 SMOKE_ACTION="${SMOKE_ACTION:-buy}"
+SMOKE_INCLUDE_ADMIN_PACK="${SMOKE_INCLUDE_ADMIN_PACK:-1}"
 DRIFT_TOLERANCE="${DRIFT_TOLERANCE:-0.0025}"
 MONEY_TOLERANCE="${MONEY_TOLERANCE:-0.05}"
 
@@ -515,5 +516,9 @@ expect_jq --arg marketId "$MARKET_ID" --arg side "$SMOKE_SIDE" --arg action "$SM
 HISTORY_COUNT="$(jq -r '.count' "$RESPONSE_FILE")"
 HISTORY_MATCH_SUMMARY="$(expect_history_trade_consistency "$RESPONSE_FILE" "$MARKET_ID" "$SMOKE_SIDE" "$SMOKE_ACTION" "$QUOTE_SHARE_DELTA" "$QUOTE_AVG_PRICE" "$QUOTE_GROSS_AMOUNT" "$QUOTE_FEE_AMOUNT")"
 pass "/api/trades/history count=${HISTORY_COUNT} ${HISTORY_MATCH_SUMMARY}"
+
+if [ "${SMOKE_INCLUDE_ADMIN_PACK}" != "0" ]; then
+  node ./scripts/qa-smoke-admin-pack.mjs
+fi
 
 pass "qa smoke complete base=${BASE_URL} market=${MARKET_SLUG:-$MARKET_ID}"

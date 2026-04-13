@@ -1,6 +1,6 @@
 # QA Smoke Checks for Alpha
 
-`./scripts/qa-smoke-alpha.sh` is the repeatable Stage 4 / production smoke check for the live alpha API path.
+`./scripts/qa-smoke-alpha.sh` is the repeatable Week 6 / production smoke pack for the live alpha API path.
 
 ## What it validates
 
@@ -13,7 +13,13 @@
    - `POST /api/trades/execute`
    - `GET /api/portfolio/summary` after execution
    - `GET /api/trades/history`
-4. AMM behavior stays aligned with the `xyz_amm_package_v0` assumptions:
+4. Admin lifecycle / resolution / settlement paths work on isolated smoke fixtures:
+   - `POST /api/admin/markets/[marketId]/status` for `draft -> open -> paused -> open -> closed`
+   - `POST /api/admin/resolution` for both `YES` and `VOID`
+   - `POST /api/admin/settlement` for resolved payout and VOID refund
+   - public readback on `GET /api/markets/[slug]`
+   - trader portfolio reflection after settlement clears the smoke exposure
+5. AMM behavior stays aligned with the `xyz_amm_package_v0` assumptions:
    - YES/NO prices remain complementary
    - quote state matches LMSR-style derivation from `qYes`, `qNo`, and `depth`
    - buy/sell direction moves probability the correct way
@@ -21,6 +27,8 @@
    - fee-on-gross math still reconciles through execute, wallet delta, and trade history
 
 The script exits non-zero on the first failure and prints concise `PASS` / `FAIL` checkpoints.
+
+By default the script now also runs the Week 5 admin pack through `scripts/qa-smoke-admin-pack.mjs`. Set `SMOKE_INCLUDE_ADMIN_PACK=0` only when you intentionally want the lighter auth/trading-only smoke path.
 
 ## Tester account strategy
 
@@ -31,7 +39,7 @@ Do not hardcode secrets in the repo. Inject them at runtime from a secret manage
 Recommended options:
 
 ### Option A, tester email + password
-This is the default path. The script signs in through Supabase, mints SSR auth cookies, then calls the app endpoints with that session.
+This is the default path for the auth/trading lane. The script signs in through Supabase, mints SSR auth cookies, then calls the app endpoints with that session.
 
 Required env:
 
@@ -51,7 +59,25 @@ If your CI or ops runner already has a valid tester session, you can skip the Su
 - `SMOKE_TRADE_AMOUNT_EUR` optional, defaults to `5`
 - `SMOKE_SIDE` optional, defaults to `yes`
 - `SMOKE_ACTION` optional, defaults to `buy`
+- `SMOKE_INCLUDE_ADMIN_PACK` optional, defaults to `1`
+- `SMOKE_VERIFY_PROFILE_RLS` optional, defaults to `0`; enable only after the profile guardrail migration is applied on runtime
+- `SUPABASE_SERVICE_ROLE_KEY` optional for the admin pack when you do not want CLI fallback
+- `SUPABASE_PROJECT_REF` optional override for CLI fallback, otherwise derived from `NEXT_PUBLIC_SUPABASE_URL`
 - `CURL_TIMEOUT` optional, defaults to `30`
+
+## Admin-pack provisioning notes
+
+The admin pack provisions isolated smoke users and smoke-only markets directly through Supabase before it hits the app admin APIs.
+
+Resolution order for the service-role secret:
+
+1. `SUPABASE_SERVICE_ROLE_KEY` env, if present
+2. `supabase projects api-keys --project-ref <ref>` CLI fallback
+
+That means local/CI runners need either:
+
+- `SUPABASE_SERVICE_ROLE_KEY`, or
+- authenticated Supabase CLI access to the linked project
 
 ## Dependencies
 
@@ -61,6 +87,7 @@ The runner needs:
 - `curl`
 - `jq`
 - `node`
+- `supabase` CLI only if the admin pack must resolve `SUPABASE_SERVICE_ROLE_KEY` via CLI fallback
 
 ## Usage
 
@@ -127,6 +154,7 @@ Quick manual smell test from the package calibration summary:
 - The script picks the first open market returned by `/api/markets`.
 - The default smoke trade is a small buy so the run stays cheap and deterministic.
 - Current app behavior bootstraps the tester wallet through `/api/me`, which helps keep repeated smoke runs stable.
+- Admin-pack smoke fixtures are created with unique `[SMOKE]` labels and left in settled / closed terminal states for auditability.
 - Optional tolerances:
   - `DRIFT_TOLERANCE` default `0.0025`
   - `MONEY_TOLERANCE` default `0.05`
