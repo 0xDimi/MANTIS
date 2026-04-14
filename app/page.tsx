@@ -1,23 +1,84 @@
 import Link from 'next/link';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { AlphaShell } from '@/components/alpha-shell';
 import { alphaPlan } from '@/lib/alpha-plan';
 
-const weekStatus: Record<string, 'complete' | 'active' | 'queued'> = {
+type WeekStatus = 'complete' | 'active' | 'queued';
+
+const fallbackWeekStatus: Record<string, WeekStatus> = {
   'Week 0': 'complete',
-  'Week 1': 'active',
-  'Week 2': 'queued',
-  'Week 3': 'queued',
-  'Week 4': 'queued',
-  'Weeks 5-6': 'queued'
+  'Week 1': 'complete',
+  'Week 2': 'complete',
+  'Week 3': 'complete',
+  'Week 4': 'complete',
+  'Weeks 5-6': 'active'
 };
 
-const statusLabel: Record<(typeof weekStatus)[keyof typeof weekStatus], string> = {
+const statusLabel: Record<WeekStatus, string> = {
   complete: 'done',
   active: 'active now',
   queued: 'queued'
 };
 
-export default function HomePage() {
+function hasWeekCheck(doc: string, week: number) {
+  return new RegExp(`^-\\s\\[(x|X)\\]\\sWeek\\s${week}\\b`, 'm').test(doc);
+}
+
+async function getWeekStatusSnapshot() {
+  try {
+    const trackPath = path.join(process.cwd(), 'docs', 'ALPHA_REBUILD_TRACK.md');
+    const doc = await readFile(trackPath, 'utf8');
+    const activeWeek = doc.match(/## Active week\s*\n([^\n]+)/m)?.[1]?.trim() ?? null;
+
+    const week0Done = hasWeekCheck(doc, 0);
+    const week1Done = hasWeekCheck(doc, 1);
+    const week2Done = hasWeekCheck(doc, 2);
+    const week3Done = hasWeekCheck(doc, 3);
+    const week4Done = hasWeekCheck(doc, 4);
+    const week5Done = hasWeekCheck(doc, 5);
+    const week6Done = hasWeekCheck(doc, 6);
+
+    const statusFor = (done: boolean, label: string): WeekStatus => {
+      if (done) return 'complete';
+      if (activeWeek === label) return 'active';
+      return 'queued';
+    };
+
+    const week56: WeekStatus = week6Done
+      ? 'complete'
+      : activeWeek === 'Week 5' || activeWeek === 'Week 6' || week5Done
+        ? 'active'
+        : 'queued';
+
+    return {
+      activeWeek,
+      weekStatus: {
+        'Week 0': statusFor(week0Done, 'Week 0'),
+        'Week 1': statusFor(week1Done, 'Week 1'),
+        'Week 2': statusFor(week2Done, 'Week 2'),
+        'Week 3': statusFor(week3Done, 'Week 3'),
+        'Week 4': statusFor(week4Done, 'Week 4'),
+        'Weeks 5-6': week56
+      } satisfies Record<string, WeekStatus>
+    };
+  } catch {
+    return {
+      activeWeek: 'Week 6',
+      weekStatus: fallbackWeekStatus
+    };
+  }
+}
+
+export default async function HomePage() {
+  const { activeWeek, weekStatus } = await getWeekStatusSnapshot();
+  const activeHeadline =
+    weekStatus['Weeks 5-6'] === 'active'
+      ? 'Week 6 launch-readiness is active'
+      : activeWeek
+        ? `${activeWeek} execution is active`
+        : 'Follow the rebuild plan in sequence';
+
   return (
     <AlphaShell
       title="Alpha rebuild control room"
@@ -26,17 +87,17 @@ export default function HomePage() {
       <section className="heroGrid">
         <article className="card stackSm">
           <p className="eyebrow">Current execution rule</p>
-          <h2>Finish Week 1 before touching Week 2+</h2>
+          <h2>{activeHeadline}</h2>
           <p className="subtle">
-            The polished static demo is no longer the live app surface. It stays untouched under <code>/public/legacy</code>{' '}
-            as visual reference while the Next app becomes the real product shell.
+            Keep stage order strict. Legacy demo remains frozen under <code>/public/legacy</code> as reference while rebuilt Next
+            routes are the live product surface.
           </p>
           <div className="buttonRow">
-            <Link className="button buttonPrimary" href="/profile">
-              Finish access foundation
+            <Link className="button buttonPrimary" href="/markets">
+              Open markets lane
             </Link>
-            <Link className="button buttonGhost" href="/markets">
-              Inspect build lanes
+            <Link className="button buttonGhost" href="/admin/resolution">
+              Open admin closeout
             </Link>
           </div>
         </article>
