@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-14 11:37 (EEST)
+Last updated: 2026-04-14 11:41 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -31,6 +31,7 @@ Last updated: 2026-04-14 11:37 (EEST)
   - [x] Runtime migration `0018_profile_update_guardrails.sql` applied on active Supabase
   - [x] RLS verification pass: disposable tester cannot self-promote `profiles.role` to admin
   - [x] Telemetry wiring implementation (Sentry/PostHog)
+  - [x] Post-telemetry-wiring production regression rerun (full smoke + admin pack + RLS probe)
   - [ ] Production telemetry env setup and verification
   - [ ] Operator runbook finalization
 

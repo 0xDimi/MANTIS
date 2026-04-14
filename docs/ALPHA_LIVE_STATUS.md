@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-14 11:37 (EEST)
+Last updated: 2026-04-14 11:41 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -54,6 +54,8 @@ Last updated: 2026-04-14 11:37 (EEST)
   - `/api/admin/settlement`
   - `/api/markets/[slug]` resolution/settlement readback
 - PASS production admin-pack smoke with RLS probe enabled (`SMOKE_VERIFY_PROFILE_RLS=1`)
+- PASS post-telemetry-wiring production regression rerun (`./scripts/qa-smoke-alpha.sh` + `SMOKE_VERIFY_PROFILE_RLS=1 node scripts/qa-smoke-admin-pack.mjs`)
+- PASS `/api/health` telemetry readiness now reports `sdkConfigured=true` for Sentry and PostHog
 
 ## In progress
 - Week 6 launch-readiness closeout
