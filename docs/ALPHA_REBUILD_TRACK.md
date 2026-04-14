@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-14 01:13 (EEST)
+Last updated: 2026-04-14 11:37 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -30,7 +30,7 @@ Last updated: 2026-04-14 01:13 (EEST)
   - [x] Repo migration added: `0018_profile_update_guardrails.sql`
   - [x] Runtime migration `0018_profile_update_guardrails.sql` applied on active Supabase
   - [x] RLS verification pass: disposable tester cannot self-promote `profiles.role` to admin
-  - [ ] Telemetry wiring implementation (Sentry/PostHog)
+  - [x] Telemetry wiring implementation (Sentry/PostHog)
   - [ ] Production telemetry env setup and verification
   - [ ] Operator runbook finalization
 
@@ -38,10 +38,15 @@ Last updated: 2026-04-14 01:13 (EEST)
 Week 6
 
 ## Active week remaining items
-1. Implement Sentry + PostHog runtime wiring in app code.
-2. Add production telemetry envs and verify signal flow.
-3. Finalize runbook + launch-readiness checks.
-4. Keep markets unchanged until launch-readiness gate.
+1. Add production telemetry envs and verify signal flow.
+2. Finalize runbook + launch-readiness checks.
+3. Keep markets unchanged until launch-readiness gate.
+
+## Post Week 6 lock (confirmed)
+1. UI polish pass (no backend contract drift).
+2. Launch market design/final slate.
+3. Domain setup + cutover checks.
+4. Founder end-to-end manual trade run.
 
 ## Locked final-product requirement
 - Users must be able to set and update their own nickname (profile display name).

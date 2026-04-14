@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-14 01:13 (EEST)
+Last updated: 2026-04-14 11:37 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -32,6 +32,9 @@ Last updated: 2026-04-14 01:13 (EEST)
 - Runtime hardening applied and verified:
   - `0018_profile_update_guardrails.sql` applied on active Supabase runtime
   - disposable-tester escalation probe now blocked (`profiles.role` self-promotion prevented)
+- Telemetry SDK wiring implemented in app code:
+  - Sentry client + server instrumentation files (`instrumentation-client.ts`, `instrumentation.ts`, `app/global-error.tsx`)
+  - PostHog client initialization provider (`components/telemetry-provider.tsx`)
 
 ## Latest verification result
 - PASS `npm run typecheck`
@@ -54,13 +57,12 @@ Last updated: 2026-04-14 01:13 (EEST)
 
 ## In progress
 - Week 6 launch-readiness closeout
-- Week 6 telemetry wiring implementation (Sentry/PostHog)
+- Week 6 telemetry env setup + signal verification (Sentry/PostHog)
 - Week 6 operator runbook finalization
 - Final-product requirement remains locked: nickname update support
 
 ## Current blockers / needs
-- Blocker: production telemetry is not wired yet
-  - Sentry SDK/instrumentation not implemented
-  - PostHog SDK/instrumentation not implemented
+- Blocker: production telemetry envs + signal verification still pending
   - production telemetry envs not present in Vercel (`NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`)
+  - end-to-end signal verification pending after env injection
 - Primary focus remains launch readiness with no stage-skipping

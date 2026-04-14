@@ -12,9 +12,11 @@
     "test:week5": "node --experimental-strip-types --loader ./tests/alias-loader.mjs --test tests/week5-admin-resolution.test.ts tests/week5-settlement.test.ts"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.48.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.8",
     "next": "15.5.15",
+    "posthog-js": "^1.368.1",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },

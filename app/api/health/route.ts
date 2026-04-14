@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { appConfig } from '@/lib/app-config';
-
-const hasSentryEnv = Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN);
-const hasPostHogEnv = Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST);
+import { telemetryStatus } from '@/lib/telemetry';
 
 export async function GET() {
   return NextResponse.json(
@@ -20,12 +18,12 @@ export async function GET() {
         },
         telemetry: {
           sentry: {
-            envConfigured: hasSentryEnv,
-            sdkConfigured: false
+            envConfigured: telemetryStatus.sentry.envConfigured,
+            sdkConfigured: telemetryStatus.sentry.sdkConfigured
           },
           posthog: {
-            envConfigured: hasPostHogEnv,
-            sdkConfigured: false
+            envConfigured: telemetryStatus.posthog.envConfigured,
+            sdkConfigured: telemetryStatus.posthog.sdkConfigured
           }
         }
       },
