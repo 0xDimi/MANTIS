@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-14 21:24 (EEST)
+Last updated: 2026-04-14 21:37 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -23,7 +23,7 @@ Last updated: 2026-04-14 21:24 (EEST)
 - [x] Week 3, AMM v0 quote engine, slippage/depth, preview/expiry
 - [x] Week 4, execute/ledger/portfolio/realtime
 - [x] Week 5, admin lifecycle/resolution/settlement/audit
-- [ ] Week 6, QA/telemetry/ops/runbook/launch readiness
+- [x] Week 6, QA/telemetry/ops/runbook/launch readiness
   - [x] Full production smoke automation consolidated in `scripts/qa-smoke-alpha.sh`
   - [x] Admin lifecycle/resolution/settlement smoke helper added in `scripts/qa-smoke-admin-pack.mjs`
   - [x] Production smoke pass completed on canonical app (auth + trade + admin + settlement)
@@ -32,15 +32,15 @@ Last updated: 2026-04-14 21:24 (EEST)
   - [x] RLS verification pass: disposable tester cannot self-promote `profiles.role` to admin
   - [x] Telemetry wiring implementation (Sentry/PostHog)
   - [x] Post-telemetry-wiring production regression rerun (full smoke + admin pack + RLS probe)
-  - [ ] Production telemetry env setup and verification
+  - [x] Production telemetry env setup and verification (`NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST` + redeploy + health check)
   - [x] Operator runbook finalization (`docs/ALPHA_OPERATOR_RUNBOOK.md`)
 
 ## Active week
-Week 6
+Post-Week-6 execution phase
 
 ## Active week remaining items
-1. Add production telemetry envs and verify signal flow.
-2. Keep markets unchanged until launch-readiness gate.
+1. Start UI polish pass (no backend contract drift).
+2. Keep markets unchanged until launch-slate design window opens.
 
 ## Post Week 6 lock (confirmed)
 1. UI polish pass (no backend contract drift).

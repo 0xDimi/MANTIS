@@ -1,13 +1,13 @@
 # Alpha Live Status
 
-Last updated: 2026-04-14 21:24 (EEST)
+Last updated: 2026-04-14 21:37 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
 - Week 3 gate is fully closed
 - Week 4 execution/ledger/portfolio/realtime gate is closed
 - Week 5 admin/resolution/settlement gate is closed
-- Week 6 QA/telemetry/ops/runbook/launch-readiness is active
+- Week 6 QA/telemetry/ops/runbook/launch-readiness is closed
 
 ## Live build/run state
 - Branch: `alpha`
@@ -55,19 +55,17 @@ Last updated: 2026-04-14 21:24 (EEST)
   - `/api/markets/[slug]` resolution/settlement readback
 - PASS production admin-pack smoke with RLS probe enabled (`SMOKE_VERIFY_PROFILE_RLS=1`)
 - PASS post-telemetry-wiring production regression rerun (`./scripts/qa-smoke-alpha.sh` + `SMOKE_VERIFY_PROFILE_RLS=1 node scripts/qa-smoke-admin-pack.mjs`)
-- PASS `/api/health` telemetry readiness now reports `sdkConfigured=true` for Sentry and PostHog
+- PASS `/api/health` telemetry readiness now reports full green for telemetry:
+  - Sentry `envConfigured=true`, `sdkConfigured=true`
+  - PostHog `envConfigured=true`, `sdkConfigured=true`
 
 ## In progress
-- Week 6 launch-readiness closeout
-- Week 6 telemetry env setup + signal verification (Sentry/PostHog)
+- Post-Week-6 transition: UI polish preparation
 - Final-product requirement remains locked: nickname update support
 
 ## Ops runbook
 - Operator runbook finalized: `docs/ALPHA_OPERATOR_RUNBOOK.md`
 
 ## Current blockers / needs
-- Blocker: production telemetry envs + signal verification still pending
-  - production telemetry envs not present in Vercel (`NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`)
-  - `NEXT_PUBLIC_POSTHOG_HOST` is now set on Vercel production; key + DSN still missing
-  - end-to-end signal verification pending after env injection
-- Primary focus remains launch readiness with no stage-skipping
+- No Week 6 blockers remain.
+- Primary focus now moves to the locked post-Week-6 sequence (UI polish -> launch market design -> domain setup -> founder manual trade run).
