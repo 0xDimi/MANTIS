@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-14 11:41 (EEST)
+Last updated: 2026-04-14 21:24 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -60,11 +60,14 @@ Last updated: 2026-04-14 11:41 (EEST)
 ## In progress
 - Week 6 launch-readiness closeout
 - Week 6 telemetry env setup + signal verification (Sentry/PostHog)
-- Week 6 operator runbook finalization
 - Final-product requirement remains locked: nickname update support
+
+## Ops runbook
+- Operator runbook finalized: `docs/ALPHA_OPERATOR_RUNBOOK.md`
 
 ## Current blockers / needs
 - Blocker: production telemetry envs + signal verification still pending
   - production telemetry envs not present in Vercel (`NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`)
+  - `NEXT_PUBLIC_POSTHOG_HOST` is now set on Vercel production; key + DSN still missing
   - end-to-end signal verification pending after env injection
 - Primary focus remains launch readiness with no stage-skipping

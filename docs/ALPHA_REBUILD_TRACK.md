@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-14 11:41 (EEST)
+Last updated: 2026-04-14 21:24 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -33,15 +33,14 @@ Last updated: 2026-04-14 11:41 (EEST)
   - [x] Telemetry wiring implementation (Sentry/PostHog)
   - [x] Post-telemetry-wiring production regression rerun (full smoke + admin pack + RLS probe)
   - [ ] Production telemetry env setup and verification
-  - [ ] Operator runbook finalization
+  - [x] Operator runbook finalization (`docs/ALPHA_OPERATOR_RUNBOOK.md`)
 
 ## Active week
 Week 6
 
 ## Active week remaining items
 1. Add production telemetry envs and verify signal flow.
-2. Finalize runbook + launch-readiness checks.
-3. Keep markets unchanged until launch-readiness gate.
+2. Keep markets unchanged until launch-readiness gate.
 
 ## Post Week 6 lock (confirmed)
 1. UI polish pass (no backend contract drift).
