@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 15:49 (EEST)
+Last updated: 2026-04-15 16:21 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -70,6 +70,10 @@ Last updated: 2026-04-15 15:49 (EEST)
   - polished market detail top section with probability-first hero and trust-layer surfacing
   - trade ticket visual polish with segmented buy/sell + YES/NO controls and clear interaction-state chips
   - bilingual copy coverage extended across updated user-facing pages
+- Header/navigation iteration applied per latest feedback (commit `5724387`):
+  - larger MANTIS logo left, centered market search bar, portfolio/cash quick glance, EN/EL toggle, notification bell, profile icon
+  - expanded `/more` knowledge page (how to trade, probability interpretation, resolution flow, risk notes)
+  - added non-launch design sample markets (10+ preview rows) for UI feedback depth when live open-market count is low
 
 ## Just completed
 - Pre-UI two-market live simulation completed successfully end-to-end via `scripts/sim-auto-resolution.mjs`:
@@ -77,6 +81,7 @@ Last updated: 2026-04-15 15:49 (EEST)
   - `gre-weather-thessaloniki-heavy-rain`: auto-closed -> resolved VOID -> settled
   - Worker exit: `auto-resolution completed for all configured markets` (code 0)
 - UI polish framework pass deployed to canonical app (`xyz-labs-demo.vercel.app`) via Vercel production deploy from `alpha` (`eea605b`).
+- Header/navigation + discover depth follow-up deployed to canonical app from `alpha` (`5724387`).
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:

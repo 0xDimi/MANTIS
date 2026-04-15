@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-15 15:49 (EEST)
+Last updated: 2026-04-15 16:21 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -50,6 +50,10 @@ Post-Week-6 execution phase
      - discover-first `/` + `/markets` composition (shelf tabs, featured swipe, category rail, shared market cards)
      - market detail top-section and trade-ticket UX/state polish
      - IBM Plex Sans + updated design token layer
+   - Follow-up header/navigation + content refinement implemented on `alpha` (`5724387`) and deployed:
+     - top bar order adjusted (logo, search, portfolio/cash glance, EN/EL, bell, profile)
+     - `/more` expanded into fuller product/how-it-works guide
+     - 10+ non-launch design sample markets added to discover surfaces for richer UI feedback when live-open count is low
 3. Post-UI (pre-launch): run tester activation walkthrough ("first trade") and validate onboarding conversion.
 4. Keep launch-slate expansion deferred until launch-design window opens.
 
