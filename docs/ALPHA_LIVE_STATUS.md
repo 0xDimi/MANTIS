@@ -63,6 +63,7 @@ Last updated: 2026-04-15 11:08 (EEST)
 ## In progress
 - Resolution/settlement simulation pass on live runtime before UI polish
 - Final-product requirement remains locked: nickname update support
+- Auto-resolution worker is armed for simulation markets (agent-run), with manual fallback only on execution errors.
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:
