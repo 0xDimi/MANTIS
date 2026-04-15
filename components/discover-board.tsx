@@ -23,7 +23,16 @@ function normalizeView(value: string | null | undefined): DiscoverView {
 }
 
 function labelize(value: string) {
-  return value.replace(/[-_]/g, ' ');
+  return value
+    .replace(/[-_]/g, ' ')
+    .replace(/\w\S*/g, (part) => part.charAt(0).toUpperCase() + part.slice(1));
+}
+
+function statusPriority(status: string) {
+  if (status === 'open') return 0;
+  if (status === 'paused') return 1;
+  if (status === 'draft') return 2;
+  return 3;
 }
 
 function hrefWith(lang: UiLang, view: DiscoverView, category: string | null, queryText?: string | null) {
@@ -41,19 +50,24 @@ function hrefWith(lang: UiLang, view: DiscoverView, category: string | null, que
 function sortMarkets(markets: Awaited<ReturnType<typeof loadMarketsBoard>>['markets'], view: DiscoverView) {
   const list = [...markets];
 
+  const withOpenPriority = (a: (typeof list)[number], b: (typeof list)[number], fallback: number) => {
+    const rank = statusPriority(a.status) - statusPriority(b.status);
+    return rank !== 0 ? rank : fallback;
+  };
+
   if (view === 'ending') {
-    return list.sort((a, b) => new Date(a.closeTime).getTime() - new Date(b.closeTime).getTime());
+    return list.sort((a, b) => withOpenPriority(a, b, new Date(a.closeTime).getTime() - new Date(b.closeTime).getTime()));
   }
 
   if (view === 'liquid') {
-    return list.sort((a, b) => (b.liquidity ?? 0) - (a.liquidity ?? 0));
+    return list.sort((a, b) => withOpenPriority(a, b, (b.liquidity ?? 0) - (a.liquidity ?? 0)));
   }
 
   if (view === 'new') {
-    return list.sort((a, b) => new Date(b.closeTime).getTime() - new Date(a.closeTime).getTime());
+    return list.sort((a, b) => withOpenPriority(a, b, new Date(b.closeTime).getTime() - new Date(a.closeTime).getTime()));
   }
 
-  return list.sort((a, b) => (b.state?.volumeTotal ?? 0) - (a.state?.volumeTotal ?? 0));
+  return list.sort((a, b) => withOpenPriority(a, b, (b.state?.volumeTotal ?? 0) - (a.state?.volumeTotal ?? 0)));
 }
 
 function isInternalMarket(slug: string, question: string) {
@@ -71,7 +85,8 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
   const filtered = normalizedQuery
     ? categoryFiltered.filter((market) => `${market.question} ${market.category}`.toLowerCase().includes(normalizedQuery))
     : categoryFiltered;
-  const featured = sorted.slice(0, 2);
+  const featuredPool = [...sorted].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
+  const featured = featuredPool.slice(0, 2);
   const categories = Array.from(new Set(mergedMarkets.map((market) => market.category)));
 
   const tabs: Array<{ key: DiscoverView; en: string; el: string }> = [
