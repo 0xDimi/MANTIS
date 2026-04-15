@@ -3,8 +3,10 @@ import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeHours } from '@/lib/format';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
+export type DiscoverMarket = BoardMarket & { previewOnly?: boolean };
+
 type MarketCardProps = {
-  market: BoardMarket;
+  market: DiscoverMarket;
   lang: UiLang;
   featured?: boolean;
 };
@@ -16,6 +18,7 @@ function labelize(value: string) {
 export function MarketCard({ market, lang, featured = false }: MarketCardProps) {
   const yesProb = market.state?.yesPrice ?? 0.5;
   const yesNoSpread = Math.abs((market.state?.yesPrice ?? 0.5) - (market.state?.noPrice ?? 0.5));
+  const marketHref = `/markets/${market.slug}${lang === 'el' ? '?lang=el' : ''}`;
 
   if (featured) {
     return (
@@ -36,15 +39,19 @@ export function MarketCard({ market, lang, featured = false }: MarketCardProps) 
           </span>
         </div>
 
-        <Link className="button buttonPrimary" href={`/markets/${market.slug}${lang === 'el' ? '?lang=el' : ''}`}>
-          {tr(lang, 'Open market', 'Άνοιγμα αγοράς')}
-        </Link>
+        {market.previewOnly ? (
+          <span className="button buttonGhost">{tr(lang, 'Design preview', 'Προεπισκόπηση σχεδίασης')}</span>
+        ) : (
+          <Link className="button buttonPrimary" href={marketHref}>
+            {tr(lang, 'Open market', 'Άνοιγμα αγοράς')}
+          </Link>
+        )}
       </article>
     );
   }
 
-  return (
-    <Link className="card marketListCard" href={`/markets/${market.slug}${lang === 'el' ? '?lang=el' : ''}`}>
+  const body = (
+    <>
       <div className="marketMetaRow">
         <span className="marketCategory">{labelize(market.category)}</span>
         <span className="marketClose">{formatRelativeHours(market.closeTime)}</span>
@@ -61,8 +68,19 @@ export function MarketCard({ market, lang, featured = false }: MarketCardProps) 
           <span>
             {tr(lang, 'Move', 'Κίνηση')} {formatPercent(yesNoSpread)}
           </span>
+          {market.previewOnly ? <span>{tr(lang, 'Preview only', 'Μόνο προεπισκόπηση')}</span> : null}
         </div>
       </div>
+    </>
+  );
+
+  if (market.previewOnly) {
+    return <article className="card marketListCard">{body}</article>;
+  }
+
+  return (
+    <Link className="card marketListCard" href={marketHref}>
+      {body}
     </Link>
   );
 }

@@ -5,7 +5,7 @@ import { normalizeLang, tr } from '@/lib/ui-lang';
 export default async function MarketsPage({
   searchParams
 }: {
-  searchParams?: Promise<{ lang?: string; view?: string; cat?: string }>;
+  searchParams?: Promise<{ lang?: string; view?: string; cat?: string; q?: string }>;
 }) {
   const params = (await searchParams) ?? {};
   const lang = normalizeLang(params.lang);
@@ -13,7 +13,7 @@ export default async function MarketsPage({
 
   return (
     <AlphaShell title={tr(lang, 'Markets', 'Αγορές')} eyebrow={tr(lang, 'Probability-first discover board', 'Discover board με έμφαση στην πιθανότητα')} lang={lang}>
-      <DiscoverBoard lang={lang} view={view} category={params.cat ?? null} />
+      <DiscoverBoard lang={lang} view={view} category={params.cat ?? null} query={params.q ?? null} />
     </AlphaShell>
   );
 }

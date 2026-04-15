@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { loadMarketsBoard } from '@/lib/alpha-read-model';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import { MarketCard } from '@/components/market-card';
+import { getDesignSampleMarkets } from '@/lib/design-sample-markets';
 
 type DiscoverView = 'trending' | 'new' | 'liquid' | 'ending';
 
@@ -9,6 +10,7 @@ type DiscoverBoardProps = {
   lang: UiLang;
   view: DiscoverView;
   category: string | null;
+  query?: string | null;
   showBrand?: boolean;
 };
 
@@ -24,15 +26,16 @@ function labelize(value: string) {
   return value.replace(/[-_]/g, ' ');
 }
 
-function hrefWith(lang: UiLang, view: DiscoverView, category: string | null) {
+function hrefWith(lang: UiLang, view: DiscoverView, category: string | null, queryText?: string | null) {
   const params = new URLSearchParams();
 
   if (lang === 'el') params.set('lang', 'el');
   if (view !== 'trending') params.set('view', view);
   if (category) params.set('cat', category);
+  if (queryText) params.set('q', queryText);
 
-  const query = params.toString();
-  return query ? `?${query}` : '';
+  const queryString = params.toString();
+  return queryString ? `?${queryString}` : '';
 }
 
 function sortMarkets(markets: Awaited<ReturnType<typeof loadMarketsBoard>>['markets'], view: DiscoverView) {
@@ -53,13 +56,18 @@ function sortMarkets(markets: Awaited<ReturnType<typeof loadMarketsBoard>>['mark
   return list.sort((a, b) => (b.state?.volumeTotal ?? 0) - (a.state?.volumeTotal ?? 0));
 }
 
-export async function DiscoverBoard({ lang, view, category, showBrand = false }: DiscoverBoardProps) {
+export async function DiscoverBoard({ lang, view, category, query, showBrand = false }: DiscoverBoardProps) {
   const { markets, error } = await loadMarketsBoard();
   const openMarkets = markets.filter((market) => market.status === 'open');
-  const sorted = sortMarkets(openMarkets, normalizeView(view));
-  const filtered = category ? sorted.filter((market) => market.category === category) : sorted;
+  const mergedMarkets = openMarkets.length >= 10 ? openMarkets : [...openMarkets, ...getDesignSampleMarkets().slice(0, 12)];
+  const sorted = sortMarkets(mergedMarkets, normalizeView(view));
+  const normalizedQuery = (query ?? '').trim().toLowerCase();
+  const categoryFiltered = category ? sorted.filter((market) => market.category === category) : sorted;
+  const filtered = normalizedQuery
+    ? categoryFiltered.filter((market) => `${market.question} ${market.category}`.toLowerCase().includes(normalizedQuery))
+    : categoryFiltered;
   const featured = sorted.slice(0, 2);
-  const categories = Array.from(new Set(openMarkets.map((market) => market.category)));
+  const categories = Array.from(new Set(mergedMarkets.map((market) => market.category)));
 
   const tabs: Array<{ key: DiscoverView; en: string; el: string }> = [
     { key: 'trending', en: 'Trending', el: 'Τάση' },
@@ -72,6 +80,12 @@ export async function DiscoverBoard({ lang, view, category, showBrand = false }:
     <>
       {error ? <div className="notice noticeError">{tr(lang, 'Live board unavailable', 'Το live board δεν είναι διαθέσιμο')}.</div> : null}
 
+      {openMarkets.length < 10 ? (
+        <div className="notice noticeWarn">
+          {tr(lang, 'Design sample markets are shown so you can review the layout with depth. These are not launch markets.', 'Εμφανίζονται δείγματα αγορών για αξιολόγηση του layout. Αυτές δεν είναι αγορές launch.')}
+        </div>
+      ) : null}
+
       {showBrand ? (
         <section className="homeBrand" aria-label="MANTIS brand">
           <img className="homeBrandLogo" src="/brand/mantis/logo/mantis-logo-primary-wordmark.png" alt="MANTIS" />
@@ -83,7 +97,7 @@ export async function DiscoverBoard({ lang, view, category, showBrand = false }:
           <Link
             key={tab.key}
             className={view === tab.key ? 'shelfTab shelfTabActive' : 'shelfTab'}
-            href={hrefWith(lang, tab.key, category)}
+            href={hrefWith(lang, tab.key, category, normalizedQuery)}
           >
             {lang === 'el' ? tab.el : tab.en}
           </Link>
@@ -97,19 +111,25 @@ export async function DiscoverBoard({ lang, view, category, showBrand = false }:
       </section>
 
       <section className="categoryStrip" aria-label={tr(lang, 'Categories', 'Κατηγορίες')}>
-        <Link className={!category ? 'categoryPill categoryPillActive' : 'categoryPill'} href={hrefWith(lang, view, null)}>
+        <Link className={!category ? 'categoryPill categoryPillActive' : 'categoryPill'} href={hrefWith(lang, view, null, normalizedQuery)}>
           {tr(lang, 'All', 'Όλες')}
         </Link>
         {categories.map((item) => (
           <Link
             key={item}
             className={category === item ? 'categoryPill categoryPillActive' : 'categoryPill'}
-            href={hrefWith(lang, view, item)}
+            href={hrefWith(lang, view, item, normalizedQuery)}
           >
             {labelize(item)}
           </Link>
         ))}
       </section>
+
+      {normalizedQuery ? (
+        <p className="subtle searchResultHint">
+          {tr(lang, 'Results for', 'Αποτελέσματα για')} <strong>{query}</strong>
+        </p>
+      ) : null}
 
       <section className="marketList" aria-label={tr(lang, 'Market list', 'Λίστα αγορών')}>
         {filtered.map((market) => (

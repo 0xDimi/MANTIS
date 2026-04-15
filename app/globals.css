@@ -57,12 +57,17 @@ code {
   padding: 12px 0 108px;
 }
 
-.shellHeader {
+.shellHeader,
+.shellHeaderPolymarket {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 12px;
+}
+
+.shellHeaderPolymarket {
+  padding: 8px 0;
 }
 
 .brandLock {
@@ -71,10 +76,20 @@ code {
   gap: 10px;
 }
 
+.brandLockLarge {
+  min-width: 160px;
+}
+
 .brandIcon {
   width: 30px;
   height: 30px;
   border-radius: 8px;
+}
+
+.brandWordmark {
+  width: clamp(150px, 14vw, 188px);
+  height: auto;
+  display: block;
 }
 
 .brandWord {
@@ -89,10 +104,70 @@ code {
   font-size: 12px;
 }
 
+.brandTagInline {
+  margin: 0 0 10px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
 .headerActions {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.headerSearch {
+  flex: 1;
+  max-width: 560px;
+}
+
+.headerSearchInput {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-1);
+  padding: 0 14px;
+  font: inherit;
+}
+
+.headerSearchInput::placeholder {
+  color: var(--text-3);
+}
+
+.headerRightGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miniStat {
+  display: inline-grid;
+  gap: 2px;
+  min-width: 72px;
+}
+
+.miniStatLabel {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.miniStatValue {
+  font-size: 13px;
+  color: #d4fbe2;
+}
+
+.profileButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
 }
 
 .langToggle {
@@ -128,6 +203,10 @@ code {
 
 .pageIntro {
   margin: 0 0 14px;
+}
+
+.pageIntroCompact h1 {
+  font-size: clamp(18px, 4.2vw, 24px);
 }
 
 .pageIntro .subtle {
@@ -560,6 +639,10 @@ code {
   gap: 10px;
 }
 
+.searchResultHint {
+  margin: -4px 0 10px;
+}
+
 .marketListCard {
   display: grid;
   gap: 10px;
@@ -708,8 +791,24 @@ code {
     grid-template-columns: 1fr;
   }
 
-  .shellHeader {
+  .shellHeader,
+  .shellHeaderPolymarket {
     gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .headerSearch {
+    order: 3;
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .miniStat {
+    min-width: 58px;
+  }
+
+  .miniStatValue {
+    font-size: 12px;
   }
 
   .brandTag {
