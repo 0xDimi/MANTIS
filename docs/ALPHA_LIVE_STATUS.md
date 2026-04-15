@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 11:05 (EEST)
+Last updated: 2026-04-15 11:08 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -68,6 +68,7 @@ Last updated: 2026-04-15 11:05 (EEST)
 - Open markets reduced from 12 to 2 for fast-cycle verification:
   - `gre-weather-athens-heatwave` (close in ~1h from activation)
   - `gre-weather-thessaloniki-heavy-rain` (close in ~2h from activation)
+- Simulation fee lowered to `50 bps` on both open markets (from `200 bps`) to reduce friction during rapid-cycle testing.
 - Other launch-slate markets switched to `draft` (soft hide, not deleted)
 - Immediate recheck after switch: PASS `qa-smoke-alpha` on production with `count=2`
 
