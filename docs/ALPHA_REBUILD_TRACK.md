@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-15 12:01 (EEST)
+Last updated: 2026-04-15 12:11 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -44,6 +44,7 @@ Post-Week-6 execution phase
    - Ship production-looking UI only (no demo/testing/rebuild hints in visible copy).
    - Mobile optimization required across core routes before launch.
    - Initial mobile UX block implemented on `alpha` (`3101d98`): two-card featured swipe, category strip, bottom nav Home/Portfolio/More, and `/more` explainer route.
+   - Notification UX block implemented on `alpha` (`48114a1`): bell icon + unread badge and `/notifications` reminders feed (closing soon + lifecycle events).
 3. Post-UI (pre-launch): run tester activation walkthrough ("first trade") and validate onboarding conversion.
 4. Keep launch-slate expansion deferred until launch-design window opens.
 

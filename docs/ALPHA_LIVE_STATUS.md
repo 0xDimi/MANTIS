@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 12:01 (EEST)
+Last updated: 2026-04-15 12:11 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -67,6 +67,7 @@ Last updated: 2026-04-15 12:01 (EEST)
 - Post-UI launch prep is now locked to controlled automation + tester first-trade walkthrough (no per-trade manual approval requirement).
 - Next immediate phase after simulation signoff: production-grade UI polish (remove demo/testing hints, mobile-first cleanup).
 - UI polish pass started with requested product UX blocks: 2-card featured swipe section, top category strip, and bottom nav (Home / Portfolio / More) with new `/more` explainer page.
+- Notification UX block added: top bell icon with unread badge and `/notifications` page for closing-soon and recent close/resolution/settlement reminders.
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:
