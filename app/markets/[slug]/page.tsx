@@ -23,7 +23,9 @@ function statusClass(status: string) {
 }
 
 function labelize(value: string) {
-  return value.replace(/[-_]/g, ' ');
+  return value
+    .replace(/[-_]/g, ' ')
+    .replace(/\w\S*/g, (part) => part.charAt(0).toUpperCase() + part.slice(1));
 }
 
 export default async function MarketDetailPage({
@@ -64,7 +66,7 @@ export default async function MarketDetailPage({
                 )}
                 <span className="summaryPill">{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
                 <span className="summaryPill">{tr(lang, 'Source', 'Πηγή')} {market.sourcePrimary}</span>
-                <span className={statusClass(market.status)}>{market.status}</span>
+                <span className={statusClass(market.status)}>{labelize(market.status)}</span>
               </div>
 
               <section className="marketChartSurface">

@@ -87,6 +87,8 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
     : categoryFiltered;
   const featuredPool = [...sorted].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
   const featured = featuredPool.slice(0, 2);
+  const featuredIds = new Set(featured.map((market) => market.id));
+  const gridMarkets = filtered.filter((market) => !featuredIds.has(market.id));
   const categories = Array.from(new Set(mergedMarkets.map((market) => market.category)));
 
   const tabs: Array<{ key: DiscoverView; en: string; el: string }> = [
@@ -136,13 +138,13 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
       ) : null}
 
       <section className="marketList" aria-label={tr(lang, 'Market list', 'Λίστα αγορών')}>
-        {filtered.map((market) => (
+        {gridMarkets.map((market) => (
           <MarketCard key={market.id} market={market} lang={lang} />
         ))}
 
-        {filtered.length === 0 ? (
+        {gridMarkets.length === 0 ? (
           <div className="card stackSm">
-            <p className="subtle">{tr(lang, 'No markets matched your filters.', 'Καμία αγορά δεν ταιριάζει με τα φίλτρα.')}</p>
+            <p className="subtle">{tr(lang, 'No additional markets matched your filters.', 'Δεν βρέθηκαν επιπλέον αγορές με αυτά τα φίλτρα.')}</p>
           </div>
         ) : null}
       </section>

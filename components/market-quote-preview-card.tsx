@@ -324,6 +324,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   const successTrade = Boolean(executionMessage && executionMessage.toLowerCase().includes('executed'));
   const claimAvailable = props.marketStatus === 'settled' && hasOpenPosition;
   const claimed = props.marketStatus === 'settled' && !hasOpenPosition && Boolean(lastTradeSnapshot);
+  const liveYes = liveState?.yesPrice ?? 0.5;
+  const liveNo = liveState?.noPrice ?? 0.5;
 
   const stateChips: Array<{ label: string; tone?: 'yes' | 'no' | 'focus' }> = [];
 
@@ -339,7 +341,22 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   if (props.marketStatus === 'void') stateChips.push({ label: 'VOID', tone: 'no' });
 
   return (
-    <article className="stackMd">
+    <article className="stackMd ticketSurfaceStack">
+      <div className="ticketSurfaceHead">
+        <div className="stackXs">
+          <span className="ticketSurfaceEyebrow">MANTIS</span>
+          <strong className="ticketSurfaceTitle">{tr(lang, 'Trade ticket', 'Δελτίο συναλλαγής')}</strong>
+        </div>
+        <div className="ticketSurfaceLive">
+          <span className="ticketSurfaceLiveYes">YES {formatPercent(liveYes)}</span>
+          <span className="ticketSurfaceLiveNo">NO {formatPercent(liveNo)}</span>
+        </div>
+      </div>
+
+      <div className="ticketSurfaceRail" aria-hidden="true">
+        <span style={{ width: `${Math.round(liveYes * 100)}%` }} />
+      </div>
+
       {(props.marketStatus !== 'open' || marketClosed) && (
         <div className="notice noticeWarn">{tr(lang, 'Market is not tradeable right now.', 'Η αγορά δεν είναι διαθέσιμη για συναλλαγή τώρα.')}</div>
       )}

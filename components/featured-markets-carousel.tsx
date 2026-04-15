@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import type { UiLang } from '@/lib/ui-lang';
-import { MarketCard } from '@/components/market-card';
+import { FeaturedMarketCard } from '@/components/featured-market-card';
 
 type FeaturedMarketsCarouselProps = {
   markets: BoardMarket[];
@@ -27,8 +27,8 @@ export function FeaturedMarketsCarousel({ markets, lang }: FeaturedMarketsCarous
       </button>
 
       <div className="featuredSwipe featuredSwipeLarge" ref={railRef}>
-        {markets.map((market) => (
-          <MarketCard key={market.id} market={market} featured lang={lang} />
+        {markets.map((market, index) => (
+          <FeaturedMarketCard key={market.id} market={market} lang={lang} lead={index === 0} />
         ))}
       </div>
 
