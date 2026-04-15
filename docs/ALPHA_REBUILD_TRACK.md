@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-15 11:35 (EEST)
+Last updated: 2026-04-15 11:46 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -40,7 +40,9 @@ Post-Week-6 execution phase
 
 ## Active week remaining items
 1. Run pre-UI two-market simulation cycle (same-day close + resolution + settlement verification).
-2. Start UI polish pass (no backend contract drift) after simulation signoff.
+2. Immediately start UI polish pass after simulation signoff (no backend contract drift).
+   - Ship production-looking UI only (no demo/testing/rebuild hints in visible copy).
+   - Mobile optimization required across core routes before launch.
 3. Post-UI (pre-launch): run tester activation walkthrough ("first trade") and validate onboarding conversion.
 4. Keep launch-slate expansion deferred until launch-design window opens.
 

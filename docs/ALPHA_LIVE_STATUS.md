@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 11:35 (EEST)
+Last updated: 2026-04-15 11:46 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -65,6 +65,7 @@ Last updated: 2026-04-15 11:35 (EEST)
 - Final-product requirement remains locked: nickname update support
 - Auto-resolution worker is armed for simulation markets (agent-run), with manual fallback only on execution errors.
 - Post-UI launch prep is now locked to controlled automation + tester first-trade walkthrough (no per-trade manual approval requirement).
+- Next immediate phase after simulation signoff: production-grade UI polish (remove demo/testing hints, mobile-first cleanup).
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:

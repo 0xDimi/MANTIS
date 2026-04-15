@@ -30,3 +30,8 @@
 - Treat `*-git-alpha-*` URLs as internal preview links only (not user-facing)
 - Continue alpha plan by wiring backend operations into the polished existing UI
 - Final public naming target when ready: **Alpha Demo v1**
+
+## UI polish target (pre-launch)
+- UI polish must ship as the real public-facing product surface (not a test/demo-looking UI).
+- Remove visible demo/testing/rebuild/operational hints from user-facing copy.
+- Prioritize mobile-first layout quality and interaction clarity across core routes.
