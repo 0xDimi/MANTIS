@@ -3,6 +3,8 @@
 ## Product and trading
 - AMM v0 behavior follows `08_AMM_V0_BUILD_READY_SPEC`
 - Sell-before-resolution is enabled in alpha
+- Controlled automation for market-making/trading flow is allowed, but must be rules-based (no random blanket bot activity across all markets)
+- Trading operations can be managed by Alfred without per-trade Dimitris approval, within explicit risk limits and runbook guardrails
 
 ## Tester economics
 - Starting paper balance per tester: **€1,000**
@@ -16,6 +18,8 @@
 
 ## Access and onboarding
 - Access mode: email invite + auth
+- Tester activation must include a clear "first trade" walkthrough flow
+- Walkthrough testing is scheduled post-UI-polish and pre-launch
 
 ## Resend
 - Keep test sender identity first

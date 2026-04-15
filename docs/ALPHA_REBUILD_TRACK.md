@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-15 11:05 (EEST)
+Last updated: 2026-04-15 11:35 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -41,7 +41,8 @@ Post-Week-6 execution phase
 ## Active week remaining items
 1. Run pre-UI two-market simulation cycle (same-day close + resolution + settlement verification).
 2. Start UI polish pass (no backend contract drift) after simulation signoff.
-3. Keep launch-slate expansion deferred until launch-design window opens.
+3. Post-UI (pre-launch): run tester activation walkthrough ("first trade") and validate onboarding conversion.
+4. Keep launch-slate expansion deferred until launch-design window opens.
 
 ## Temporary simulation override (approved)
 - Runtime market slate is intentionally reduced to 2 open markets for fast-cycle operations testing today.
@@ -52,7 +53,8 @@ Post-Week-6 execution phase
 1. UI polish pass (no backend contract drift).
 2. Launch market design/final slate.
 3. Domain setup + cutover checks.
-4. Founder end-to-end manual trade run.
+4. Controlled automated trading ops (rules-based, not random blanket bots).
+5. Tester activation run with first-trade walkthrough.
 
 ## Locked final-product requirement
 - Users must be able to set and update their own nickname (profile display name).
