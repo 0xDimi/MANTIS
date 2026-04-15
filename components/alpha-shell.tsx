@@ -22,11 +22,13 @@ export async function AlphaShell({
   title,
   eyebrow,
   lang = 'en',
+  showIntro = true,
   children
 }: {
   title: string;
   eyebrow?: string;
   lang?: UiLang;
+  showIntro?: boolean;
   children: ReactNode;
 }) {
   const [{ count }, summary] = await Promise.all([loadNotificationSummary(), loadHeaderSummary()]);
@@ -85,12 +87,12 @@ export async function AlphaShell({
         </div>
       </header>
 
-      <p className="brandTagInline">{tr(lang, 'Here, your opinion has value', 'Εδώ, η άποψή σου έχει αξία')}</p>
-
-      <section className="pageIntro pageIntroCompact">
-        <h1>{title}</h1>
-        {eyebrow ? <p className="subtle">{eyebrow}</p> : null}
-      </section>
+      {showIntro ? (
+        <section className="pageIntro pageIntroCompact">
+          <h1>{title}</h1>
+          {eyebrow ? <p className="subtle">{eyebrow}</p> : null}
+        </section>
+      ) : null}
 
       {children}
 

@@ -1,18 +1,25 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const supabase = await getSupabaseServerClient();
+    const scope = new URL(request.url).searchParams.get('scope') === 'all' ? 'all' : 'open';
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('markets')
       .select(
-        'id,slug,question,category,status,close_time,fee_bps,b_liquidity,market_state(yes_price,no_price,volume_total,participants_count,last_trade_at)'
+        'id,slug,question,category,status,close_time,fee_bps,b_liquidity,updated_at,market_state(yes_price,no_price,volume_total,participants_count,last_trade_at)'
       )
-      .eq('status', 'open')
-      .order('close_time', { ascending: true })
-      .limit(25);
+      .limit(40);
+
+    if (scope === 'open') {
+      query = query.eq('status', 'open').order('close_time', { ascending: true });
+    } else {
+      query = query.order('updated_at', { ascending: false });
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

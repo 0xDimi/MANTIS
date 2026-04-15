@@ -54,7 +54,7 @@ code {
 .shell {
   width: min(calc(100% - 28px), var(--container));
   margin: 0 auto;
-  padding: 12px 0 108px;
+  padding: 0 0 108px;
 }
 
 .shellHeader,
@@ -67,7 +67,7 @@ code {
 }
 
 .shellHeaderPolymarket {
-  padding: 8px 0;
+  padding: 4px 0 8px;
 }
 
 .brandLock {
@@ -100,12 +100,6 @@ code {
 
 .brandTag {
   margin: 2px 0 0;
-  color: var(--text-3);
-  font-size: 12px;
-}
-
-.brandTagInline {
-  margin: 0 0 10px;
   color: var(--text-3);
   font-size: 12px;
 }
@@ -614,6 +608,40 @@ code {
   margin-bottom: 14px;
 }
 
+.featuredSwipeLarge {
+  grid-auto-columns: minmax(92%, 760px);
+  margin-bottom: 16px;
+}
+
+.featuredCarouselWrap {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.featuredNavButton {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.featuredCardLarge {
+  min-height: 220px;
+}
+
+.featuredDetailRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
 .featuredCard {
   scroll-snap-align: start;
 }
@@ -637,6 +665,7 @@ code {
 .marketList {
   display: grid;
   gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .searchResultHint {
@@ -646,6 +675,25 @@ code {
 .marketListCard {
   display: grid;
   gap: 10px;
+}
+
+.marketCardPoly {
+  min-height: 192px;
+}
+
+.marketBottomRowTight {
+  align-items: center;
+}
+
+.marketCardActionRow {
+  gap: 6px;
+}
+
+.marketMiniButton {
+  min-height: 36px;
+  min-width: 56px;
+  padding: 0 10px;
+  font-size: 13px;
 }
 
 .marketCategory,
@@ -811,6 +859,14 @@ code {
     font-size: 12px;
   }
 
+  .featuredCarouselWrap {
+    grid-template-columns: 1fr;
+  }
+
+  .featuredNavButton {
+    display: none;
+  }
+
   .brandTag {
     max-width: 220px;
   }
@@ -822,5 +878,15 @@ code {
   .marketBottomRow {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .marketList {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1250px) {
+  .marketList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

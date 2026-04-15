@@ -169,9 +169,10 @@ async function readJson<T>(path: string) {
   return payload as T;
 }
 
-export async function loadMarketsBoard() {
+export async function loadMarketsBoard(options?: { scope?: 'open' | 'all' }) {
   try {
-    const payload = await readJson<MarketsApiResponse>('/api/markets');
+    const scope = options?.scope === 'all' ? 'all' : 'open';
+    const payload = await readJson<MarketsApiResponse>(`/api/markets?scope=${scope}`);
 
     const markets: BoardMarket[] = (payload.markets ?? []).map((market) => ({
       id: market.id,

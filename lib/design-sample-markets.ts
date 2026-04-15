@@ -1,7 +1,5 @@
 import type { BoardMarket } from '@/lib/alpha-read-model';
 
-type SampleMarket = BoardMarket & { previewOnly: true };
-
 const sampleQuestions = [
   { category: 'macro', question: 'Will ECB cut rates by at least 25 bps before 31 Jul 2026?' },
   { category: 'sports', question: 'Will Panathinaikos finish above Olympiacos in the regular season?' },
@@ -22,7 +20,7 @@ function pseudo(index: number) {
   return Math.max(0.18, Math.min(0.82, base / 100));
 }
 
-export function getDesignSampleMarkets(): SampleMarket[] {
+export function getDesignSampleMarkets(): BoardMarket[] {
   const now = Date.now();
 
   return sampleQuestions.map((item, index) => {
@@ -44,8 +42,7 @@ export function getDesignSampleMarkets(): SampleMarket[] {
         volumeTotal: 1600 + index * 420,
         participantsCount: 24 + index * 3,
         lastTradeAt: new Date(now - (index + 1) * 27 * 60 * 1000).toISOString()
-      },
-      previewOnly: true
+      }
     };
   });
 }

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { loadMarketsBoard } from '@/lib/alpha-read-model';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import { MarketCard } from '@/components/market-card';
+import { FeaturedMarketsCarousel } from '@/components/featured-markets-carousel';
 import { getDesignSampleMarkets } from '@/lib/design-sample-markets';
 
 type DiscoverView = 'trending' | 'new' | 'liquid' | 'ending';
@@ -11,7 +12,6 @@ type DiscoverBoardProps = {
   view: DiscoverView;
   category: string | null;
   query?: string | null;
-  showBrand?: boolean;
 };
 
 function normalizeView(value: string | null | undefined): DiscoverView {
@@ -56,10 +56,9 @@ function sortMarkets(markets: Awaited<ReturnType<typeof loadMarketsBoard>>['mark
   return list.sort((a, b) => (b.state?.volumeTotal ?? 0) - (a.state?.volumeTotal ?? 0));
 }
 
-export async function DiscoverBoard({ lang, view, category, query, showBrand = false }: DiscoverBoardProps) {
-  const { markets, error } = await loadMarketsBoard();
-  const openMarkets = markets.filter((market) => market.status === 'open');
-  const mergedMarkets = openMarkets.length >= 10 ? openMarkets : [...openMarkets, ...getDesignSampleMarkets().slice(0, 12)];
+export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
+  const { markets, error } = await loadMarketsBoard({ scope: 'all' });
+  const mergedMarkets = markets.length >= 10 ? markets : [...markets, ...getDesignSampleMarkets()];
   const sorted = sortMarkets(mergedMarkets, normalizeView(view));
   const normalizedQuery = (query ?? '').trim().toLowerCase();
   const categoryFiltered = category ? sorted.filter((market) => market.category === category) : sorted;
@@ -80,18 +79,6 @@ export async function DiscoverBoard({ lang, view, category, query, showBrand = f
     <>
       {error ? <div className="notice noticeError">{tr(lang, 'Live board unavailable', 'Το live board δεν είναι διαθέσιμο')}.</div> : null}
 
-      {openMarkets.length < 10 ? (
-        <div className="notice noticeWarn">
-          {tr(lang, 'Design sample markets are shown so you can review the layout with depth. These are not launch markets.', 'Εμφανίζονται δείγματα αγορών για αξιολόγηση του layout. Αυτές δεν είναι αγορές launch.')}
-        </div>
-      ) : null}
-
-      {showBrand ? (
-        <section className="homeBrand" aria-label="MANTIS brand">
-          <img className="homeBrandLogo" src="/brand/mantis/logo/mantis-logo-primary-wordmark.png" alt="MANTIS" />
-        </section>
-      ) : null}
-
       <section className="shelfTabs" aria-label={tr(lang, 'Market views', 'Προβολές αγοράς')}>
         {tabs.map((tab) => (
           <Link
@@ -104,11 +91,7 @@ export async function DiscoverBoard({ lang, view, category, query, showBrand = f
         ))}
       </section>
 
-      <section className="featuredSwipe" aria-label={tr(lang, 'Featured markets', 'Προβεβλημένες αγορές')}>
-        {featured.map((market) => (
-          <MarketCard key={market.id} market={market} featured lang={lang} />
-        ))}
-      </section>
+      <FeaturedMarketsCarousel markets={featured} lang={lang} />
 
       <section className="categoryStrip" aria-label={tr(lang, 'Categories', 'Κατηγορίες')}>
         <Link className={!category ? 'categoryPill categoryPillActive' : 'categoryPill'} href={hrefWith(lang, view, null, normalizedQuery)}>
@@ -138,7 +121,7 @@ export async function DiscoverBoard({ lang, view, category, query, showBrand = f
 
         {filtered.length === 0 ? (
           <div className="card stackSm">
-            <p className="subtle">{tr(lang, 'No open markets right now.', 'Δεν υπάρχουν ανοιχτές αγορές αυτή τη στιγμή.')}</p>
+            <p className="subtle">{tr(lang, 'No markets matched your filters.', 'Καμία αγορά δεν ταιριάζει με τα φίλτρα.')}</p>
           </div>
         ) : null}
       </section>

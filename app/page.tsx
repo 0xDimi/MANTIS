@@ -12,7 +12,7 @@ export default async function HomePage({
   const view = (params.view as 'trending' | 'new' | 'liquid' | 'ending' | undefined) ?? 'trending';
 
   return (
-    <AlphaShell title={tr(lang, 'Discover', 'Ανακάλυψη')} eyebrow={tr(lang, 'Prediction markets at a glance', 'Αγορές πρόβλεψης με μια ματιά')} lang={lang}>
+    <AlphaShell title={tr(lang, 'Discover', 'Ανακάλυψη')} lang={lang} showIntro={false}>
       <DiscoverBoard lang={lang} view={view} category={params.cat ?? null} query={params.q ?? null} />
     </AlphaShell>
   );
