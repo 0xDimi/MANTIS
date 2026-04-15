@@ -2,10 +2,11 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { appConfig } from '@/lib/app-config';
-import { loadNotificationSummary } from '@/lib/notifications';
+import { loadNotificationsFeed } from '@/lib/notifications';
 import { loadHeaderSummary } from '@/lib/header-summary';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import { LanguageToggle } from '@/components/language-toggle';
+import { NotificationsPopover } from '@/components/notifications-popover';
 
 const nav = [
   { href: '/', en: 'Home', el: 'Αρχική' },
@@ -31,10 +32,10 @@ export async function AlphaShell({
   showIntro?: boolean;
   children: ReactNode;
 }) {
-  const [{ count }, summary] = await Promise.all([loadNotificationSummary(), loadHeaderSummary()]);
+  const [summary, notifications] = await Promise.all([loadHeaderSummary(), loadNotificationsFeed()]);
   const homeHref = lang === 'el' ? '/?lang=el' : '/';
   const profileHref = lang === 'el' ? '/profile?lang=el' : '/profile';
-  const notificationsHref = lang === 'el' ? '/notifications?lang=el' : '/notifications';
+  const notificationsCount = notifications.closingSoon.length + notifications.recentEvents.length;
 
   return (
     <div className="shell">
@@ -76,10 +77,13 @@ export async function AlphaShell({
             <LanguageToggle />
           </Suspense>
 
-          <Link className="notifButton" href={notificationsHref} aria-label="Notifications">
-            <span aria-hidden="true">🔔</span>
-            {count > 0 ? <span className="notifBadge">{Math.min(count, 99)}</span> : null}
-          </Link>
+          <NotificationsPopover
+            count={notificationsCount}
+            lang={lang}
+            closingSoon={notifications.closingSoon}
+            recentEvents={notifications.recentEvents}
+            error={notifications.error}
+          />
 
           <Link className="profileButton" href={profileHref} aria-label="Profile">
             <span>◉</span>
