@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-14 21:37 (EEST)
+Last updated: 2026-04-15 11:05 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -8,6 +8,7 @@ Last updated: 2026-04-14 21:37 (EEST)
 - Week 4 execution/ledger/portfolio/realtime gate is closed
 - Week 5 admin/resolution/settlement gate is closed
 - Week 6 QA/telemetry/ops/runbook/launch-readiness is closed
+- Pre-UI simulation mode is active (2 open markets only, fast close windows today)
 
 ## Live build/run state
 - Branch: `alpha`
@@ -60,12 +61,19 @@ Last updated: 2026-04-14 21:37 (EEST)
   - PostHog `envConfigured=true`, `sdkConfigured=true`
 
 ## In progress
-- Post-Week-6 transition: UI polish preparation
+- Resolution/settlement simulation pass on live runtime before UI polish
 - Final-product requirement remains locked: nickname update support
+
+## Simulation mode (active)
+- Open markets reduced from 12 to 2 for fast-cycle verification:
+  - `gre-weather-athens-heatwave` (close in ~1h from activation)
+  - `gre-weather-thessaloniki-heavy-rain` (close in ~2h from activation)
+- Other launch-slate markets switched to `draft` (soft hide, not deleted)
+- Immediate recheck after switch: PASS `qa-smoke-alpha` on production with `count=2`
 
 ## Ops runbook
 - Operator runbook finalized: `docs/ALPHA_OPERATOR_RUNBOOK.md`
 
 ## Current blockers / needs
-- No Week 6 blockers remain.
-- Primary focus now moves to the locked post-Week-6 sequence (UI polish -> launch market design -> domain setup -> founder manual trade run).
+- No functional blockers from Week 6 remain.
+- Active execution now: complete same-day simulation close -> resolution -> settlement checks, then start UI polish.

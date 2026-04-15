@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-14 21:37 (EEST)
+Last updated: 2026-04-15 11:05 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -39,8 +39,14 @@ Last updated: 2026-04-14 21:37 (EEST)
 Post-Week-6 execution phase
 
 ## Active week remaining items
-1. Start UI polish pass (no backend contract drift).
-2. Keep markets unchanged until launch-slate design window opens.
+1. Run pre-UI two-market simulation cycle (same-day close + resolution + settlement verification).
+2. Start UI polish pass (no backend contract drift) after simulation signoff.
+3. Keep launch-slate expansion deferred until launch-design window opens.
+
+## Temporary simulation override (approved)
+- Runtime market slate is intentionally reduced to 2 open markets for fast-cycle operations testing today.
+- Remaining launch-slate markets are set to `draft` (soft hidden, recoverable), not deleted.
+- Purpose: accelerate real-runtime validation of close-time behavior, admin resolution, settlement payout/refund, and portfolio reflection before UI pass.
 
 ## Post Week 6 lock (confirmed)
 1. UI polish pass (no backend contract drift).
