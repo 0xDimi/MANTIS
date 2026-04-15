@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-15 18:25 (EEST)
+Last updated: 2026-04-15 19:20 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -59,6 +59,12 @@ Post-Week-6 execution phase
      - featured module enlarged with explicit prev/next controls
      - top-bar gap cleanup and removal of highlighted top-copy clutter
      - market-card visual hierarchy aligned closer to prediction-market card language while preserving MANTIS identity
+   - Second-pass hierarchy cleanup implemented on `alpha` (`0e05c78`) and deployed:
+     - reduced over-containerization in discover flow
+     - tuned tabs/category visual priority (active-first, lighter inactive)
+     - rebuilt detail above-the-fold around market question + summary row + chart/ticket focus
+     - replaced boxed trust blocks with lighter Rules/Sources/Resolution sectioning
+     - filtered internal/smoke/test/lifecycle markets out of primary browse feed
 3. Post-UI (pre-launch): run tester activation walkthrough ("first trade") and validate onboarding conversion.
 4. Keep launch-slate expansion deferred until launch-design window opens.
 

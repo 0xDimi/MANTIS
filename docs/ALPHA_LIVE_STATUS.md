@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 18:25 (EEST)
+Last updated: 2026-04-15 19:20 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -79,6 +79,14 @@ Last updated: 2026-04-15 18:25 (EEST)
   - featured markets module enlarged with previous/next controls
   - market cards moved closer to Polymarket-like information density and YES/NO action framing while preserving MANTIS styling
   - removed highlighted top-copy clutter and tightened top-bar vertical spacing
+- Discover/detail hierarchy refactor pass applied (commit `0e05c78`):
+  - discover flow reduced to shelves → featured → categories → market grid (less wrapper-card feel)
+  - featured module tightened with lead-card + peek behavior, compact meta, and restrained controls
+  - shelf/category rails de-emphasized for inactive states (active-only emphasis)
+  - market cards tightened to single-surface hierarchy with cleaner bottom action/meta rows
+  - detail page above-the-fold rebuilt around question title + compact summary row + chart/ticket prominence
+  - generic AI-style headings removed; rules/sources/resolution moved to lighter secondary sections
+  - internal/smoke/test market slugs are filtered from discover browse surfaces
 
 ## Just completed
 - Pre-UI two-market live simulation completed successfully end-to-end via `scripts/sim-auto-resolution.mjs`:
@@ -88,6 +96,7 @@ Last updated: 2026-04-15 18:25 (EEST)
 - UI polish framework pass deployed to canonical app (`xyz-labs-demo.vercel.app`) via Vercel production deploy from `alpha` (`eea605b`).
 - Header/navigation + discover depth follow-up deployed to canonical app from `alpha` (`5724387`).
 - Market-card-focused follow-up deployed to canonical app from `alpha` (`e2d52ec`).
+- Discover/detail hierarchy pass deployed to canonical app from `alpha` (`0e05c78`).
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:
