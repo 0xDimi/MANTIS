@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-15 19:24 (EEST)
+Last updated: 2026-04-15 20:15 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -66,6 +66,13 @@ Post-Week-6 execution phase
      - replaced boxed trust blocks with lighter Rules/Sources/Resolution sectioning
      - filtered internal/smoke/test/lifecycle markets out of primary browse feed
    - Scope-guard follow-up (`9b3e422`) deployed to keep this pass strictly UI-focused (no backend/data-flow contract edits).
+   - Discover-only surgical refinement implemented (`107b94a`, `7c4621b`) and deployed:
+     - fixed header dead-air by cropping wordmark whitespace and tightening top-shell baseline
+     - redesigned featured area into a taller lead-story module with intentional second-card peek
+     - rebuilt shared market-card interactions: full-card navigation + separate YES/NO action targets
+     - embedded live pricing in card CTAs (`YES x¢` / `NO x¢`) and tightened typography hierarchy
+     - refined tab/category rails for cleaner active/inactive contrast and title-case presentation
+     - discover ordering now prioritizes open user-facing markets ahead of non-open states
 3. Post-UI (pre-launch): run tester activation walkthrough ("first trade") and validate onboarding conversion.
 4. Keep launch-slate expansion deferred until launch-design window opens.
 

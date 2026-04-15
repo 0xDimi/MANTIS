@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 19:24 (EEST)
+Last updated: 2026-04-15 20:15 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -87,6 +87,13 @@ Last updated: 2026-04-15 19:24 (EEST)
   - detail page above-the-fold rebuilt around question title + compact summary row + chart/ticket prominence
   - generic AI-style headings removed; rules/sources/resolution moved to lighter secondary sections
   - internal/smoke/test market slugs are filtered from discover browse surfaces
+- Discover-only surgical refinement pass applied (commits `107b94a`, `7c4621b`):
+  - top shell spacing tightened and wordmark whitespace cropped so header/search baseline sits higher and cleaner
+  - featured module rebuilt as a lead-story card (taller, heavier, intentional peek second card)
+  - shared market card V3 shipped with full-card click semantics + separate YES/NO action targets
+  - YES/NO quick actions now include embedded pricing (e.g. `YES 85¢`, `NO 15¢`)
+  - category/tab presentation tightened (lighter inactive, cleaner active, title-case labels)
+  - discover ranking now prioritizes open user-facing markets before non-open states
 
 ## Just completed
 - Pre-UI two-market live simulation completed successfully end-to-end via `scripts/sim-auto-resolution.mjs`:
@@ -98,6 +105,7 @@ Last updated: 2026-04-15 19:24 (EEST)
 - Market-card-focused follow-up deployed to canonical app from `alpha` (`e2d52ec`).
 - Discover/detail hierarchy pass deployed to canonical app from `alpha` (`0e05c78`).
 - Follow-up scope guard deployed from `alpha` (`9b3e422`) to keep this pass UI-only (no API/auth/trade/data-flow contract changes).
+- Discover-only surgical refinement deployed from `alpha` (`107b94a`, `7c4621b`) with no portfolio/admin/settlement scope changes.
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:
