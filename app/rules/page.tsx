@@ -1,14 +1,22 @@
 import { AlphaShell } from '@/components/alpha-shell';
+import { normalizeLang, tr } from '@/lib/ui-lang';
 
-export default function RulesPage() {
+export default async function RulesPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ lang?: string }>;
+}) {
+  const params = (await searchParams) ?? {};
+  const lang = normalizeLang(params.lang);
+
   return (
-    <AlphaShell title="Rules and resolution" eyebrow="Source hierarchy and clear outcomes">
+    <AlphaShell title={tr(lang, 'Rules and resolution', 'Κανόνες και επίλυση')} eyebrow={tr(lang, 'Source hierarchy and clear outcomes', 'Ιεραρχία πηγών και καθαρά αποτελέσματα')} lang={lang}>
       <section className="card">
         <ul>
-          <li>market source hierarchy</li>
-          <li>close time and resolution timing</li>
-          <li>YES / NO / VOID logic</li>
-          <li>manual-admin safeguards and audit logging</li>
+          <li>{tr(lang, 'market source hierarchy', 'ιεραρχία πηγών αγοράς')}</li>
+          <li>{tr(lang, 'close time and resolution timing', 'χρόνος λήξης και χρόνος επίλυσης')}</li>
+          <li>{tr(lang, 'YES / NO / VOID logic', 'λογική YES / NO / VOID')}</li>
+          <li>{tr(lang, 'manual-admin safeguards and audit logging', 'χειροκίνητες δικλίδες admin και audit logs')}</li>
         </ul>
       </section>
     </AlphaShell>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { tr, type UiLang } from '@/lib/ui-lang';
 
 type QuotePreviewPayload = {
   quote?: {
@@ -27,6 +28,7 @@ type MarketQuotePreviewCardProps = {
   closeTime: string;
   yesLabel: string;
   noLabel: string;
+  lang?: UiLang;
 };
 
 type PortfolioSummaryPayload = {
@@ -76,9 +78,7 @@ function formatPercent(value: number) {
 }
 
 function formatCountdown(ms: number) {
-  if (ms <= 0) {
-    return 'expired';
-  }
+  if (ms <= 0) return 'expired';
 
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -92,20 +92,16 @@ function formatCountdown(ms: number) {
 }
 
 function formatTime(value: string | null | undefined) {
-  if (!value) {
-    return '—';
-  }
+  if (!value) return '—';
 
   const parsed = new Date(value);
 
-  if (!Number.isFinite(parsed.getTime())) {
-    return '—';
-  }
+  if (!Number.isFinite(parsed.getTime())) return '—';
 
   return parsed.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
-export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
+export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePreviewCardProps) {
   const [side, setSide] = useState<'yes' | 'no'>('yes');
   const [action, setAction] = useState<'buy' | 'sell'>('buy');
   const [amountEur, setAmountEur] = useState('10');
@@ -118,13 +114,12 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
   const [liveState, setLiveState] = useState<{ yesPrice: number; noPrice: number; lastTradeAt: string | null } | null>(null);
   const [walletBalance, setWalletBalance] = useState<string | null>(null);
   const [positionSnapshot, setPositionSnapshot] = useState<string | null>(null);
+  const [hasOpenPosition, setHasOpenPosition] = useState(false);
   const [lastTradeSnapshot, setLastTradeSnapshot] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
 
   useEffect(() => {
-    if (!quote?.expiresAt) {
-      return;
-    }
+    if (!quote?.expiresAt) return;
 
     const timer = setInterval(() => setNowMs(Date.now()), 1000);
     return () => clearInterval(timer);
@@ -139,10 +134,7 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
         const payload = (await response.json()) as MarketStatePayload;
 
         if (!response.ok) {
-          if (!cancelled) {
-            setStateError(payload.error ?? `state refresh failed (${response.status})`);
-          }
-
+          if (!cancelled) setStateError(payload.error ?? `state refresh failed (${response.status})`);
           return;
         }
 
@@ -180,15 +172,10 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
   }, [props.closeTime, nowMs]);
 
   const quoteExpiryText = useMemo(() => {
-    if (!quote?.expiresAt) {
-      return null;
-    }
+    if (!quote?.expiresAt) return null;
 
     const expiresMs = new Date(quote.expiresAt).getTime();
-
-    if (!Number.isFinite(expiresMs)) {
-      return 'invalid expiry';
-    }
+    if (!Number.isFinite(expiresMs)) return 'invalid expiry';
 
     return formatCountdown(expiresMs - nowMs);
   }, [quote?.expiresAt, nowMs]);
@@ -201,16 +188,14 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
 
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
       setLoading(false);
-      setError('Enter a valid amount above 0.');
+      setError(tr(lang, 'Enter a valid amount above 0.', 'Συμπλήρωσε έγκυρο ποσό πάνω από 0.'));
       return;
     }
 
     try {
       const response = await fetch('/api/quotes/preview', {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           marketId: props.marketId,
           side,
@@ -254,9 +239,16 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
         const marketPosition = portfolio.positions.find((item) => item.marketId === props.marketId);
 
         if (marketPosition) {
+          const yesShares = Number(marketPosition.position.yesShares ?? 0);
+          const noShares = Number(marketPosition.position.noShares ?? 0);
+          setHasOpenPosition(yesShares > 0 || noShares > 0);
+
           setPositionSnapshot(
-            `YES ${marketPosition.position.yesShares.toFixed(4)} · NO ${marketPosition.position.noShares.toFixed(4)} · MV €${marketPosition.position.marketValue.toFixed(2)}`
+            `YES ${yesShares.toFixed(4)} · NO ${noShares.toFixed(4)} · MV €${Number(marketPosition.position.marketValue ?? 0).toFixed(2)}`
           );
+        } else {
+          setHasOpenPosition(false);
+          setPositionSnapshot(null);
         }
       }
 
@@ -276,7 +268,7 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
 
   async function executeTrade() {
     if (!quote?.quoteHash || !quote.expiresAt) {
-      setExecutionMessage('Request a fresh quote first.');
+      setExecutionMessage(tr(lang, 'Request a fresh quote first.', 'Ζήτησε νέο quote πρώτα.'));
       return;
     }
 
@@ -288,9 +280,7 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
     try {
       const response = await fetch('/api/trades/execute', {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           marketId: props.marketId,
           side,
@@ -308,8 +298,9 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
         return;
       }
 
-      setExecutionMessage('Trade executed. Portfolio and state snapshots updated.');
-      await Promise.all([refreshPortfolioSnapshots(), Promise.resolve()]);
+      setExecutionMessage(tr(lang, 'Trade executed. Portfolio updated.', 'Η συναλλαγή εκτελέστηκε. Το χαρτοφυλάκιο ενημερώθηκε.'));
+      await refreshPortfolioSnapshots();
+
       const stateRes = await fetch(`/api/markets/${props.marketSlug}`, { cache: 'no-store' });
       const statePayload = (await stateRes.json()) as MarketStatePayload;
 
@@ -327,144 +318,197 @@ export function MarketQuotePreviewCard(props: MarketQuotePreviewCardProps) {
     }
   }
 
+  const quoteReady = Boolean(quote?.quote && quoteExpiryText !== 'expired');
+  const requoteNeeded = Boolean(quote?.quote && quoteExpiryText === 'expired');
+  const failedTrade = Boolean(executionMessage && executionMessage.toLowerCase().includes('failed'));
+  const successTrade = Boolean(executionMessage && executionMessage.toLowerCase().includes('executed'));
+  const claimAvailable = props.marketStatus === 'settled' && hasOpenPosition;
+  const claimed = props.marketStatus === 'settled' && !hasOpenPosition && Boolean(lastTradeSnapshot);
+
+  const stateChips: Array<{ label: string; tone?: 'yes' | 'no' | 'focus' }> = [];
+
+  if (quoteReady) stateChips.push({ label: tr(lang, 'Quote ready', 'Quote έτοιμο'), tone: 'focus' });
+  if (loading) stateChips.push({ label: tr(lang, 'Quoting', 'Υπολογισμός quote'), tone: 'focus' });
+  if (executing) stateChips.push({ label: action === 'buy' ? tr(lang, 'Buying', 'Αγορά') : tr(lang, 'Selling', 'Πώληση'), tone: 'focus' });
+  if (successTrade) stateChips.push({ label: tr(lang, 'Trade success', 'Επιτυχής συναλλαγή'), tone: 'yes' });
+  if (requoteNeeded) stateChips.push({ label: tr(lang, 'Requote needed', 'Απαιτείται νέο quote'), tone: 'no' });
+  if (failedTrade) stateChips.push({ label: tr(lang, 'Trade failed', 'Αποτυχία συναλλαγής'), tone: 'no' });
+  if (claimAvailable) stateChips.push({ label: tr(lang, 'Claim available', 'Διαθέσιμη είσπραξη'), tone: 'yes' });
+  if (claimed) stateChips.push({ label: tr(lang, 'Claimed', 'Εισπραγμένο'), tone: 'yes' });
+  if (props.marketStatus === 'settled') stateChips.push({ label: tr(lang, 'Settled', 'Settled'), tone: 'yes' });
+  if (props.marketStatus === 'void') stateChips.push({ label: 'VOID', tone: 'no' });
+
   return (
-    <article className="card stackMd">
-      <div>
-        <p className="eyebrow">Week 3 quote preview</p>
-        <h3>Rebuilt preview + expiry interaction</h3>
-        <p className="subtle">This interaction hits <code>POST /api/quotes/preview</code> directly on the rebuilt route.</p>
+    <article className="stackMd">
+      {(props.marketStatus !== 'open' || marketClosed) && (
+        <div className="notice noticeWarn">{tr(lang, 'Market is not tradeable right now.', 'Η αγορά δεν είναι διαθέσιμη για συναλλαγή τώρα.')}</div>
+      )}
+
+      <div className="stateChips">
+        {stateChips.map((chip) => (
+          <span
+            key={chip.label}
+            className={
+              chip.tone === 'yes'
+                ? 'stateChip stateChipYes'
+                : chip.tone === 'no'
+                  ? 'stateChip stateChipNo'
+                  : chip.tone === 'focus'
+                    ? 'stateChip stateChipFocus'
+                    : 'stateChip'
+            }
+          >
+            {chip.label}
+          </span>
+        ))}
       </div>
 
-      {props.marketStatus !== 'open' || marketClosed ? (
-        <div className="notice noticeWarn">Market is not tradeable right now, quote preview is disabled.</div>
-      ) : null}
+      <div className="ticketShell stackMd">
+        <div className="stackSm">
+          <span className="fieldLabel">{tr(lang, 'Action', 'Ενέργεια')}</span>
+          <div className="segmentRow">
+            <button
+              className={action === 'buy' ? 'segmentButton segmentButtonActive' : 'segmentButton'}
+              type="button"
+              onClick={() => setAction('buy')}
+            >
+              {tr(lang, 'Buy', 'Αγορά')}
+            </button>
+            <button
+              className={action === 'sell' ? 'segmentButton segmentButtonActive' : 'segmentButton'}
+              type="button"
+              onClick={() => setAction('sell')}
+            >
+              {tr(lang, 'Sell', 'Πώληση')}
+            </button>
+          </div>
+        </div>
 
-      <div className="routeGrid">
+        <div className="stackSm">
+          <span className="fieldLabel">{tr(lang, 'Direction', 'Κατεύθυνση')}</span>
+          <div className="segmentRow">
+            <button
+              className={side === 'yes' ? 'segmentButton buttonYes' : 'segmentButton'}
+              type="button"
+              onClick={() => setSide('yes')}
+            >
+              YES ({props.yesLabel})
+            </button>
+            <button
+              className={side === 'no' ? 'segmentButton buttonNo' : 'segmentButton'}
+              type="button"
+              onClick={() => setSide('no')}
+            >
+              NO ({props.noLabel})
+            </button>
+          </div>
+        </div>
+
         <label className="stackXs">
-          <span className="fieldLabel">Side</span>
-          <select className="select" value={side} onChange={(event) => setSide(event.target.value as 'yes' | 'no')}>
-            <option value="yes">YES ({props.yesLabel})</option>
-            <option value="no">NO ({props.noLabel})</option>
-          </select>
+          <span className="fieldLabel">{action === 'buy' ? tr(lang, 'Budget (€ total)', 'Ποσό (€ σύνολο)') : tr(lang, 'Target payout (€ gross)', 'Στόχος πληρωμής (€ μικτό)')}</span>
+          <input
+            className="input"
+            type="number"
+            min="1"
+            step="1"
+            value={amountEur}
+            onChange={(event) => setAmountEur(event.target.value)}
+            disabled={loading || props.marketStatus !== 'open' || marketClosed}
+          />
         </label>
 
-        <label className="stackXs">
-          <span className="fieldLabel">Action</span>
-          <select className="select" value={action} onChange={(event) => setAction(event.target.value as 'buy' | 'sell')}>
-            <option value="buy">Buy</option>
-            <option value="sell">Sell</option>
-          </select>
-        </label>
-      </div>
-
-      <label className="stackXs">
-        <span className="fieldLabel">{action === 'buy' ? 'Budget (€ total)' : 'Target payout (€ gross)'}</span>
-        <input
-          className="input"
-          type="number"
-          min="1"
-          step="1"
-          value={amountEur}
-          onChange={(event) => setAmountEur(event.target.value)}
-          disabled={loading || props.marketStatus !== 'open' || marketClosed}
-        />
-      </label>
-
-      <div className="buttonRow">
         <button
-          className="button buttonPrimary"
+          className={side === 'yes' ? 'ticketCta ticketCtaYes' : 'ticketCta ticketCtaNo'}
           type="button"
           onClick={requestQuotePreview}
           disabled={loading || props.marketStatus !== 'open' || marketClosed}
         >
-          {loading ? 'Requesting quote...' : 'Get quote preview'}
+          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : tr(lang, 'Get quote preview', 'Λήψη προεπισκόπησης quote')}
         </button>
       </div>
 
       {error ? <div className="notice noticeError">{error}</div> : null}
+      {stateError ? <div className="notice noticeWarn">{stateError}</div> : null}
 
-      <div className="card stackSm">
-        <div className="splitSectionLabel">Live state pulse (10s)</div>
-        {stateError ? <div className="notice noticeWarn">{stateError}</div> : null}
-        {liveState ? (
-          <div className="metricGridCompact">
-            <div className="metricTile">
-              <div className="metricTileLabel">YES</div>
-              <div className="metricTileValue metricTileValueSmall">{formatPercent(liveState.yesPrice)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">NO</div>
-              <div className="metricTileValue metricTileValueSmall">{formatPercent(liveState.noPrice)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">Last trade</div>
-              <div className="metricTileValue metricTileValueSmall">{formatTime(liveState.lastTradeAt)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">Updated</div>
-              <div className="metricTileValue metricTileValueSmall">{formatTime(new Date().toISOString())}</div>
-            </div>
+      {liveState ? (
+        <div className="metricGridCompact">
+          <div className="metricTile">
+            <div className="metricTileLabel">YES</div>
+            <div className="metricTileValue metricTileValueSmall">{formatPercent(liveState.yesPrice)}</div>
           </div>
-        ) : (
-          <p className="subtle">Waiting for market_state.</p>
-        )}
-      </div>
+          <div className="metricTile">
+            <div className="metricTileLabel">NO</div>
+            <div className="metricTileValue metricTileValueSmall">{formatPercent(liveState.noPrice)}</div>
+          </div>
+          <div className="metricTile">
+            <div className="metricTileLabel">{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')}</div>
+            <div className="metricTileValue metricTileValueSmall">{formatTime(liveState.lastTradeAt)}</div>
+          </div>
+          <div className="metricTile">
+            <div className="metricTileLabel">{tr(lang, 'Status', 'Κατάσταση')}</div>
+            <div className="metricTileValue metricTileValueSmall">{props.marketStatus.toUpperCase()}</div>
+          </div>
+        </div>
+      ) : null}
 
       {quote?.quote ? (
         <div className="stackSm">
           <div className="statusRow statusRowStart">
             <div>
-              <div className="splitSectionLabel">Quote summary</div>
+              <div className="splitSectionLabel">{tr(lang, 'Quote summary', 'Σύνοψη quote')}</div>
               <p className="subtle">
                 Hash: <code>{quote.quoteHash?.slice(0, 12)}...</code>
               </p>
             </div>
             <span className={quoteExpiryText === 'expired' ? 'badgeNo' : 'badgeNeutral'}>
-              Expires in {quoteExpiryText ?? '—'}
+              {tr(lang, 'Expires in', 'Λήγει σε')} {quoteExpiryText ?? '—'}
             </span>
           </div>
 
           <div className="metricGridCompact">
             <div className="metricTile">
-              <div className="metricTileLabel">Gross amount</div>
+              <div className="metricTileLabel">{tr(lang, 'Estimate', 'Εκτίμηση')}</div>
               <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.amountEur)}</div>
             </div>
             <div className="metricTile">
-              <div className="metricTileLabel">Fee</div>
-              <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.feeAmountEur)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">Total</div>
-              <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.totalAmountEur)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">Shares delta</div>
-              <div className="metricTileValue metricTileValueSmall">{quote.quote.shareDelta.toFixed(4)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">Average price</div>
+              <div className="metricTileLabel">{tr(lang, 'Avg price', 'Μέση τιμή')}</div>
               <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.averagePrice)}</div>
             </div>
             <div className="metricTile">
-              <div className="metricTileLabel">Price impact</div>
+              <div className="metricTileLabel">{tr(lang, 'Fee', 'Χρέωση')}</div>
+              <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.feeAmountEur)}</div>
+            </div>
+            <div className="metricTile">
+              <div className="metricTileLabel">{tr(lang, 'Price impact', 'Επίδραση τιμής')}</div>
               <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.impact)}</div>
+            </div>
+            <div className="metricTile">
+              <div className="metricTileLabel">{tr(lang, 'Shares', 'Μετοχές')}</div>
+              <div className="metricTileValue metricTileValueSmall">{quote.quote.shareDelta.toFixed(4)}</div>
+            </div>
+            <div className="metricTile">
+              <div className="metricTileLabel">{tr(lang, 'Max payout', 'Μέγιστη πληρωμή')}</div>
+              <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.toWinEur)}</div>
             </div>
           </div>
 
-          <div className="notice noticeSuccess">
-            Post-trade midpoint: YES {formatPercent(quote.quote.postYesPrice)} · NO {formatPercent(quote.quote.postNoPrice)}
-          </div>
+          <button
+            className={side === 'yes' ? 'ticketCta ticketCtaYes' : 'ticketCta ticketCtaNo'}
+            type="button"
+            onClick={executeTrade}
+            disabled={executing || quoteExpiryText === 'expired'}
+          >
+            {executing ? tr(lang, 'Executing...', 'Εκτέλεση...') : tr(lang, 'Confirm trade', 'Επιβεβαίωση συναλλαγής')}
+          </button>
 
-          <div className="buttonRow">
-            <button className="button buttonPrimary" type="button" onClick={executeTrade} disabled={executing || quoteExpiryText === 'expired'}>
-              {executing ? 'Executing...' : 'Execute trade'}
-            </button>
-          </div>
-
-          {executionMessage ? <div className="notice noticeSuccess">{executionMessage}</div> : null}
-          {walletBalance ? <p className="subtle">Wallet: {walletBalance}</p> : null}
-          {positionSnapshot ? <p className="subtle">Position: {positionSnapshot}</p> : null}
-          {lastTradeSnapshot ? <p className="subtle">Latest trade: {lastTradeSnapshot}</p> : null}
+          {executionMessage ? (
+            <div className={executionMessage.toLowerCase().includes('executed') ? 'notice noticeSuccess' : 'notice noticeError'}>
+              {executionMessage}
+            </div>
+          ) : null}
+          {walletBalance ? <p className="subtle">{tr(lang, 'Wallet', 'Πορτοφόλι')}: {walletBalance}</p> : null}
+          {positionSnapshot ? <p className="subtle">{tr(lang, 'Position', 'Θέση')}: {positionSnapshot}</p> : null}
+          {lastTradeSnapshot ? <p className="subtle">{tr(lang, 'Latest trade', 'Τελευταία συναλλαγή')}: {lastTradeSnapshot}</p> : null}
         </div>
       ) : null}
     </article>
