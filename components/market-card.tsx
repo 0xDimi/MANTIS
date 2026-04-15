@@ -35,7 +35,7 @@ export function MarketCard({ market, lang, featured = false }: MarketCardProps) 
         </div>
 
         <div className="featuredDetailRow">
-          <span>{tr(lang, 'Volume', 'Όγκος')} {formatCompact(market.state?.volumeTotal ?? 0)}</span>
+          {(market.state?.volumeTotal ?? 0) > 0 ? <span>{tr(lang, 'Volume', 'Όγκος')} {formatCompact(market.state?.volumeTotal ?? 0)}</span> : <span>{tr(lang, 'New market', 'Νέα αγορά')}</span>}
           <span>{tr(lang, 'Closes', 'Κλείνει')} {formatRelativeHours(market.closeTime)}</span>
           <span className={statusTone(market.status)}>{market.status}</span>
         </div>
@@ -49,26 +49,32 @@ export function MarketCard({ market, lang, featured = false }: MarketCardProps) 
   }
 
   return (
-    <Link className="card marketListCard marketCardPoly" href={href}>
+    <article className="card marketListCard marketCardPoly">
       <div className="marketMetaRow">
         <span className="marketCategory">{labelize(market.category)}</span>
         <span className={statusTone(market.status)}>{market.status}</span>
       </div>
 
-      <h3 className="marketQuestion">{market.question}</h3>
+      <h3 className="marketQuestion">
+        <Link href={href}>{market.question}</Link>
+      </h3>
 
       <div className="marketBottomRow marketBottomRowTight">
         <div className="probabilityPrimary">{formatPercent(yesProb)}</div>
         <div className="buttonRow marketCardActionRow">
-          <span className="button buttonYes marketMiniButton">Yes</span>
-          <span className="button buttonNo marketMiniButton">No</span>
+          <Link className="button buttonYes marketMiniButton" href={href}>
+            Yes
+          </Link>
+          <Link className="button buttonNo marketMiniButton" href={href}>
+            No
+          </Link>
         </div>
       </div>
 
       <div className="marketMiniMeta">
-        <span>{tr(lang, 'Vol', 'Όγκος')} {formatCompact(market.state?.volumeTotal ?? 0)}</span>
+        {(market.state?.volumeTotal ?? 0) > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} {formatCompact(market.state?.volumeTotal ?? 0)}</span> : <span>{tr(lang, 'New market', 'Νέα αγορά')}</span>}
         <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
       </div>
-    </Link>
+    </article>
   );
 }

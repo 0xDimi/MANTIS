@@ -56,9 +56,15 @@ function sortMarkets(markets: Awaited<ReturnType<typeof loadMarketsBoard>>['mark
   return list.sort((a, b) => (b.state?.volumeTotal ?? 0) - (a.state?.volumeTotal ?? 0));
 }
 
+function isInternalMarket(slug: string, question: string) {
+  const target = `${slug} ${question}`.toLowerCase();
+  return /(smoke|qa|test|sim|internal|ops|lifecycle|admin[-_]?)/.test(target);
+}
+
 export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
   const { markets, error } = await loadMarketsBoard({ scope: 'all' });
-  const mergedMarkets = markets.length >= 10 ? markets : [...markets, ...getDesignSampleMarkets()];
+  const userMarkets = markets.filter((market) => !isInternalMarket(market.slug, market.question));
+  const mergedMarkets = userMarkets.length >= 10 ? userMarkets : [...userMarkets, ...getDesignSampleMarkets()];
   const sorted = sortMarkets(mergedMarkets, normalizeView(view));
   const normalizedQuery = (query ?? '').trim().toLowerCase();
   const categoryFiltered = category ? sorted.filter((market) => market.category === category) : sorted;

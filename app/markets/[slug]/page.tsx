@@ -9,9 +9,10 @@ import { normalizeLang, tr } from '@/lib/ui-lang';
 function statusClass(status: string) {
   switch (status) {
     case 'open':
+      return 'badgeYes';
     case 'resolved':
     case 'settled':
-      return 'badgeYes';
+      return 'badgeNeutral';
     case 'paused':
     case 'closed':
     case 'void':
@@ -38,74 +39,53 @@ export default async function MarketDetailPage({
   const { market, state, error } = await loadMarketDetail(slug);
 
   return (
-    <AlphaShell title={tr(lang, 'Market detail', 'Λεπτομέρειες αγοράς')} eyebrow={tr(lang, 'Forecast clarity with explicit trust hooks', 'Καθαρή πρόβλεψη με ρητές δικλίδες εμπιστοσύνης')} lang={lang}>
+    <AlphaShell title={market?.question ?? tr(lang, 'Market', 'Αγορά')} lang={lang} showIntro={false}>
       <div className="buttonRow">
         <Link className="button buttonGhost" href={lang === 'el' ? '/markets?lang=el' : '/markets'}>
           {tr(lang, 'Back to markets', 'Επιστροφή στις αγορές')}
         </Link>
       </div>
 
-      {error ? <div className="notice noticeError">{tr(lang, 'Contract data unavailable', 'Τα δεδομένα της αγοράς δεν είναι διαθέσιμα')}: {error}</div> : null}
+      {error ? <div className="notice noticeError">{tr(lang, 'Market data unavailable', 'Τα δεδομένα αγοράς δεν είναι διαθέσιμα')}: {error}</div> : null}
 
       {market ? (
         <>
-          <section className="card stackMd">
-            <div className="detailTitleRow">
-              <div>
-                <p className="eyebrow">{labelize(market.category)}</p>
-                <h2>{market.question}</h2>
-              </div>
-              <span className={statusClass(market.status)}>{market.status}</span>
-            </div>
+          <section className="marketHeroGrid">
+            <article className="marketHeroMain">
+              <p className="eyebrow">{labelize(market.category)}</p>
+              <h1 className="marketTitle">{market.question}</h1>
 
-            <div className="metricGridCompact">
-              <div className="metricTile">
-                <div className="metricTileLabel">{tr(lang, 'Forecast', 'Πρόβλεψη')}</div>
-                <div className="metricTileValue">{formatPercent(state?.yesPrice ?? 0.5)}</div>
+              <div className="marketSummaryRow">
+                <span className="summaryPill">{tr(lang, 'Chance', 'Πιθανότητα')} {formatPercent(state?.yesPrice ?? 0.5)}</span>
+                {Number(state?.volumeTotal ?? 0) > 0 ? (
+                  <span className="summaryPill">{tr(lang, 'Volume', 'Όγκος')} {formatCompact(state?.volumeTotal ?? 0)}</span>
+                ) : (
+                  <span className="summaryPill">{tr(lang, 'New market', 'Νέα αγορά')}</span>
+                )}
+                <span className="summaryPill">{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
+                <span className="summaryPill">{tr(lang, 'Source', 'Πηγή')} {market.sourcePrimary}</span>
+                <span className={statusClass(market.status)}>{market.status}</span>
               </div>
-              <div className="metricTile">
-                <div className="metricTileLabel">{tr(lang, 'Volume', 'Όγκος')}</div>
-                <div className="metricTileValue">€{formatCompact(state?.volumeTotal ?? 0)}</div>
-              </div>
-              <div className="metricTile">
-                <div className="metricTileLabel">{tr(lang, 'Close time', 'Χρόνος λήξης')}</div>
-                <div className="metricTileValue metricTileValueSmall">
-                  {formatDateTime(market.closeTime)} ({formatRelativeHours(market.closeTime)})
+
+              <section className="marketChartSurface">
+                <ProbabilitySplit
+                  yesValue={state?.yesPrice ?? 0.5}
+                  noValue={state?.noPrice ?? 0.5}
+                  yesLabel={market.yesLabel}
+                  noLabel={market.noLabel}
+                  formatValue={formatPercent}
+                />
+
+                <div className="marketTrendLine" aria-hidden="true" />
+
+                <div className="marketMetaFoot">
+                  <span>{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(market.closeTime)}</span>
+                  <span>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')} {formatDateTime(market.resolutionTime)}</span>
                 </div>
-              </div>
-              <div className="metricTile">
-                <div className="metricTileLabel">{tr(lang, 'Source', 'Πηγή')}</div>
-                <div className="metricTileValue metricTileValueSmall">{market.sourcePrimary}</div>
-              </div>
-            </div>
+              </section>
+            </article>
 
-            <div className="buttonRow">
-              <a className="button buttonGhost" href="#trade-ticket">
-                {tr(lang, 'Trade ticket', 'Εισιτήριο συναλλαγής')}
-              </a>
-              <a className="button buttonGhost" href="#rules-layer">
-                {tr(lang, 'Rules and source', 'Κανόνες και πηγή')}
-              </a>
-            </div>
-
-            {state ? (
-              <ProbabilitySplit
-                yesValue={state.yesPrice}
-                noValue={state.noPrice}
-                yesLabel={market.yesLabel}
-                noLabel={market.noLabel}
-                formatValue={formatPercent}
-              />
-            ) : null}
-          </section>
-
-          <section className="twoColGrid">
-            <article id="trade-ticket" className="card stackMd">
-              <div>
-                <p className="eyebrow">{tr(lang, 'Decision surface', 'Επιφάνεια απόφασης')}</p>
-                <h3>{tr(lang, 'Trade this market', 'Συναλλαγή σε αυτή την αγορά')}</h3>
-              </div>
-
+            <aside className="card marketTicketCard" id="trade-ticket">
               <MarketQuotePreviewCard
                 marketId={market.id}
                 marketSlug={market.slug}
@@ -115,48 +95,38 @@ export default async function MarketDetailPage({
                 noLabel={market.noLabel}
                 lang={lang}
               />
+            </aside>
+          </section>
+
+          <section className="marketInfoStack" id="rules-layer">
+            <article className="marketInfoSection">
+              <h3>{tr(lang, 'Rules', 'Κανόνες')}</h3>
+              <p>{market.voidRule}</p>
             </article>
 
-            <article id="rules-layer" className="card stackMd">
-              <div>
-                <p className="eyebrow">{tr(lang, 'Trust layer', 'Επίπεδο εμπιστοσύνης')}</p>
-                <h3>{tr(lang, 'Rules and resolution', 'Κανόνες και επίλυση')}</h3>
-              </div>
-
-              <div className="panelBlock">
-                <div className="splitSectionLabel">{tr(lang, 'Primary source', 'Κύρια πηγή')}</div>
-                <p className="panelText">{market.sourcePrimary}</p>
-              </div>
-
-              <div className="panelBlock">
-                <div className="splitSectionLabel">{tr(lang, 'Fallback source', 'Εναλλακτική πηγή')}</div>
-                <p className="panelText">{market.sourceFallback ?? tr(lang, 'No fallback source', 'Δεν υπάρχει εναλλακτική πηγή')}</p>
-              </div>
-
-              <div className="panelBlock">
-                <div className="splitSectionLabel">{tr(lang, 'Void rule', 'Κανόνας VOID')}</div>
-                <p className="panelText">{market.voidRule}</p>
-              </div>
-
-              {market.resolution ? (
-                <div className="panelBlock">
-                  <div className="splitSectionLabel">{tr(lang, 'Resolution', 'Επίλυση')}</div>
-                  <p className="panelText">
-                    {tr(lang, 'Outcome', 'Αποτέλεσμα')}: {market.resolution.outcome.toUpperCase()} · {formatDateTime(market.resolution.createdAt)}
-                  </p>
-                  <p className="panelText">{market.resolution.evidenceSummary}</p>
-                </div>
-              ) : null}
-
-              {market.settlement ? (
-                <div className="panelBlock">
-                  <div className="splitSectionLabel">{tr(lang, 'Settlement', 'Διακανονισμός')}</div>
-                  <p className="panelText">
-                    {tr(lang, 'Payout', 'Πληρωμή')} €{formatCompact(market.settlement.totalPayout)} · {tr(lang, 'Refund', 'Επιστροφή')} €{formatCompact(market.settlement.totalRefund)}
-                  </p>
-                </div>
-              ) : null}
+            <article className="marketInfoSection">
+              <h3>{tr(lang, 'Sources', 'Πηγές')}</h3>
+              <p>{market.sourcePrimary}</p>
+              <p>{market.sourceFallback ?? tr(lang, 'No fallback source provided.', 'Δεν υπάρχει εναλλακτική πηγή.')}</p>
             </article>
+
+            {market.resolution ? (
+              <article className="marketInfoSection">
+                <h3>{tr(lang, 'Resolution', 'Επίλυση')}</h3>
+                <p>{tr(lang, 'Outcome', 'Αποτέλεσμα')}: {market.resolution.outcome.toUpperCase()}</p>
+                <p>{market.resolution.evidenceSummary}</p>
+                <p>{formatDateTime(market.resolution.createdAt)}</p>
+              </article>
+            ) : null}
+
+            {market.settlement ? (
+              <article className="marketInfoSection">
+                <h3>{tr(lang, 'Settlement', 'Διακανονισμός')}</h3>
+                <p>
+                  {tr(lang, 'Payout', 'Πληρωμή')} €{formatCompact(market.settlement.totalPayout)} · {tr(lang, 'Refund', 'Επιστροφή')} €{formatCompact(market.settlement.totalRefund)}
+                </p>
+              </article>
+            ) : null}
           </section>
         </>
       ) : (
