@@ -29,10 +29,7 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
   const { market, state, error } = await loadMarketDetail(slug);
 
   return (
-    <AlphaShell
-      title={market?.question ?? `Market detail · ${slug}`}
-      eyebrow="Week 2 rebuild: contract detail now renders from GET /api/markets/[slug] with DB-backed rules, source, and live state panels."
-    >
+    <AlphaShell title={market?.question ?? `Market detail · ${slug}`} eyebrow="Contract detail">
       <div className="buttonRow">
         <Link className="button buttonGhost" href="/markets">
           Back to markets
@@ -128,8 +125,8 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
             <article className="card stackMd">
               <div>
                 <p className="eyebrow">Live market state</p>
-                <h3>Initial chart + state presentation</h3>
-                <p className="subtle">This is the first real Week 2 state layer, showing current pricing and inventory directly from live market fields.</p>
+                <h3>Pricing and activity</h3>
+                <p className="subtle">Current probability, inventory, and volume.</p>
               </div>
 
               {state ? (
@@ -184,8 +181,8 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ s
             <article className="card stackMd">
               <div>
                 <p className="eyebrow">Rules + source</p>
-                <h3>DB-backed trust layer</h3>
-                <p className="subtle">Primary source, fallback path, and void rule now render from market records instead of hardcoded demo copy.</p>
+                <h3>Resolution rules</h3>
+                <p className="subtle">Primary source, fallback source, and void rule.</p>
               </div>
 
               <div className="stackSm">

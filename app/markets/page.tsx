@@ -31,22 +31,19 @@ export default async function MarketsPage() {
     .sort((left, right) => new Date(left.closeTime).getTime() - new Date(right.closeTime).getTime())[0];
 
   return (
-    <AlphaShell
-      title="Markets"
-      eyebrow="Week 2 rebuild: the board now reads from GET /api/markets while legacy stays frozen as UX reference only."
-    >
+    <AlphaShell title="Markets" eyebrow="Live board">
       {error ? <div className="notice noticeError">Board data unavailable: {error}</div> : null}
 
       <section className="metricsGrid">
         <article className="card stackSm">
           <p className="eyebrow">Board state</p>
           <div className="metricValue">{liveMarkets}</div>
-          <p className="subtle">Open contracts returned by the server market board.</p>
+          <p className="subtle">Open contracts right now.</p>
         </article>
         <article className="card stackSm">
           <p className="eyebrow">Volume</p>
           <div className="metricValue">€{formatCompact(totalVolume)}</div>
-          <p className="subtle">Initial live read from market_state.volume_total across the board.</p>
+          <p className="subtle">Total activity across open markets.</p>
         </article>
         <article className="card stackSm">
           <p className="eyebrow">Next close</p>
@@ -58,15 +55,12 @@ export default async function MarketsPage() {
       <section className="card stackSm">
         <div className="statusRow statusRowStart">
           <div>
-            <p className="eyebrow">Week 2 completion lane</p>
-            <h2>DB-backed board surface</h2>
+            <p className="eyebrow">Market board</p>
+            <h2>Live contracts</h2>
           </div>
           <span className="badgeNeutral">{totalParticipants} tracked participants</span>
         </div>
-        <p className="subtle">
-          Each contract card below is rendered from the live market API contract, not from <code>public/legacy</code>. Quote and execution remain
-          server-authoritative for later weeks.
-        </p>
+        <p className="subtle">Browse, open a market, and trade from contract detail.</p>
       </section>
 
       <section className="marketBoard">

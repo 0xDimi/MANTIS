@@ -13,6 +13,7 @@ export const appConfig = {
 
 export const routeMap = [
   '/',
+  '/more',
   '/markets',
   '/markets/[slug]',
   '/portfolio',

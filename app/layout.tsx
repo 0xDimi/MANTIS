@@ -4,8 +4,8 @@ import { appConfig } from '@/lib/app-config';
 import { TelemetryProvider } from '@/components/telemetry-provider';
 
 export const metadata: Metadata = {
-  title: `${appConfig.name} | Alpha Demo v1`,
-  description: 'Server-authoritative alpha rebuild for xyz Labs, with legacy UI kept as reference only.'
+  title: `${appConfig.codename} | Prediction Markets`,
+  description: 'MANTIS prediction markets experience for paper-trading and market resolution testing.'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

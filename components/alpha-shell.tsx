@@ -3,12 +3,9 @@ import type { ReactNode } from 'react';
 import { appConfig } from '@/lib/app-config';
 
 const nav = [
-  { href: '/', label: 'Overview' },
-  { href: '/profile', label: 'Access' },
-  { href: '/markets', label: 'Markets' },
+  { href: '/', label: 'Home' },
   { href: '/portfolio', label: 'Portfolio' },
-  { href: '/rules', label: 'Rules' },
-  { href: '/admin', label: 'Admin' }
+  { href: '/more', label: 'More' }
 ];
 
 export function AlphaShell({
@@ -24,25 +21,24 @@ export function AlphaShell({
     <div className="shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">{appConfig.codename} · operational alpha</p>
+          <p className="eyebrow">{appConfig.codename}</p>
           <h1>{title}</h1>
           {eyebrow ? <p className="subtle">{eyebrow}</p> : null}
         </div>
-        <div className="topbarMeta">
-          <span className="pill">{appConfig.environment}</span>
-          <span className="pill pillStrong">{appConfig.version}</span>
-        </div>
+        <div className="topbarMeta" />
       </header>
 
-      <nav className="navRow" aria-label="Primary">
-        {nav.map((item) => (
-          <Link key={item.href} className="navLink" href={item.href}>
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-
       {children}
+
+      <nav className="bottomDock" aria-label="Primary">
+        <div className="bottomDockInner">
+          {nav.map((item) => (
+            <Link key={item.href} className="bottomDockLink" href={item.href}>
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 }

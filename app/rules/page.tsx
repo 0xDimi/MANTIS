@@ -2,7 +2,7 @@ import { AlphaShell } from '@/components/alpha-shell';
 
 export default function RulesPage() {
   return (
-    <AlphaShell title="Rules and resolution" eyebrow="Manual admin resolution and clear source stack are non-negotiable for the alpha.">
+    <AlphaShell title="Rules and resolution" eyebrow="Source hierarchy and clear outcomes">
       <section className="card">
         <ul>
           <li>market source hierarchy</li>
