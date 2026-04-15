@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 13:04 (EEST)
+Last updated: 2026-04-15 15:49 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -62,17 +62,21 @@ Last updated: 2026-04-15 13:04 (EEST)
 
 ## In progress
 - Final-product requirement remains locked: nickname update support
-- Auto-resolution worker is armed for simulation markets (agent-run), with manual fallback only on execution errors.
 - Post-UI launch prep is now locked to controlled automation + tester first-trade walkthrough (no per-trade manual approval requirement).
-- Next immediate phase after simulation signoff: production-grade UI polish (remove demo/testing hints, mobile-first cleanup).
-- UI polish pass started with requested product UX blocks: 2-card featured swipe section, top category strip, and bottom nav (Home / Portfolio / More) with new `/more` explainer page.
-- Notification UX block added: top bell icon with unread badge and `/notifications` page for closing-soon and recent close/resolution/settlement reminders.
+- UI polish pass now includes full framework-driven redesign on live routes (commit `eea605b`):
+  - shared shell/header with brand lockup, compact EN/EL switcher, and notification bell
+  - IBM Plex Sans typography + new design tokens and refined dark gradient system
+  - discover-first board on `/` and `/markets` with shelf tabs, 2-card featured swipe, category rail, and shared market cards
+  - polished market detail top section with probability-first hero and trust-layer surfacing
+  - trade ticket visual polish with segmented buy/sell + YES/NO controls and clear interaction-state chips
+  - bilingual copy coverage extended across updated user-facing pages
 
 ## Just completed
 - Pre-UI two-market live simulation completed successfully end-to-end via `scripts/sim-auto-resolution.mjs`:
   - `gre-weather-athens-heatwave`: auto-closed -> resolved YES -> settled
   - `gre-weather-thessaloniki-heavy-rain`: auto-closed -> resolved VOID -> settled
   - Worker exit: `auto-resolution completed for all configured markets` (code 0)
+- UI polish framework pass deployed to canonical app (`xyz-labs-demo.vercel.app`) via Vercel production deploy from `alpha` (`eea605b`).
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:
