@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 16:21 (EEST)
+Last updated: 2026-04-15 18:25 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -74,6 +74,11 @@ Last updated: 2026-04-15 16:21 (EEST)
   - larger MANTIS logo left, centered market search bar, portfolio/cash quick glance, EN/EL toggle, notification bell, profile icon
   - expanded `/more` knowledge page (how to trade, probability interpretation, resolution flow, risk notes)
   - added non-launch design sample markets (10+ preview rows) for UI feedback depth when live open-market count is low
+- Market-card-focused polish pass applied per latest visual feedback (commit `e2d52ec`):
+  - discover cards now render in a 3-column desktop grid (with responsive 2/1 collapse)
+  - featured markets module enlarged with previous/next controls
+  - market cards moved closer to Polymarket-like information density and YES/NO action framing while preserving MANTIS styling
+  - removed highlighted top-copy clutter and tightened top-bar vertical spacing
 
 ## Just completed
 - Pre-UI two-market live simulation completed successfully end-to-end via `scripts/sim-auto-resolution.mjs`:
@@ -82,6 +87,7 @@ Last updated: 2026-04-15 16:21 (EEST)
   - Worker exit: `auto-resolution completed for all configured markets` (code 0)
 - UI polish framework pass deployed to canonical app (`xyz-labs-demo.vercel.app`) via Vercel production deploy from `alpha` (`eea605b`).
 - Header/navigation + discover depth follow-up deployed to canonical app from `alpha` (`5724387`).
+- Market-card-focused follow-up deployed to canonical app from `alpha` (`e2d52ec`).
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:

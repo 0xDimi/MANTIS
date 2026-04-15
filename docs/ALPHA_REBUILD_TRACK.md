@@ -1,6 +1,6 @@
 # Alpha Rebuild Track
 
-Last updated: 2026-04-15 16:21 (EEST)
+Last updated: 2026-04-15 18:25 (EEST)
 
 ## Principles
 - Follow `docs/DELIVERY_PLAN_6_WEEKS.md` in order. No week skipping.
@@ -54,6 +54,11 @@ Post-Week-6 execution phase
      - top bar order adjusted (logo, search, portfolio/cash glance, EN/EL, bell, profile)
      - `/more` expanded into fuller product/how-it-works guide
      - 10+ non-launch design sample markets added to discover surfaces for richer UI feedback when live-open count is low
+   - Market-card-focused refinement implemented on `alpha` (`e2d52ec`) and deployed:
+     - discover grid now 3-up desktop with responsive collapse
+     - featured module enlarged with explicit prev/next controls
+     - top-bar gap cleanup and removal of highlighted top-copy clutter
+     - market-card visual hierarchy aligned closer to prediction-market card language while preserving MANTIS identity
 3. Post-UI (pre-launch): run tester activation walkthrough ("first trade") and validate onboarding conversion.
 4. Keep launch-slate expansion deferred until launch-design window opens.
 
