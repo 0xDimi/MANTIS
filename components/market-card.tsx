@@ -92,7 +92,7 @@ export function MarketCard({ market, lang, featured = false }: MarketCardProps) 
           </div>
 
           <div className="marketMiniMeta">
-            {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} {formatCompact(volume)}</span> : <span>{tr(lang, 'New market', 'Νέα αγορά')}</span>}
+            {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : <span>{tr(lang, 'New market', 'Νέα αγορά')}</span>}
             <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
             {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeHours(market.state.lastTradeAt)}</span> : null}
           </div>
@@ -130,7 +130,7 @@ export function MarketCard({ market, lang, featured = false }: MarketCardProps) 
         </div>
 
         <div className="marketMiniMeta">
-          {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} {formatCompact(volume)}</span> : <span>{tr(lang, 'New market', 'Νέα αγορά')}</span>}
+          {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : <span>{tr(lang, 'New market', 'Νέα αγορά')}</span>}
           <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
           {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeHours(market.state.lastTradeAt)}</span> : null}
         </div>

@@ -58,7 +58,7 @@ export default async function MarketDetailPage({
               <div className="marketSummaryRow">
                 <span className="summaryPill">{tr(lang, 'Chance', 'Πιθανότητα')} {formatPercent(state?.yesPrice ?? 0.5)}</span>
                 {Number(state?.volumeTotal ?? 0) > 0 ? (
-                  <span className="summaryPill">{tr(lang, 'Volume', 'Όγκος')} {formatCompact(state?.volumeTotal ?? 0)}</span>
+                  <span className="summaryPill">{tr(lang, 'Volume', 'Όγκος')} €{formatCompact(state?.volumeTotal ?? 0)}</span>
                 ) : (
                   <span className="summaryPill">{tr(lang, 'New market', 'Νέα αγορά')}</span>
                 )}
