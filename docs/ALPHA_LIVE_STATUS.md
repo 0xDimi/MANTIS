@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 19:20 (EEST)
+Last updated: 2026-04-15 19:24 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -97,6 +97,7 @@ Last updated: 2026-04-15 19:20 (EEST)
 - Header/navigation + discover depth follow-up deployed to canonical app from `alpha` (`5724387`).
 - Market-card-focused follow-up deployed to canonical app from `alpha` (`e2d52ec`).
 - Discover/detail hierarchy pass deployed to canonical app from `alpha` (`0e05c78`).
+- Follow-up scope guard deployed from `alpha` (`9b3e422`) to keep this pass UI-only (no API/auth/trade/data-flow contract changes).
 
 ## Simulation mode (active)
 - Open markets reduced from 12 to 2 for fast-cycle verification:
