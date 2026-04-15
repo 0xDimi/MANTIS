@@ -21,6 +21,10 @@ export default async function HomePage() {
     <AlphaShell title="Home" eyebrow="Simple, fast, and mobile-first">
       {error ? <div className="notice noticeError">Live board unavailable: {error}</div> : null}
 
+      <section className="homeBrand" aria-label="MANTIS brand">
+        <img className="homeBrandLogo" src="/brand/mantis/logo/mantis-logo-primary-wordmark.png" alt="MANTIS" />
+      </section>
+
       <section className="categoryStrip" aria-label="Categories">
         {categories.map((category, index) => (
           <span key={category} className={index === 0 ? 'categoryPill categoryPillActive' : 'categoryPill'}>

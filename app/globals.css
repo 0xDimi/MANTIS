@@ -79,6 +79,19 @@ code {
   margin: 14px 0 16px;
 }
 
+.homeBrand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 6px 0 14px;
+}
+
+.homeBrandLogo {
+  width: min(360px, 72vw);
+  height: auto;
+  display: block;
+}
+
 .categoryStrip::-webkit-scrollbar {
   display: none;
 }
