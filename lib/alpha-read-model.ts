@@ -133,72 +133,6 @@ type MarketDetailApiResponse = {
   } | null;
 };
 
-function getSampleDetail(slug: string): { market: MarketDetailRead; state: NonNullable<MarketStateRead> } | null {
-  const match = /^sample-(\d+)$/.exec(slug);
-  if (!match) {
-    return null;
-  }
-
-  const idx = Number(match[1]);
-  if (!Number.isFinite(idx) || idx < 1 || idx > 30) {
-    return null;
-  }
-
-  const samples = [
-    { category: 'macro', question: 'Will ECB cut rates by at least 25 bps before 31 Jul 2026?' },
-    { category: 'sports', question: 'Will Panathinaikos finish above Olympiacos in the regular season?' },
-    { category: 'tech', question: 'Will Apple announce an on-device LLM feature set this quarter?' },
-    { category: 'crypto', question: 'Will Ethereum close above $4,000 by 30 Sep 2026?' },
-    { category: 'greece', question: 'Will Athens record at least one 40°C day this summer?' },
-    { category: 'energy', question: 'Will Brent crude settle above $95 before 01 Oct 2026?' },
-    { category: 'politics', question: 'Will the next Greek election be called before Dec 2026?' },
-    { category: 'travel', question: 'Will Santorini airport passenger traffic grow YoY this August?' },
-    { category: 'ai', question: 'Will an open model top the benchmark leaderboard this quarter?' },
-    { category: 'finance', question: 'Will EUR/USD trade above 1.14 before year-end?' },
-    { category: 'climate', question: 'Will Thessaloniki monthly rainfall exceed 90mm next month?' },
-    { category: 'culture', question: 'Will a Greek-produced film win a major EU festival award this year?' }
-  ] as const;
-
-  const sample = samples[(idx - 1) % samples.length];
-  const yesPrice = Number(Math.max(0.18, Math.min(0.82, ((idx * 37 + 13) % 100) / 100)).toFixed(2));
-  const noPrice = Number((1 - yesPrice).toFixed(2));
-  const now = Date.now();
-  const closeAt = new Date(now + (idx + 2) * 36 * 60 * 60 * 1000).toISOString();
-
-  return {
-    market: {
-      id: slug,
-      slug,
-      question: sample.question,
-      description: null,
-      category: sample.category,
-      status: 'open',
-      closeTime: closeAt,
-      resolutionTime: closeAt,
-      sourcePrimary: 'House rules reference',
-      sourceFallback: null,
-      voidRule: 'Voids if official source is unavailable or contradictory at close.',
-      yesLabel: 'Yes',
-      noLabel: 'No',
-      liquidity: 1200 + idx * 230,
-      feeBps: 50,
-      resolution: null,
-      settlement: null
-    },
-    state: {
-      marketId: slug,
-      qYes: yesPrice,
-      qNo: noPrice,
-      yesPrice,
-      noPrice,
-      lastTradeAt: new Date(now - (idx + 1) * 27 * 60 * 1000).toISOString(),
-      volumeTotal: 1600 + idx * 420,
-      openInterest: 600 + idx * 100,
-      participantsCount: 24 + idx * 3
-    }
-  };
-}
-
 async function getRequestBaseUrl() {
   const headerStore = await headers();
   const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host');
@@ -273,17 +207,6 @@ export async function loadMarketDetail(slug: string) {
   try {
     const payload = await readJson<MarketDetailApiResponse>(`/api/markets/${slug}`);
 
-    if (!payload.market) {
-      const sample = getSampleDetail(slug);
-      if (sample) {
-        return {
-          market: sample.market,
-          state: sample.state,
-          error: null
-        };
-      }
-    }
-
     return {
       market: payload.market
         ? ({
@@ -340,15 +263,6 @@ export async function loadMarketDetail(slug: string) {
       error: null
     };
   } catch (error) {
-    const sample = getSampleDetail(slug);
-    if (sample) {
-      return {
-        market: sample.market,
-        state: sample.state,
-        error: null
-      };
-    }
-
     return {
       market: null,
       state: null as MarketStateRead,
