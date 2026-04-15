@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { appConfig } from '@/lib/app-config';
+import { loadNotificationSummary } from '@/lib/notifications';
 
 const nav = [
   { href: '/', label: 'Home' },
@@ -8,7 +9,7 @@ const nav = [
   { href: '/more', label: 'More' }
 ];
 
-export function AlphaShell({
+export async function AlphaShell({
   title,
   eyebrow,
   children
@@ -17,6 +18,8 @@ export function AlphaShell({
   eyebrow?: string;
   children: ReactNode;
 }) {
+  const { count } = await loadNotificationSummary();
+
   return (
     <div className="shell">
       <header className="topbar">
@@ -25,7 +28,12 @@ export function AlphaShell({
           <h1>{title}</h1>
           {eyebrow ? <p className="subtle">{eyebrow}</p> : null}
         </div>
-        <div className="topbarMeta" />
+        <div className="topbarMeta">
+          <Link className="notifButton" href="/notifications" aria-label="Notifications">
+            <span aria-hidden="true">🔔</span>
+            {count > 0 ? <span className="notifBadge">{Math.min(count, 99)}</span> : null}
+          </Link>
+        </div>
       </header>
 
       {children}

@@ -14,6 +14,7 @@ export const appConfig = {
 export const routeMap = [
   '/',
   '/more',
+  '/notifications',
   '/markets',
   '/markets/[slug]',
   '/portfolio',
