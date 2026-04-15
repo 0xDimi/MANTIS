@@ -1121,6 +1121,14 @@ code {
     grid-template-columns: 1fr;
   }
 
+  .notifPopoverPanel {
+    position: fixed;
+    top: 94px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+  }
+
   .featuredNavButton {
     display: none;
   }
