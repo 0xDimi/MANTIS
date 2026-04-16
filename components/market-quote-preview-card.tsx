@@ -180,6 +180,12 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
     return formatCountdown(expiresMs - nowMs);
   }, [quote?.expiresAt, nowMs]);
 
+  const closeCountdown = useMemo(() => {
+    const closeMs = new Date(props.closeTime).getTime();
+    if (!Number.isFinite(closeMs)) return '—';
+    return closeMs <= nowMs ? tr(lang, 'Closed', 'Κλειστή') : formatCountdown(closeMs - nowMs);
+  }, [props.closeTime, nowMs, lang]);
+
   async function requestQuotePreview() {
     setLoading(true);
     setError(null);
@@ -348,10 +354,12 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         <div className="stackXs">
           <span className="ticketSurfaceEyebrow">MANTIS</span>
           <strong className="ticketSurfaceTitle">{tr(lang, 'Trade ticket', 'Δελτίο συναλλαγής')}</strong>
+          <span className="ticketSurfaceHint">{tr(lang, 'Choose side, size, then preview quote', 'Επίλεξε πλευρά, ποσό και μετά προεπισκόπηση quote')}</span>
         </div>
         <div className="ticketSurfaceLive">
           <span className="ticketSurfaceLiveYes">YES {formatPercent(liveYes)}</span>
           <span className="ticketSurfaceLiveNo">NO {formatPercent(liveNo)}</span>
+          <span className="ticketSurfaceClose">{tr(lang, 'Close', 'Λήξη')} {closeCountdown}</span>
         </div>
       </div>
 
@@ -383,6 +391,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
       </div>
 
       <div className="ticketShell stackMd">
+        <div className="ticketSectionTitle">{tr(lang, 'Order setup', 'Ρύθμιση εντολής')}</div>
+
         <div className="stackSm">
           <span className="fieldLabel">{tr(lang, 'Action', 'Ενέργεια')}</span>
           <div className="segmentRow">
@@ -434,6 +444,20 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
             onChange={(event) => setAmountEur(event.target.value)}
             disabled={loading || props.marketStatus !== 'open' || marketClosed}
           />
+
+          <div className="ticketQuickAmounts">
+            {[10, 25, 50, 100].map((value) => (
+              <button
+                key={value}
+                className={amountEur === String(value) ? 'ticketQuickAmount ticketQuickAmountActive' : 'ticketQuickAmount'}
+                type="button"
+                onClick={() => setAmountEur(String(value))}
+                disabled={loading || props.marketStatus !== 'open' || marketClosed}
+              >
+                €{value}
+              </button>
+            ))}
+          </div>
         </label>
 
         <button
@@ -442,7 +466,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           onClick={requestQuotePreview}
           disabled={loading || props.marketStatus !== 'open' || marketClosed}
         >
-          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : tr(lang, 'Get quote preview', 'Λήψη προεπισκόπησης quote')}
+          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : tr(lang, 'Preview quote', 'Προεπισκόπηση quote')}
         </button>
       </div>
 

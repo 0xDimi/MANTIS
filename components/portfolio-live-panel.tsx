@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
 type PortfolioPayload = {
@@ -219,7 +220,15 @@ export function PortfolioLivePanel() {
           </button>
         </div>
 
-        {openPositions.length === 0 ? <p className="subtle">No open positions yet.</p> : null}
+        {openPositions.length === 0 ? (
+          <div className="panelBlock stackXs">
+            <strong>No open positions yet.</strong>
+            <p className="subtle">Build exposure from the Markets board, then this table will track live chance, mark, size, and P/L.</p>
+            <Link className="button buttonGhost" href="/markets">
+              Open markets
+            </Link>
+          </div>
+        ) : null}
 
         {openPositions.length > 0 ? (
           <div className="portfolioTableWrap">

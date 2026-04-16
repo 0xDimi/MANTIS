@@ -74,6 +74,15 @@ export function MarketTrendPanel({ slug, yesPrice, noPrice, volumeTotal, liquidi
           </defs>
           <path d={toPath(series)} stroke="url(#mantisTrend)" strokeWidth="2.4" fill="none" strokeLinecap="round" />
         </svg>
+        <div className="marketTrendAxisY">
+          <span>80%</span>
+          <span>50%</span>
+          <span>20%</span>
+        </div>
+        <div className="marketTrendAxisX">
+          <span>{tr(lang, '24h ago', '24ω πριν')}</span>
+          <span>{tr(lang, 'Now', 'Τώρα')}</span>
+        </div>
       </div>
 
       <div className="marketTrendMeta">

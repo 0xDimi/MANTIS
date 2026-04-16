@@ -7,6 +7,7 @@ import { loadHeaderSummary } from '@/lib/header-summary';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import { LanguageToggle } from '@/components/language-toggle';
 import { NotificationsPopover } from '@/components/notifications-popover';
+import { HeaderAccountMenu } from '@/components/header-account-menu';
 
 const nav = [
   { href: '/', en: 'Home', el: 'Αρχική' },
@@ -35,6 +36,7 @@ export async function AlphaShell({
   const [summary, notifications] = await Promise.all([loadHeaderSummary(), loadNotificationsFeed()]);
   const homeHref = lang === 'el' ? '/?lang=el' : '/';
   const profileHref = lang === 'el' ? '/profile?lang=el' : '/profile';
+  const notificationsHref = lang === 'el' ? '/notifications?lang=el' : '/notifications';
   const notificationsCount = notifications.closingSoon.length + notifications.recentEvents.length;
 
   return (
@@ -85,9 +87,15 @@ export async function AlphaShell({
             error={notifications.error}
           />
 
-          <Link className="profileButton" href={profileHref} aria-label="Profile">
-            <span>◉</span>
-          </Link>
+          <HeaderAccountMenu
+            lang={lang}
+            profileHref={profileHref}
+            notificationsHref={notificationsHref}
+            initials={summary.viewer.initials}
+            displayName={summary.viewer.displayName}
+            email={summary.viewer.email}
+            authenticated={summary.authenticated}
+          />
         </div>
       </header>
 

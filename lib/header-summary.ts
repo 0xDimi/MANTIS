@@ -13,10 +13,19 @@ export async function loadHeaderSummary() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { authenticated: false, cash: null as number | null, portfolio: null as number | null };
+      return {
+        authenticated: false,
+        cash: null as number | null,
+        portfolio: null as number | null,
+        viewer: {
+          displayName: null as string | null,
+          email: null as string | null,
+          initials: 'ME'
+        }
+      };
     }
 
-    const [{ data: wallet }, { data: positions }] = await Promise.all([
+    const [{ data: wallet }, { data: positions }, { data: profile }] = await Promise.all([
       supabase
         .from('wallet_accounts')
         .select('available_balance')
@@ -26,8 +35,24 @@ export async function loadHeaderSummary() {
       supabase
         .from('positions')
         .select('market_id,yes_shares,no_shares,yes_cost_basis,no_cost_basis')
+        .eq('user_id', user.id),
+      supabase
+        .from('profiles')
+        .select('display_name,username')
         .eq('user_id', user.id)
+        .limit(1)
+        .maybeSingle()
     ]);
+
+    const displayName = (profile as any)?.display_name ?? (profile as any)?.username ?? null;
+    const email = user.email ?? null;
+    const source = (displayName || email || 'ME').trim();
+    const initials = source
+      .split(/\s+|@|\.|_|-/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part: string) => part.charAt(0).toUpperCase())
+      .join('') || 'ME';
 
     const rows = ((positions ?? []) as any[]).filter((position) => {
       const yesShares = Number(position.yes_shares ?? 0);
@@ -61,9 +86,23 @@ export async function loadHeaderSummary() {
     return {
       authenticated: true,
       cash: round2(Number((wallet as any)?.available_balance ?? 0)),
-      portfolio: round2(marketValueTotal)
+      portfolio: round2(marketValueTotal),
+      viewer: {
+        displayName,
+        email,
+        initials
+      }
     };
   } catch {
-    return { authenticated: false, cash: null as number | null, portfolio: null as number | null };
+    return {
+      authenticated: false,
+      cash: null as number | null,
+      portfolio: null as number | null,
+      viewer: {
+        displayName: null as string | null,
+        email: null as string | null,
+        initials: 'ME'
+      }
+    };
   }
 }
