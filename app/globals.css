@@ -1580,7 +1580,7 @@ code {
 }
 
 .ticketSideButton {
-  min-height: 74px;
+  min-height: 68px;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: #262d36;
@@ -1591,7 +1591,7 @@ code {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 0 14px;
+  padding: 0 12px;
   transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 }
 
