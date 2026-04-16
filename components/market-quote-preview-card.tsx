@@ -424,7 +424,10 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
               {tr(lang, 'Sell', 'Πώληση')}
             </button>
           </div>
-          <span className="ticketOrderType">{tr(lang, 'Market', 'Αγορά')}</span>
+          <span className="ticketOrderType">
+            {tr(lang, 'Market', 'Αγορά')}
+            <span className="ticketOrderTypeCaret" aria-hidden="true">⌄</span>
+          </span>
         </div>
 
         <div className="ticketSideGrid">
@@ -433,29 +436,36 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
             type="button"
             onClick={() => setSide('yes')}
           >
-            {yesDisplay} {yesCents}¢
+            <span className="ticketSideLabel">{yesDisplay}</span>
+            <span className="ticketSidePrice">{yesCents}¢</span>
           </button>
           <button
             className={side === 'no' ? 'ticketSideButton ticketSideButtonNoActive' : 'ticketSideButton'}
             type="button"
             onClick={() => setSide('no')}
           >
-            {noDisplay} {noCents}¢
+            <span className="ticketSideLabel">{noDisplay}</span>
+            <span className="ticketSidePrice">{noCents}¢</span>
           </button>
         </div>
 
-        <label className="stackXs ticketAmountBlock">
-          <span className="fieldLabel">{tr(lang, 'Amount', 'Ποσό')}</span>
-          {walletBalance ? <span className="ticketAmountBalance">{tr(lang, 'Balance', 'Υπόλοιπο')} {walletBalance}</span> : null}
-          <input
-            className="input"
-            type="number"
-            min="1"
-            step="1"
-            value={amountEur}
-            onChange={(event) => setAmountEur(event.target.value)}
-            disabled={loading || props.marketStatus !== 'open' || marketClosed}
-          />
+        <label className="ticketAmountBlock stackXs">
+          <div className="ticketAmountRow">
+            <div className="ticketAmountCopy stackXs">
+              <span className="fieldLabel ticketAmountLabel">{tr(lang, 'Amount', 'Ποσό')}</span>
+              {walletBalance ? <span className="ticketAmountBalance">{tr(lang, 'Balance', 'Υπόλοιπο')} {walletBalance}</span> : null}
+            </div>
+            <input
+              className="ticketAmountInput"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="0"
+              value={amountEur}
+              onChange={(event) => setAmountEur(event.target.value)}
+              disabled={loading || props.marketStatus !== 'open' || marketClosed}
+            />
+          </div>
 
           <div className="ticketQuickAmounts">
             {[10, 25, 50, 100].map((value) => (
@@ -489,7 +499,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           onClick={requestQuotePreview}
           disabled={loading || props.marketStatus !== 'open' || marketClosed}
         >
-          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : `${tr(lang, 'Preview', 'Προεπισκόπηση')} · ${mainCtaLabel}`}
+          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : mainCtaLabel}
         </button>
       </div>
 

@@ -1412,23 +1412,22 @@ code {
 }
 
 .ticketShell {
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
-  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #171c23;
+  padding: 18px;
 }
 
 .marketTicketCard {
-  border-radius: 18px;
-  border-color: rgba(255, 255, 255, 0.15);
-  background:
-    radial-gradient(125% 80% at 100% 0%, rgba(124, 92, 255, 0.12), transparent 58%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.016));
+  border-radius: 20px;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: #171c23;
+  box-shadow: none;
 }
 
 .marketTicketCard .ticketShell {
-  border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(10, 15, 32, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+  background: #171c23;
 }
 
 .marketTicketCard .segmentButton {
@@ -1524,86 +1523,141 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .ticketActionTabs {
   display: inline-flex;
-  gap: 10px;
+  gap: 22px;
 }
 
 .ticketActionTab {
-  min-height: 32px;
+  min-height: 34px;
   border-radius: 0;
   border: 0;
   border-bottom: 3px solid transparent;
   background: transparent;
-  color: #95a0b6;
+  color: #8a93a3;
   font: inherit;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
-  padding: 0 2px;
+  padding: 0 0 10px;
 }
 
 .ticketActionTabActive {
-  color: #eff4ff;
-  border-bottom-color: rgba(239, 244, 255, 0.88);
+  color: #eef2f8;
+  border-bottom-color: rgba(238, 242, 248, 0.95);
 }
 
 .ticketOrderType {
-  min-height: 30px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.03);
-  color: #d0d8ec;
-  font-size: 12px;
+  min-height: auto;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  color: #e1e6ee;
+  font-size: 17px;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 11px;
+  gap: 8px;
+  padding: 0;
+}
+
+.ticketOrderTypeCaret {
+  color: #b2bbc8;
+  font-size: 18px;
+  line-height: 1;
 }
 
 .ticketSideGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 14px;
 }
 
 .ticketSideButton {
-  min-height: 56px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.05);
-  color: #b4bfd6;
+  min-height: 94px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #262d36;
+  color: rgba(231, 237, 246, 0.68);
   font: inherit;
-  font-size: clamp(26px, 2vw, 40px);
-  font-weight: 700;
-  letter-spacing: -0.01em;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 18px;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.ticketSideLabel,
+.ticketSidePrice {
+  font-size: clamp(26px, 2vw, 34px);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .ticketSideButtonYesActive {
-  border-color: rgba(34, 197, 94, 0.48);
-  background: rgba(34, 197, 94, 0.74);
-  color: #f3fff7;
+  border-color: rgba(67, 160, 100, 0.9);
+  background: #3ca15f;
+  color: #f4faf5;
 }
 
 .ticketSideButtonNoActive {
-  border-color: rgba(239, 68, 68, 0.48);
-  background: rgba(239, 68, 68, 0.66);
-  color: #fff5f5;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #303846;
+  color: #eef2f8;
 }
 
 .ticketAmountBlock {
-  gap: 6px;
+  gap: 10px;
+}
+
+.ticketAmountRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.ticketAmountCopy {
+  min-width: 0;
+}
+
+.ticketAmountLabel {
+  font-size: 16px;
+  color: #e4e8ef;
 }
 
 .ticketAmountBalance {
-  color: var(--text-3);
+  color: #7f8aa3;
   font-size: 13px;
+}
+
+.ticketAmountInput {
+  width: 140px;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  font: inherit;
+  font-size: clamp(48px, 4vw, 66px);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  text-align: right;
+  padding: 0;
+  outline: none;
+}
+
+.ticketAmountInput::placeholder {
+  color: #64748b;
 }
 
 .segmentRow {
@@ -1630,24 +1684,25 @@ code {
 .ticketQuickAmounts {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .ticketQuickAmount {
-  min-height: 28px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-2);
-  padding: 0 10px;
-  font-size: 11px;
+  min-height: 40px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #262d36;
+  color: #dde3ec;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .ticketQuickAmountActive {
-  border-color: rgba(124, 92, 255, 0.44);
-  background: rgba(124, 92, 255, 0.18);
-  color: #ece8ff;
+  border-color: rgba(255, 255, 255, 0.06);
+  background: #262d36;
+  color: #dde3ec;
 }
 
 .stateChips {
@@ -1682,23 +1737,22 @@ code {
 
 .ticketCta {
   width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+  min-height: 56px;
+  border-radius: 16px;
+  border: 1px solid rgba(67, 140, 227, 0.96);
+  background: #418de8;
+  color: #f7fbff;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  box-shadow: inset 0 -10px 0 rgba(26, 102, 190, 0.28);
 }
 
-.ticketCta.ticketCtaYes {
-  border-color: rgba(34, 197, 94, 0.34);
-  background: rgba(34, 197, 94, 0.2);
-  color: #a7f3d0;
-}
-
+.ticketCta.ticketCtaYes,
 .ticketCta.ticketCtaNo {
-  border-color: rgba(239, 68, 68, 0.34);
-  background: rgba(239, 68, 68, 0.2);
-  color: #fecaca;
+  border-color: rgba(67, 140, 227, 0.96);
+  background: #418de8;
+  color: #f7fbff;
 }
 
 .accountPageShell {
