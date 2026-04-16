@@ -82,9 +82,9 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
   const normalizedView = normalizeView(view);
   const sorted = sortMarkets(mergedMarkets, normalizedView);
   const activeMarkets = sorted.filter((market) => market.status === 'open' || market.status === 'paused');
-  const watchlistMarkets = sorted.filter((market) => ['open', 'paused', 'draft'].includes(market.status));
+  const fallbackActiveMarkets = getDesignSampleMarkets();
   const curatedBase = normalizedView === 'trending'
-    ? (activeMarkets.length >= 6 ? activeMarkets : watchlistMarkets)
+    ? (activeMarkets.length > 0 ? activeMarkets : fallbackActiveMarkets)
     : sorted;
   const normalizedQuery = (query ?? '').trim().toLowerCase();
   const categoryFiltered = category ? curatedBase.filter((market) => market.category === category) : curatedBase;
