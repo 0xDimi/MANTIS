@@ -3,7 +3,6 @@ import { loadMarketsBoard } from '@/lib/alpha-read-model';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import { MarketCard } from '@/components/market-card';
 import { FeaturedMarketsCarousel } from '@/components/featured-markets-carousel';
-import { getDesignSampleMarkets } from '@/lib/design-sample-markets';
 
 type DiscoverView = 'trending' | 'new' | 'liquid' | 'ending';
 
@@ -78,13 +77,12 @@ function isInternalMarket(slug: string, question: string) {
 export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
   const { markets, error } = await loadMarketsBoard({ scope: 'all' });
   const userMarkets = markets.filter((market) => !isInternalMarket(market.slug, market.question));
-  const mergedMarkets = userMarkets.length >= 10 ? userMarkets : [...userMarkets, ...getDesignSampleMarkets()];
   const normalizedView = normalizeView(view);
-  const sorted = sortMarkets(mergedMarkets, normalizedView);
+  const sorted = sortMarkets(userMarkets, normalizedView);
   const activeMarkets = sorted.filter((market) => market.status === 'open' || market.status === 'paused');
-  const fallbackActiveMarkets = getDesignSampleMarkets();
+  const watchlistMarkets = sorted.filter((market) => ['open', 'paused', 'draft'].includes(market.status));
   const curatedBase = normalizedView === 'trending'
-    ? (activeMarkets.length > 0 ? activeMarkets : fallbackActiveMarkets)
+    ? (activeMarkets.length >= 4 ? activeMarkets : watchlistMarkets)
     : sorted;
   const normalizedQuery = (query ?? '').trim().toLowerCase();
   const categoryFiltered = category ? curatedBase.filter((market) => market.category === category) : curatedBase;
@@ -95,7 +93,7 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
   const featured = featuredPool.slice(0, 2);
   const featuredIds = new Set(featured.map((market) => market.id));
   const gridMarkets = filtered.filter((market) => !featuredIds.has(market.id));
-  const categories = Array.from(new Set(mergedMarkets.map((market) => market.category)));
+  const categories = Array.from(new Set(userMarkets.map((market) => market.category)));
 
   const tabs: Array<{ key: DiscoverView; en: string; el: string }> = [
     { key: 'trending', en: 'Trending', el: 'Τάση' },
@@ -120,7 +118,7 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
         ))}
       </section>
 
-      <FeaturedMarketsCarousel markets={featured} lang={lang} />
+      {featured.length > 0 ? <FeaturedMarketsCarousel markets={featured} lang={lang} /> : null}
 
       <section className="categoryStrip" aria-label={tr(lang, 'Categories', 'Κατηγορίες')}>
         <Link className={!category ? 'categoryPill categoryPillActive' : 'categoryPill'} href={hrefWith(lang, view, null, normalizedQuery)}>
@@ -150,7 +148,7 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
 
         {gridMarkets.length === 0 ? (
           <div className="card stackSm">
-            <p className="subtle">{tr(lang, 'No additional markets matched your filters.', 'Δεν βρέθηκαν επιπλέον αγορές με αυτά τα φίλτρα.')}</p>
+            <p className="subtle">{tr(lang, 'No markets matched your current filters.', 'Δεν βρέθηκαν αγορές με τα τρέχοντα φίλτρα.')}</p>
           </div>
         ) : null}
       </section>
