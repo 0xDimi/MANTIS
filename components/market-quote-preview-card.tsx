@@ -101,6 +101,16 @@ function formatTime(value: string | null | undefined) {
   return parsed.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
+function normalizeOutcomeLabel(label: string | undefined, fallback: 'yes' | 'no') {
+  const baseline = fallback === 'yes' ? 'Yes' : 'No';
+  const value = (label ?? '').trim();
+
+  if (!value) return baseline;
+  if (value.toLowerCase() === fallback) return baseline;
+
+  return value;
+}
+
 export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePreviewCardProps) {
   const [side, setSide] = useState<'yes' | 'no'>('yes');
   const [action, setAction] = useState<'buy' | 'sell'>('buy');
@@ -332,8 +342,14 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   const claimed = props.marketStatus === 'settled' && !hasOpenPosition && Boolean(lastTradeSnapshot);
   const liveYes = liveState?.yesPrice ?? 0.5;
   const liveNo = liveState?.noPrice ?? 0.5;
+  const yesCents = Math.round(liveYes * 100);
+  const noCents = Math.round(liveNo * 100);
+  const yesDisplay = normalizeOutcomeLabel(props.yesLabel, 'yes');
+  const noDisplay = normalizeOutcomeLabel(props.noLabel, 'no');
   const quoteExposure = quote?.quote ? quote.quote.shareDelta * quote.quote.averagePrice : 0;
   const quoteMaxLoss = quote?.quote ? Math.max(quote.quote.totalAmountEur, quote.quote.amountEur) : 0;
+  const walletNumber = walletBalance ? Number(walletBalance.split(' ')[0]) : null;
+  const mainCtaLabel = `${action === 'buy' ? tr(lang, 'Buy', 'Αγορά') : tr(lang, 'Sell', 'Πώληση')} ${side === 'yes' ? yesDisplay : noDisplay}`;
 
   const stateChips: Array<{ label: string; tone?: 'yes' | 'no' | 'focus' }> = [];
 
@@ -391,50 +407,46 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
       </div>
 
       <div className="ticketShell stackMd">
-        <div className="ticketSectionTitle">{tr(lang, 'Order setup', 'Ρύθμιση εντολής')}</div>
-
-        <div className="stackSm">
-          <span className="fieldLabel">{tr(lang, 'Action', 'Ενέργεια')}</span>
-          <div className="segmentRow">
+        <div className="ticketTopTabs">
+          <div className="ticketActionTabs" role="tablist" aria-label={tr(lang, 'Action', 'Ενέργεια')}>
             <button
-              className={action === 'buy' ? 'segmentButton segmentButtonActive' : 'segmentButton'}
+              className={action === 'buy' ? 'ticketActionTab ticketActionTabActive' : 'ticketActionTab'}
               type="button"
               onClick={() => setAction('buy')}
             >
               {tr(lang, 'Buy', 'Αγορά')}
             </button>
             <button
-              className={action === 'sell' ? 'segmentButton segmentButtonActive' : 'segmentButton'}
+              className={action === 'sell' ? 'ticketActionTab ticketActionTabActive' : 'ticketActionTab'}
               type="button"
               onClick={() => setAction('sell')}
             >
               {tr(lang, 'Sell', 'Πώληση')}
             </button>
           </div>
+          <span className="ticketOrderType">{tr(lang, 'Market', 'Αγορά')}</span>
         </div>
 
-        <div className="stackSm">
-          <span className="fieldLabel">{tr(lang, 'Direction', 'Κατεύθυνση')}</span>
-          <div className="segmentRow">
-            <button
-              className={side === 'yes' ? 'segmentButton buttonYes' : 'segmentButton'}
-              type="button"
-              onClick={() => setSide('yes')}
-            >
-              YES ({props.yesLabel})
-            </button>
-            <button
-              className={side === 'no' ? 'segmentButton buttonNo' : 'segmentButton'}
-              type="button"
-              onClick={() => setSide('no')}
-            >
-              NO ({props.noLabel})
-            </button>
-          </div>
+        <div className="ticketSideGrid">
+          <button
+            className={side === 'yes' ? 'ticketSideButton ticketSideButtonYesActive' : 'ticketSideButton'}
+            type="button"
+            onClick={() => setSide('yes')}
+          >
+            {yesDisplay} {yesCents}¢
+          </button>
+          <button
+            className={side === 'no' ? 'ticketSideButton ticketSideButtonNoActive' : 'ticketSideButton'}
+            type="button"
+            onClick={() => setSide('no')}
+          >
+            {noDisplay} {noCents}¢
+          </button>
         </div>
 
-        <label className="stackXs">
-          <span className="fieldLabel">{action === 'buy' ? tr(lang, 'Budget (€ total)', 'Ποσό (€ σύνολο)') : tr(lang, 'Target payout (€ gross)', 'Στόχος πληρωμής (€ μικτό)')}</span>
+        <label className="stackXs ticketAmountBlock">
+          <span className="fieldLabel">{tr(lang, 'Amount', 'Ποσό')}</span>
+          {walletBalance ? <span className="ticketAmountBalance">{tr(lang, 'Balance', 'Υπόλοιπο')} {walletBalance}</span> : null}
           <input
             className="input"
             type="number"
@@ -457,6 +469,17 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
                 €{value}
               </button>
             ))}
+
+            {walletNumber && walletNumber > 0 ? (
+              <button
+                className="ticketQuickAmount"
+                type="button"
+                onClick={() => setAmountEur(String(Math.max(1, Math.floor(walletNumber))))}
+                disabled={loading || props.marketStatus !== 'open' || marketClosed}
+              >
+                {tr(lang, 'Max', 'Μέγιστο')}
+              </button>
+            ) : null}
           </div>
         </label>
 
@@ -466,7 +489,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           onClick={requestQuotePreview}
           disabled={loading || props.marketStatus !== 'open' || marketClosed}
         >
-          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : tr(lang, 'Preview quote', 'Προεπισκόπηση quote')}
+          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : `${tr(lang, 'Preview', 'Προεπισκόπηση')} · ${mainCtaLabel}`}
         </button>
       </div>
 

@@ -1520,6 +1520,92 @@ code {
   color: #d8d0ff;
 }
 
+.ticketTopTabs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ticketActionTabs {
+  display: inline-flex;
+  gap: 10px;
+}
+
+.ticketActionTab {
+  min-height: 32px;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #95a0b6;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.ticketActionTabActive {
+  color: #eff4ff;
+  border-bottom-color: rgba(239, 244, 255, 0.88);
+}
+
+.ticketOrderType {
+  min-height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+  color: #d0d8ec;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 11px;
+}
+
+.ticketSideGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ticketSideButton {
+  min-height: 56px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #b4bfd6;
+  font: inherit;
+  font-size: clamp(26px, 2vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.ticketSideButtonYesActive {
+  border-color: rgba(34, 197, 94, 0.48);
+  background: rgba(34, 197, 94, 0.74);
+  color: #f3fff7;
+}
+
+.ticketSideButtonNoActive {
+  border-color: rgba(239, 68, 68, 0.48);
+  background: rgba(239, 68, 68, 0.66);
+  color: #fff5f5;
+}
+
+.ticketAmountBlock {
+  gap: 6px;
+}
+
+.ticketAmountBalance {
+  color: var(--text-3);
+  font-size: 13px;
+}
+
 .segmentRow {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
