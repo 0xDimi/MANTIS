@@ -326,6 +326,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   const claimed = props.marketStatus === 'settled' && !hasOpenPosition && Boolean(lastTradeSnapshot);
   const liveYes = liveState?.yesPrice ?? 0.5;
   const liveNo = liveState?.noPrice ?? 0.5;
+  const quoteExposure = quote?.quote ? quote.quote.shareDelta * quote.quote.averagePrice : 0;
+  const quoteMaxLoss = quote?.quote ? Math.max(quote.quote.totalAmountEur, quote.quote.amountEur) : 0;
 
   const stateChips: Array<{ label: string; tone?: 'yes' | 'no' | 'focus' }> = [];
 
@@ -470,7 +472,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
 
       {quote?.quote ? (
         <div className="stackSm">
-          <div className="statusRow statusRowStart">
+          <div className="statusRow statusRowStart ticketQuoteHead">
             <div>
               <div className="splitSectionLabel">{tr(lang, 'Quote summary', 'Σύνοψη quote')}</div>
               <p className="subtle">
@@ -482,14 +484,18 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
             </span>
           </div>
 
-          <div className="metricGridCompact">
+          <div className="metricGridCompact ticketQuoteGrid">
             <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Estimate', 'Εκτίμηση')}</div>
+              <div className="metricTileLabel">{tr(lang, 'Stake', 'Κεφάλαιο')}</div>
               <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.amountEur)}</div>
             </div>
             <div className="metricTile">
               <div className="metricTileLabel">{tr(lang, 'Avg price', 'Μέση τιμή')}</div>
               <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.averagePrice)}</div>
+            </div>
+            <div className="metricTile">
+              <div className="metricTileLabel">{tr(lang, 'Exposure', 'Έκθεση')}</div>
+              <div className="metricTileValue metricTileValueSmall">{formatMoney(quoteExposure)}</div>
             </div>
             <div className="metricTile">
               <div className="metricTileLabel">{tr(lang, 'Fee', 'Χρέωση')}</div>
@@ -504,8 +510,20 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
               <div className="metricTileValue metricTileValueSmall">{quote.quote.shareDelta.toFixed(4)}</div>
             </div>
             <div className="metricTile">
+              <div className="metricTileLabel">{tr(lang, 'Max loss', 'Μέγιστη απώλεια')}</div>
+              <div className="metricTileValue metricTileValueSmall">{formatMoney(quoteMaxLoss)}</div>
+            </div>
+            <div className="metricTile">
               <div className="metricTileLabel">{tr(lang, 'Max payout', 'Μέγιστη πληρωμή')}</div>
               <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.toWinEur)}</div>
+            </div>
+            <div className="metricTile">
+              <div className="metricTileLabel">{tr(lang, 'Post YES', 'Μετά YES')}</div>
+              <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.postYesPrice)}</div>
+            </div>
+            <div className="metricTile">
+              <div className="metricTileLabel">{tr(lang, 'Post NO', 'Μετά NO')}</div>
+              <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.postNoPrice)}</div>
             </div>
           </div>
 

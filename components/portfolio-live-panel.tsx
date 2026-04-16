@@ -22,6 +22,10 @@ type PortfolioPayload = {
       question: string;
       status: string;
     } | null;
+    pricing?: {
+      yesPrice: number;
+      noPrice: number;
+    } | null;
     position: {
       yesShares: number;
       noShares: number;
@@ -46,6 +50,7 @@ type TradesPayload = {
     side: 'yes' | 'no';
     action: 'buy' | 'sell';
     shareDelta: number;
+    avgPrice: number;
     grossAmount: number;
     feeAmount: number;
     netAmount: number;
@@ -59,23 +64,20 @@ function fmtMoney(value: number) {
 }
 
 function fmtSignedMoney(value: number) {
-  if (value > 0) {
-    return `+€${value.toFixed(2)}`;
-  }
-
-  if (value < 0) {
-    return `-€${Math.abs(value).toFixed(2)}`;
-  }
-
+  if (value > 0) return `+€${value.toFixed(2)}`;
+  if (value < 0) return `-€${Math.abs(value).toFixed(2)}`;
   return '€0.00';
+}
+
+function fmtPercent(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) return '—';
+  return `${Math.round(value * 100)}%`;
 }
 
 function fmtTime(value: string) {
   const parsed = new Date(value);
 
-  if (!Number.isFinite(parsed.getTime())) {
-    return '—';
-  }
+  if (!Number.isFinite(parsed.getTime())) return '—';
 
   return parsed.toLocaleString('en-GB', {
     day: '2-digit',
@@ -83,6 +85,13 @@ function fmtTime(value: string) {
     hour: '2-digit',
     minute: '2-digit'
   });
+}
+
+function statusClass(status: string | undefined) {
+  if (!status) return 'badgeNeutral';
+  if (status === 'open') return 'badgeYes';
+  if (status === 'paused' || status === 'closed') return 'badgeNeutral';
+  return 'badgeNo';
 }
 
 export function PortfolioLivePanel() {
@@ -95,7 +104,7 @@ export function PortfolioLivePanel() {
     try {
       const [portfolioRes, tradesRes] = await Promise.all([
         fetch('/api/portfolio/summary', { cache: 'no-store' }),
-        fetch('/api/trades/history?limit=10', { cache: 'no-store' })
+        fetch('/api/trades/history?limit=16', { cache: 'no-store' })
       ]);
 
       const portfolioPayload = (await portfolioRes.json()) as PortfolioPayload;
@@ -145,7 +154,19 @@ export function PortfolioLivePanel() {
     };
   }, []);
 
-  const positionCount = useMemo(() => portfolio?.positions?.length ?? 0, [portfolio?.positions]);
+  const openPositions = useMemo(
+    () =>
+      (portfolio?.positions ?? [])
+        .filter((entry) => ['open', 'paused', 'closed'].includes(entry.market?.status ?? 'open'))
+        .sort((a, b) => b.position.marketValue - a.position.marketValue),
+    [portfolio?.positions]
+  );
+
+  const settledPositions = useMemo(
+    () =>
+      (portfolio?.positions ?? []).filter((entry) => ['settled', 'resolved', 'void'].includes(entry.market?.status ?? '')),
+    [portfolio?.positions]
+  );
 
   if (loading) {
     return <section className="card"><p className="subtle">Loading portfolio...</p></section>;
@@ -166,7 +187,7 @@ export function PortfolioLivePanel() {
   }
 
   return (
-    <section className="stackMd">
+    <section className="stackMd portfolioSurface">
       <section className="metricsGrid">
         <article className="card stackSm">
           <p className="eyebrow">Available</p>
@@ -182,50 +203,103 @@ export function PortfolioLivePanel() {
 
         <article className="card stackSm">
           <p className="eyebrow">Open positions</p>
-          <div className="metricValue">{positionCount}</div>
+          <div className="metricValue">{openPositions.length}</div>
           <p className="subtle">Auto-refresh every 10s.</p>
         </article>
       </section>
 
-      <section className="twoColGrid">
-        <article className="card stackSm">
-          <div className="statusRow statusRowStart">
-            <div>
-              <p className="eyebrow">Positions</p>
-              <h3>Live exposure</h3>
-            </div>
-            <button className="button buttonGhost" type="button" onClick={refresh}>
-              Refresh now
-            </button>
+      <section className="card stackSm">
+        <div className="statusRow statusRowStart">
+          <div>
+            <p className="eyebrow">Positions</p>
+            <h3>Open exposure</h3>
           </div>
+          <button className="button buttonGhost" type="button" onClick={refresh}>
+            Refresh now
+          </button>
+        </div>
 
-          {positionCount === 0 ? <p className="subtle">No open positions yet.</p> : null}
+        {openPositions.length === 0 ? <p className="subtle">No open positions yet.</p> : null}
 
-          {(portfolio?.positions ?? []).map((entry) => (
-            <div className="panelBlock" key={entry.marketId}>
-              <div className="splitSectionLabel">{entry.market?.question ?? entry.marketId}</div>
-              <p className="subtle">
-                YES {entry.position.yesShares.toFixed(4)} · NO {entry.position.noShares.toFixed(4)} · Value {fmtMoney(entry.position.marketValue)} · Unrealized {fmtSignedMoney(entry.position.unrealizedPnl)}
-              </p>
+        {openPositions.length > 0 ? (
+          <div className="portfolioTableWrap">
+            <div className="portfolioTableHead">
+              <span>Market</span>
+              <span>Chance</span>
+              <span>Avg entry</span>
+              <span>Mark</span>
+              <span>Size</span>
+              <span>P/L</span>
+              <span>State</span>
             </div>
-          ))}
-        </article>
 
-        <article className="card stackSm">
-          <p className="eyebrow">Recent trades</p>
-          <h3>Execution + ledger reflection</h3>
+            {openPositions.map((entry) => {
+              const totalShares = entry.position.yesShares + entry.position.noShares;
+              const costBasis = entry.position.yesCostBasis + entry.position.noCostBasis;
+              const avgEntry = totalShares > 0 ? costBasis / totalShares : null;
+              const mark = totalShares > 0 ? entry.position.marketValue / totalShares : null;
+              const pnlClass = entry.position.unrealizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown';
 
-          {!(trades?.trades?.length) ? <p className="subtle">No recent trades.</p> : null}
+              return (
+                <div className="portfolioTableRow" key={entry.marketId}>
+                  <div className="portfolioMarketCol">
+                    <strong>{entry.market?.question ?? entry.marketId}</strong>
+                    <span>YES {entry.position.yesShares.toFixed(2)} · NO {entry.position.noShares.toFixed(2)}</span>
+                  </div>
+                  <span>{fmtPercent(entry.pricing?.yesPrice)}</span>
+                  <span>{fmtPercent(avgEntry)}</span>
+                  <span>{fmtPercent(mark)}</span>
+                  <span>{fmtMoney(entry.position.marketValue)}</span>
+                  <span className={pnlClass}>{fmtSignedMoney(entry.position.unrealizedPnl)}</span>
+                  <span className={statusClass(entry.market?.status)}>{(entry.market?.status ?? 'open').toUpperCase()}</span>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
 
-          {(trades?.trades ?? []).map((trade) => (
-            <div className="panelBlock" key={trade.id}>
-              <div className="splitSectionLabel">{trade.action.toUpperCase()} {trade.side.toUpperCase()} · {fmtMoney(trade.grossAmount)}</div>
-              <p className="subtle">
-                {trade.market?.question ?? 'Unknown market'} · shares {trade.shareDelta.toFixed(4)} · fee {fmtMoney(trade.feeAmount)} · net {fmtSignedMoney(trade.netAmount)} · {fmtTime(trade.createdAt)}
-              </p>
+        {settledPositions.length > 0 ? (
+          <p className="subtle">
+            Settled / resolved positions in history: <strong>{settledPositions.length}</strong>
+          </p>
+        ) : null}
+      </section>
+
+      <section className="card stackSm">
+        <p className="eyebrow">Recent trades</p>
+        <h3>Execution ledger</h3>
+
+        {!(trades?.trades?.length) ? <p className="subtle">No recent trades.</p> : null}
+
+        {trades?.trades?.length ? (
+          <div className="portfolioTableWrap">
+            <div className="portfolioTableHead portfolioLedgerHead">
+              <span>Time</span>
+              <span>Market</span>
+              <span>Side</span>
+              <span>Action</span>
+              <span>Shares</span>
+              <span>Avg</span>
+              <span>Fee</span>
+              <span>Net</span>
             </div>
-          ))}
-        </article>
+            {trades.trades.map((trade) => (
+              <div className="portfolioTableRow portfolioLedgerRow" key={trade.id}>
+                <span>{fmtTime(trade.createdAt)}</span>
+                <div className="portfolioMarketCol">
+                  <strong>{trade.market?.question ?? 'Unknown market'}</strong>
+                  <span>{trade.market?.category ?? 'n/a'}</span>
+                </div>
+                <span className={trade.side === 'yes' ? 'ticketSurfaceLiveYes' : 'ticketSurfaceLiveNo'}>{trade.side.toUpperCase()}</span>
+                <span>{trade.action.toUpperCase()}</span>
+                <span>{trade.shareDelta.toFixed(3)}</span>
+                <span>{fmtPercent(trade.avgPrice)}</span>
+                <span>{fmtMoney(trade.feeAmount)}</span>
+                <span className={trade.netAmount >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown'}>{fmtSignedMoney(trade.netAmount)}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
       </section>
     </section>
   );

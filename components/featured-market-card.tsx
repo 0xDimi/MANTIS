@@ -9,6 +9,25 @@ type FeaturedMarketCardProps = {
   lead?: boolean;
 };
 
+const contextByCategory: Record<string, { en: string; el: string }> = {
+  politics: {
+    en: 'Policy shifts can reprice this market fast if narrative momentum flips.',
+    el: 'Οι πολιτικές μετατοπίσεις μπορούν να αλλάξουν γρήγορα την τιμολόγηση αν αλλάξει η δυναμική.'
+  },
+  economy: {
+    en: 'Macro prints and policy tone are the main drivers for this contract.',
+    el: 'Οι μακροοικονομικές ανακοινώσεις και ο τόνος πολιτικής είναι οι βασικοί οδηγοί.'
+  },
+  weather: {
+    en: 'Official station updates can move implied odds quickly near the deadline.',
+    el: 'Οι επίσημες μετεωρολογικές ενημερώσεις μετακινούν γρήγορα τις πιθανότητες κοντά στη λήξη.'
+  },
+  technology: {
+    en: 'Company guidance and product timing updates are the key catalysts.',
+    el: 'Οι ενημερώσεις για καθοδήγηση εταιρειών και χρονοδιάγραμμα προϊόντων είναι οι βασικοί καταλύτες.'
+  }
+};
+
 function labelize(value: string) {
   return value
     .replace(/[-_]/g, ' ')
@@ -58,9 +77,13 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
   const noCents = Math.round(noProb * 100);
   const href = marketHref(market.slug, lang);
   const volume = market.state?.volumeTotal ?? 0;
+  const context = contextByCategory[market.category.toLowerCase()] ?? {
+    en: 'Watch for new verified updates, this market can reprice quickly close to deadline.',
+    el: 'Παρακολούθησε τις νέες επιβεβαιωμένες ενημερώσεις, αυτή η αγορά μπορεί να ανατιμολογηθεί γρήγορα κοντά στη λήξη.'
+  };
 
   return (
-    <article className={`card featuredDistinctCard${lead ? ' featuredDistinctLead' : ''}`}>
+    <article className={`card featuredDistinctCard${lead ? ' featuredDistinctLead' : ' featuredDistinctFollow'}`}>
       <Link className="marketCardHitArea" href={href} aria-label={market.question} />
 
       <div className="featuredDistinctShell">
@@ -69,9 +92,12 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
           <span className={statusTone(market.status)}>{statusLabel(market.status, lang)}</span>
         </div>
 
-        <h2 className="featuredDistinctTitle">
-          <Link className="marketTitleLink" href={href}>{market.question}</Link>
-        </h2>
+        <div className="featuredDistinctBody">
+          <h2 className="featuredDistinctTitle">
+            <Link className="marketTitleLink" href={href}>{market.question}</Link>
+          </h2>
+          <p className="featuredDistinctContext">{lang === 'el' ? context.el : context.en}</p>
+        </div>
 
         <div className="featuredDistinctSignal">
           <div className="featuredDistinctForecast">
@@ -83,12 +109,11 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
           </div>
         </div>
 
-        <p className="featuredDistinctMeta">
-          {volume > 0 ? `${tr(lang, 'Vol', 'Όγκος')} €${formatCompact(volume)}` : tr(lang, 'New market', 'Νέα αγορά')}
-          {' · '}
-          {tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}
-          {market.state?.lastTradeAt ? ` · ${tr(lang, 'Trade', 'Συναλλαγή')} ${formatRelativeHours(market.state.lastTradeAt)}` : ''}
-        </p>
+        <div className="featuredDistinctMeta">
+          <span>{volume > 0 ? `${tr(lang, 'Vol', 'Όγκος')} €${formatCompact(volume)}` : tr(lang, 'Fresh listing', 'Νέα εισαγωγή')}</span>
+          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
+          <span>{market.state?.lastTradeAt ? `${tr(lang, 'Trade', 'Συναλλαγή')} ${formatRelativeHours(market.state.lastTradeAt)}` : tr(lang, 'Awaiting first trade', 'Αναμένεται πρώτη συναλλαγή')}</span>
+        </div>
 
         <div className="featuredDistinctActions">
           <Link className="button buttonYes featuredActionBtn" href={marketHref(market.slug, lang, 'yes')}>
@@ -102,7 +127,7 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
         </div>
       </div>
 
-      <span className="featuredMantisMark" aria-hidden="true">MANTIS</span>
+      <span className="featuredMantisMark" aria-hidden="true">MANTIS · CURATED</span>
     </article>
   );
 }

@@ -79,13 +79,19 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
   const { markets, error } = await loadMarketsBoard({ scope: 'all' });
   const userMarkets = markets.filter((market) => !isInternalMarket(market.slug, market.question));
   const mergedMarkets = userMarkets.length >= 10 ? userMarkets : [...userMarkets, ...getDesignSampleMarkets()];
-  const sorted = sortMarkets(mergedMarkets, normalizeView(view));
+  const normalizedView = normalizeView(view);
+  const sorted = sortMarkets(mergedMarkets, normalizedView);
+  const activeMarkets = sorted.filter((market) => market.status === 'open' || market.status === 'paused');
+  const watchlistMarkets = sorted.filter((market) => ['open', 'paused', 'draft'].includes(market.status));
+  const curatedBase = normalizedView === 'trending'
+    ? (activeMarkets.length >= 6 ? activeMarkets : watchlistMarkets)
+    : sorted;
   const normalizedQuery = (query ?? '').trim().toLowerCase();
-  const categoryFiltered = category ? sorted.filter((market) => market.category === category) : sorted;
+  const categoryFiltered = category ? curatedBase.filter((market) => market.category === category) : curatedBase;
   const filtered = normalizedQuery
     ? categoryFiltered.filter((market) => `${market.question} ${market.category}`.toLowerCase().includes(normalizedQuery))
     : categoryFiltered;
-  const featuredPool = [...sorted].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
+  const featuredPool = [...curatedBase].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
   const featured = featuredPool.slice(0, 2);
   const featuredIds = new Set(featured.map((market) => market.id));
   const gridMarkets = filtered.filter((market) => !featuredIds.has(market.id));

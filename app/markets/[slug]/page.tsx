@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { AlphaShell } from '@/components/alpha-shell';
+import { MarketTrendPanel } from '@/components/market-trend-panel';
 import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { ProbabilitySplit } from '@/components/probability-split';
-import { loadMarketDetail } from '@/lib/alpha-read-model';
+import { loadMarketDetail, loadMarketsBoard } from '@/lib/alpha-read-model';
 import { formatCompact, formatDateTime, formatPercent, formatRelativeHours } from '@/lib/format';
 import { normalizeLang, tr } from '@/lib/ui-lang';
 
@@ -38,7 +39,15 @@ export default async function MarketDetailPage({
   const { slug } = await params;
   const query = (await searchParams) ?? {};
   const lang = normalizeLang(query.lang);
-  const { market, state, error } = await loadMarketDetail(slug);
+  const [{ market, state, error }, board] = await Promise.all([
+    loadMarketDetail(slug),
+    loadMarketsBoard({ scope: 'all' })
+  ]);
+  const relatedMarkets = market
+    ? (board.markets ?? [])
+        .filter((item) => item.slug !== market.slug && item.category === market.category && item.status === 'open')
+        .slice(0, 3)
+    : [];
 
   return (
     <AlphaShell title={market?.question ?? tr(lang, 'Market', 'Αγορά')} lang={lang} showIntro={false}>
@@ -57,16 +66,30 @@ export default async function MarketDetailPage({
               <p className="eyebrow">{labelize(market.category)}</p>
               <h1 className="marketTitle">{market.question}</h1>
 
-              <div className="marketSummaryRow">
-                <span className="summaryPill">{tr(lang, 'Chance', 'Πιθανότητα')} {formatPercent(state?.yesPrice ?? 0.5)}</span>
-                {Number(state?.volumeTotal ?? 0) > 0 ? (
-                  <span className="summaryPill">{tr(lang, 'Volume', 'Όγκος')} €{formatCompact(state?.volumeTotal ?? 0)}</span>
-                ) : (
-                  <span className="summaryPill">{tr(lang, 'New market', 'Νέα αγορά')}</span>
-                )}
-                <span className="summaryPill">{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
-                <span className="summaryPill">{tr(lang, 'Source', 'Πηγή')} {market.sourcePrimary}</span>
-                <span className={statusClass(market.status)}>{labelize(market.status)}</span>
+              <div className="marketSignalBand">
+                <div className="marketSignalPrimary">
+                  <span>{tr(lang, 'Live chance', 'Ζωντανή πιθανότητα')}</span>
+                  <strong>{formatPercent(state?.yesPrice ?? 0.5)}</strong>
+                  <em>YES</em>
+                </div>
+                <div className="marketSignalGrid">
+                  <div className="marketSignalItem">
+                    <span>{tr(lang, 'Volume', 'Όγκος')}</span>
+                    <strong>{Number(state?.volumeTotal ?? 0) > 0 ? `€${formatCompact(state?.volumeTotal ?? 0)}` : tr(lang, 'Fresh listing', 'Νέα εισαγωγή')}</strong>
+                  </div>
+                  <div className="marketSignalItem">
+                    <span>{tr(lang, 'Close', 'Λήξη')}</span>
+                    <strong>{formatRelativeHours(market.closeTime)}</strong>
+                  </div>
+                  <div className="marketSignalItem">
+                    <span>{tr(lang, 'Source', 'Πηγή')}</span>
+                    <strong>{market.sourcePrimary}</strong>
+                  </div>
+                  <div className="marketSignalItem">
+                    <span>{tr(lang, 'Status', 'Κατάσταση')}</span>
+                    <strong className={statusClass(market.status)}>{labelize(market.status)}</strong>
+                  </div>
+                </div>
               </div>
 
               <section className="marketChartSurface">
@@ -78,13 +101,35 @@ export default async function MarketDetailPage({
                   formatValue={formatPercent}
                 />
 
-                <div className="marketTrendLine" aria-hidden="true" />
+                <MarketTrendPanel
+                  slug={market.slug}
+                  yesPrice={state?.yesPrice ?? 0.5}
+                  noPrice={state?.noPrice ?? 0.5}
+                  volumeTotal={state?.volumeTotal ?? 0}
+                  liquidity={market.liquidity}
+                  participants={state?.participantsCount ?? 0}
+                  lang={lang}
+                />
 
                 <div className="marketMetaFoot">
                   <span>{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(market.closeTime)}</span>
                   <span>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')} {formatDateTime(market.resolutionTime)}</span>
                 </div>
               </section>
+
+              {relatedMarkets.length > 0 ? (
+                <section className="relatedMarketsRail" aria-label={tr(lang, 'Related markets', 'Σχετικές αγορές')}>
+                  <p className="marketTrendLabel">{tr(lang, 'Related markets', 'Σχετικές αγορές')}</p>
+                  <div className="relatedMarketsList">
+                    {relatedMarkets.map((item) => (
+                      <Link key={item.id} className="relatedMarketPill" href={`/markets/${item.slug}${lang === 'el' ? '?lang=el' : ''}`}>
+                        <span>{item.question}</span>
+                        <strong>{formatPercent(item.state?.yesPrice ?? 0.5)}</strong>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
             </article>
 
             <aside className="card marketTicketCard" id="trade-ticket">

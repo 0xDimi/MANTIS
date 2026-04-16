@@ -88,9 +88,9 @@ export function MarketCard({ market, lang }: MarketCardProps) {
         </div>
 
         <div className="marketMiniMeta">
-          {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : <span>{tr(lang, 'New market', 'Νέα αγορά')}</span>}
+          {volume > 0 ? <span className="marketMiniMetaStrong">{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : <span className="marketMiniMetaStrong">{tr(lang, 'Fresh listing', 'Νέα εισαγωγή')}</span>}
           <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
-          {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeHours(market.state.lastTradeAt)}</span> : null}
+          {market.state?.lastTradeAt ? <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')} {formatRelativeHours(market.state.lastTradeAt)}</span> : <span>{tr(lang, 'Awaiting flow', 'Αναμένεται ροή')}</span>}
         </div>
       </div>
     </article>
