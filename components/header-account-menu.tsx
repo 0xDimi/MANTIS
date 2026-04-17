@@ -78,6 +78,7 @@ export function HeaderAccountMenu({
         onClick={() => setOpen((value) => !value)}
       >
         <span className="profileAvatarCircle" aria-hidden="true">{(initials || 'ME').slice(0, 2)}</span>
+        <span className="profileButtonCaret" aria-hidden="true">⌄</span>
       </button>
 
       {open ? (

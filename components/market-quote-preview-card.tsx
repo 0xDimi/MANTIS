@@ -45,7 +45,6 @@ type PortfolioSummaryPayload = {
       unrealizedPnl: number;
     };
   }>;
-  error?: string;
 };
 
 type TradeHistoryPayload = {
@@ -57,7 +56,6 @@ type TradeHistoryPayload = {
     grossAmount: number;
     createdAt: string;
   }>;
-  error?: string;
 };
 
 type MarketStatePayload = {
@@ -77,8 +75,8 @@ function formatPercent(value: number) {
   return `${(value * 100).toFixed(1)}%`;
 }
 
-function formatCountdown(ms: number) {
-  if (ms <= 0) return 'expired';
+function formatCountdown(ms: number, lang: UiLang) {
+  if (ms <= 0) return tr(lang, 'expired', 'έληξε');
 
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -109,6 +107,16 @@ function normalizeOutcomeLabel(label: string | undefined, fallback: 'yes' | 'no'
   if (value.toLowerCase() === fallback) return baseline;
 
   return value;
+}
+
+function marketBlockedMessage(status: string, marketClosed: boolean, lang: UiLang) {
+  if (marketClosed || status === 'closed') return tr(lang, 'Trading is closed for this market.', 'Η διαπραγμάτευση έχει κλείσει για αυτή την αγορά.');
+  if (status === 'paused') return tr(lang, 'Trading is paused. Check back shortly.', 'Η διαπραγμάτευση είναι σε παύση. Δοκίμασε ξανά σύντομα.');
+  if (status === 'draft') return tr(lang, 'Market is preparing. Trading opens soon.', 'Η αγορά προετοιμάζεται. Η διαπραγμάτευση ανοίγει σύντομα.');
+  if (status === 'resolved') return tr(lang, 'Market is resolved and no longer tradeable.', 'Η αγορά επιλύθηκε και δεν είναι πλέον διαθέσιμη για συναλλαγή.');
+  if (status === 'settled') return tr(lang, 'Market is settled. Trading is complete.', 'Η αγορά έχει διακανονιστεί. Η διαπραγμάτευση ολοκληρώθηκε.');
+  if (status === 'void') return tr(lang, 'Market is voided.', 'Η αγορά είναι ακυρωμένη.');
+  return null;
 }
 
 export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePreviewCardProps) {
@@ -176,29 +184,35 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
     };
   }, [props.marketSlug]);
 
+  const closeMs = useMemo(() => new Date(props.closeTime).getTime(), [props.closeTime]);
+
   const marketClosed = useMemo(() => {
-    const closeMs = new Date(props.closeTime).getTime();
-    return Number.isFinite(closeMs) ? closeMs <= nowMs : false;
-  }, [props.closeTime, nowMs]);
+    if (!Number.isFinite(closeMs)) return false;
+    return closeMs <= nowMs;
+  }, [closeMs, nowMs]);
+
+  const closeCountdown = useMemo(() => {
+    if (!Number.isFinite(closeMs)) return '—';
+    return closeMs <= nowMs ? tr(lang, 'Closed', 'Κλειστή') : formatCountdown(closeMs - nowMs, lang);
+  }, [closeMs, nowMs, lang]);
 
   const quoteExpiryText = useMemo(() => {
     if (!quote?.expiresAt) return null;
 
     const expiresMs = new Date(quote.expiresAt).getTime();
-    if (!Number.isFinite(expiresMs)) return 'invalid expiry';
+    if (!Number.isFinite(expiresMs)) return tr(lang, 'invalid', 'μη έγκυρο');
 
-    return formatCountdown(expiresMs - nowMs);
-  }, [quote?.expiresAt, nowMs]);
+    return formatCountdown(expiresMs - nowMs, lang);
+  }, [quote?.expiresAt, nowMs, lang]);
 
-  const closeCountdown = useMemo(() => {
-    const closeMs = new Date(props.closeTime).getTime();
-    if (!Number.isFinite(closeMs)) return '—';
-    return closeMs <= nowMs ? tr(lang, 'Closed', 'Κλειστή') : formatCountdown(closeMs - nowMs);
-  }, [props.closeTime, nowMs, lang]);
+  const blockedMessage = marketBlockedMessage(props.marketStatus, marketClosed, lang);
+  const msToClose = Number.isFinite(closeMs) ? closeMs - nowMs : Infinity;
+  const closingSoon = msToClose > 0 && msToClose <= 2 * 60 * 60 * 1000;
 
   async function requestQuotePreview() {
     setLoading(true);
     setError(null);
+    setExecutionMessage(null);
 
     const parsedAmount = Number(amountEur);
 
@@ -278,7 +292,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         }
       }
     } catch {
-      // non-fatal snapshot helper
+      // non-fatal helper refresh
     }
   }
 
@@ -334,12 +348,12 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
     }
   }
 
-  const quoteReady = Boolean(quote?.quote && quoteExpiryText !== 'expired');
-  const requoteNeeded = Boolean(quote?.quote && quoteExpiryText === 'expired');
+  const quoteReady = Boolean(quote?.quote && quoteExpiryText !== tr(lang, 'expired', 'έληξε'));
+  const quoteExpired = Boolean(quote?.quote && quoteExpiryText === tr(lang, 'expired', 'έληξε'));
   const failedTrade = Boolean(executionMessage && executionMessage.toLowerCase().includes('failed'));
   const successTrade = Boolean(executionMessage && executionMessage.toLowerCase().includes('executed'));
   const claimAvailable = props.marketStatus === 'settled' && hasOpenPosition;
-  const claimed = props.marketStatus === 'settled' && !hasOpenPosition && Boolean(lastTradeSnapshot);
+
   const liveYes = liveState?.yesPrice ?? 0.5;
   const liveNo = liveState?.noPrice ?? 0.5;
   const yesCents = Math.round(liveYes * 100);
@@ -349,20 +363,21 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   const quoteExposure = quote?.quote ? quote.quote.shareDelta * quote.quote.averagePrice : 0;
   const quoteMaxLoss = quote?.quote ? Math.max(quote.quote.totalAmountEur, quote.quote.amountEur) : 0;
   const walletNumber = walletBalance ? Number(walletBalance.split(' ')[0]) : null;
-  const mainCtaLabel = `${action === 'buy' ? tr(lang, 'Buy', 'Αγορά') : tr(lang, 'Sell', 'Πώληση')} ${side === 'yes' ? yesDisplay : noDisplay}`;
+  const intentLabel = `${action === 'buy' ? tr(lang, 'Buy', 'Αγορά') : tr(lang, 'Sell', 'Πώληση')} ${side === 'yes' ? yesDisplay : noDisplay}`;
 
-  const stateChips: Array<{ label: string; tone?: 'yes' | 'no' | 'focus' }> = [];
+  const previewStats = quote?.quote
+    ? [
+        { label: tr(lang, 'Avg price', 'Μέση τιμή'), value: formatPercent(quote.quote.averagePrice) },
+        { label: tr(lang, 'Estimated shares', 'Εκτιμώμενες μετοχές'), value: quote.quote.shareDelta.toFixed(4) },
+        { label: tr(lang, 'Exposure', 'Έκθεση'), value: formatMoney(quoteExposure) },
+        { label: tr(lang, 'Fee', 'Χρέωση'), value: formatMoney(quote.quote.feeAmountEur) },
+        { label: tr(lang, 'Price impact', 'Επίδραση τιμής'), value: formatPercent(quote.quote.impact) },
+        { label: tr(lang, 'Max loss', 'Μέγιστη απώλεια'), value: formatMoney(quoteMaxLoss) },
+        { label: tr(lang, 'Payout if correct', 'Πληρωμή αν επαληθευτεί'), value: formatMoney(quote.quote.toWinEur) }
+      ]
+    : [];
 
-  if (quoteReady) stateChips.push({ label: tr(lang, 'Quote ready', 'Quote έτοιμο'), tone: 'focus' });
-  if (loading) stateChips.push({ label: tr(lang, 'Quoting', 'Υπολογισμός quote'), tone: 'focus' });
-  if (executing) stateChips.push({ label: action === 'buy' ? tr(lang, 'Buying', 'Αγορά') : tr(lang, 'Selling', 'Πώληση'), tone: 'focus' });
-  if (successTrade) stateChips.push({ label: tr(lang, 'Trade success', 'Επιτυχής συναλλαγή'), tone: 'yes' });
-  if (requoteNeeded) stateChips.push({ label: tr(lang, 'Requote needed', 'Απαιτείται νέο quote'), tone: 'no' });
-  if (failedTrade) stateChips.push({ label: tr(lang, 'Trade failed', 'Αποτυχία συναλλαγής'), tone: 'no' });
-  if (claimAvailable) stateChips.push({ label: tr(lang, 'Claim available', 'Διαθέσιμη είσπραξη'), tone: 'yes' });
-  if (claimed) stateChips.push({ label: tr(lang, 'Claimed', 'Εισπραγμένο'), tone: 'yes' });
-  if (props.marketStatus === 'settled') stateChips.push({ label: tr(lang, 'Settled', 'Settled'), tone: 'yes' });
-  if (props.marketStatus === 'void') stateChips.push({ label: 'VOID', tone: 'no' });
+  const quoteFreshTone = quoteExpired ? 'quoteFreshness quoteFreshnessStale' : 'quoteFreshness quoteFreshnessLive';
 
   return (
     <article className="stackMd ticketSurfaceStack">
@@ -370,7 +385,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         <div className="stackXs">
           <span className="ticketSurfaceEyebrow">MANTIS</span>
           <strong className="ticketSurfaceTitle">{tr(lang, 'Trade ticket', 'Δελτίο συναλλαγής')}</strong>
-          <span className="ticketSurfaceHint">{tr(lang, 'Choose side, size, then preview quote', 'Επίλεξε πλευρά, ποσό και μετά προεπισκόπηση quote')}</span>
+          <span className="ticketSurfaceHint">{tr(lang, 'Set intent first, then preview execution.', 'Όρισε πρόθεση και μετά δες προεπισκόπηση εκτέλεσης.')}</span>
         </div>
         <div className="ticketSurfaceLive">
           <span className="ticketSurfaceLiveYes">YES {formatPercent(liveYes)}</span>
@@ -383,28 +398,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         <span style={{ width: `${Math.round(liveYes * 100)}%` }} />
       </div>
 
-      {(props.marketStatus !== 'open' || marketClosed) && (
-        <div className="notice noticeWarn">{tr(lang, 'Market is not tradeable right now.', 'Η αγορά δεν είναι διαθέσιμη για συναλλαγή τώρα.')}</div>
-      )}
-
-      <div className="stateChips">
-        {stateChips.map((chip) => (
-          <span
-            key={chip.label}
-            className={
-              chip.tone === 'yes'
-                ? 'stateChip stateChipYes'
-                : chip.tone === 'no'
-                  ? 'stateChip stateChipNo'
-                  : chip.tone === 'focus'
-                    ? 'stateChip stateChipFocus'
-                    : 'stateChip'
-            }
-          >
-            {chip.label}
-          </span>
-        ))}
-      </div>
+      {blockedMessage ? <div className="notice noticeWarn">{blockedMessage}</div> : null}
+      {!blockedMessage && closingSoon ? <div className="notice noticeWarn">{tr(lang, 'Closing soon. Quotes may expire quickly.', 'Η λήξη πλησιάζει. Τα quote μπορεί να λήγουν γρήγορα.')}</div> : null}
 
       <div className="ticketShell stackMd">
         <div className="ticketTopTabs">
@@ -424,10 +419,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
               {tr(lang, 'Sell', 'Πώληση')}
             </button>
           </div>
-          <span className="ticketOrderType">
-            {tr(lang, 'Market', 'Αγορά')}
-            <span className="ticketOrderTypeCaret" aria-hidden="true">⌄</span>
-          </span>
+          <span className="ticketOrderType">{tr(lang, 'Market', 'Αγορά')}</span>
         </div>
 
         <div className="ticketSideGrid">
@@ -463,7 +455,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
               placeholder="0"
               value={amountEur}
               onChange={(event) => setAmountEur(event.target.value)}
-              disabled={loading || props.marketStatus !== 'open' || marketClosed}
+              disabled={loading || Boolean(blockedMessage)}
             />
           </div>
 
@@ -474,7 +466,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
                 className={amountEur === String(value) ? 'ticketQuickAmount ticketQuickAmountActive' : 'ticketQuickAmount'}
                 type="button"
                 onClick={() => setAmountEur(String(value))}
-                disabled={loading || props.marketStatus !== 'open' || marketClosed}
+                disabled={loading || Boolean(blockedMessage)}
               >
                 €{value}
               </button>
@@ -485,7 +477,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
                 className="ticketQuickAmount"
                 type="button"
                 onClick={() => setAmountEur(String(Math.max(1, Math.floor(walletNumber))))}
-                disabled={loading || props.marketStatus !== 'open' || marketClosed}
+                disabled={loading || Boolean(blockedMessage)}
               >
                 {tr(lang, 'Max', 'Μέγιστο')}
               </button>
@@ -497,9 +489,9 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           className={side === 'yes' ? 'ticketCta ticketCtaYes' : 'ticketCta ticketCtaNo'}
           type="button"
           onClick={requestQuotePreview}
-          disabled={loading || props.marketStatus !== 'open' || marketClosed}
+          disabled={loading || Boolean(blockedMessage)}
         >
-          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : mainCtaLabel}
+          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : `${tr(lang, 'Preview', 'Προεπισκόπηση')} · ${intentLabel}`}
         </button>
       </div>
 
@@ -507,100 +499,61 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
       {stateError ? <div className="notice noticeWarn">{stateError}</div> : null}
 
       {liveState ? (
-        <div className="metricGridCompact">
-          <div className="metricTile">
-            <div className="metricTileLabel">YES</div>
-            <div className="metricTileValue metricTileValueSmall">{formatPercent(liveState.yesPrice)}</div>
-          </div>
-          <div className="metricTile">
-            <div className="metricTileLabel">NO</div>
-            <div className="metricTileValue metricTileValueSmall">{formatPercent(liveState.noPrice)}</div>
-          </div>
-          <div className="metricTile">
-            <div className="metricTileLabel">{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')}</div>
-            <div className="metricTileValue metricTileValueSmall">{formatTime(liveState.lastTradeAt)}</div>
-          </div>
-          <div className="metricTile">
-            <div className="metricTileLabel">{tr(lang, 'Status', 'Κατάσταση')}</div>
-            <div className="metricTileValue metricTileValueSmall">{props.marketStatus.toUpperCase()}</div>
-          </div>
+        <div className="ticketLiveMeta">
+          <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')}: {formatTime(liveState.lastTradeAt)}</span>
+          <span>{tr(lang, 'Status', 'Κατάσταση')}: {props.marketStatus.toUpperCase()}</span>
         </div>
       ) : null}
 
       {quote?.quote ? (
-        <div className="stackSm">
-          <div className="statusRow statusRowStart ticketQuoteHead">
+        <div className="ticketPreviewPanel stackSm">
+          <div className="ticketPreviewHead">
             <div>
-              <div className="splitSectionLabel">{tr(lang, 'Quote summary', 'Σύνοψη quote')}</div>
+              <div className="splitSectionLabel">{tr(lang, 'Quote preview', 'Προεπισκόπηση quote')}</div>
               <p className="subtle">
                 Hash: <code>{quote.quoteHash?.slice(0, 12)}...</code>
               </p>
             </div>
-            <span className={quoteExpiryText === 'expired' ? 'badgeNo' : 'badgeNeutral'}>
-              {tr(lang, 'Expires in', 'Λήγει σε')} {quoteExpiryText ?? '—'}
+            <span className={quoteFreshTone}>
+              <span />
+              {tr(lang, 'Refresh in', 'Ανανέωση σε')} {quoteExpiryText ?? '—'}
             </span>
           </div>
 
-          <div className="metricGridCompact ticketQuoteGrid">
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Stake', 'Κεφάλαιο')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.amountEur)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Avg price', 'Μέση τιμή')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.averagePrice)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Exposure', 'Έκθεση')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatMoney(quoteExposure)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Fee', 'Χρέωση')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.feeAmountEur)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Price impact', 'Επίδραση τιμής')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.impact)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Shares', 'Μετοχές')}</div>
-              <div className="metricTileValue metricTileValueSmall">{quote.quote.shareDelta.toFixed(4)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Max loss', 'Μέγιστη απώλεια')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatMoney(quoteMaxLoss)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Max payout', 'Μέγιστη πληρωμή')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatMoney(quote.quote.toWinEur)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Post YES', 'Μετά YES')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.postYesPrice)}</div>
-            </div>
-            <div className="metricTile">
-              <div className="metricTileLabel">{tr(lang, 'Post NO', 'Μετά NO')}</div>
-              <div className="metricTileValue metricTileValueSmall">{formatPercent(quote.quote.postNoPrice)}</div>
-            </div>
+          <div className="ticketPreviewMetrics">
+            {previewStats.map((item) => (
+              <div key={item.label} className="ticketPreviewMetric">
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+              </div>
+            ))}
           </div>
 
           <button
-            className={side === 'yes' ? 'ticketCta ticketCtaYes' : 'ticketCta ticketCtaNo'}
+            className={side === 'yes' ? 'ticketCta ticketCtaYes ticketCtaConfirm' : 'ticketCta ticketCtaNo ticketCtaConfirm'}
             type="button"
             onClick={executeTrade}
-            disabled={executing || quoteExpiryText === 'expired'}
+            disabled={executing || quoteExpired || Boolean(blockedMessage)}
           >
-            {executing ? tr(lang, 'Executing...', 'Εκτέλεση...') : tr(lang, 'Confirm trade', 'Επιβεβαίωση συναλλαγής')}
+            {executing ? tr(lang, 'Executing...', 'Εκτέλεση...') : `${tr(lang, 'Confirm', 'Επιβεβαίωση')} · ${intentLabel}`}
           </button>
 
           {executionMessage ? (
-            <div className={executionMessage.toLowerCase().includes('executed') ? 'notice noticeSuccess' : 'notice noticeError'}>
-              {executionMessage}
-            </div>
+            <div className={successTrade ? 'notice noticeSuccess' : failedTrade ? 'notice noticeError' : 'notice noticeWarn'}>{executionMessage}</div>
           ) : null}
+
+          {claimAvailable ? <p className="subtle">{tr(lang, 'Settlement is available for your open position.', 'Ο διακανονισμός είναι διαθέσιμος για την ανοικτή θέση σου.')}</p> : null}
           {walletBalance ? <p className="subtle">{tr(lang, 'Wallet', 'Πορτοφόλι')}: {walletBalance}</p> : null}
           {positionSnapshot ? <p className="subtle">{tr(lang, 'Position', 'Θέση')}: {positionSnapshot}</p> : null}
           {lastTradeSnapshot ? <p className="subtle">{tr(lang, 'Latest trade', 'Τελευταία συναλλαγή')}: {lastTradeSnapshot}</p> : null}
+        </div>
+      ) : null}
+
+      {(quoteReady || loading || executing) ? (
+        <div className="stateChips">
+          {quoteReady ? <span className="stateChip stateChipYes">{tr(lang, 'Quote ready', 'Quote έτοιμο')}</span> : null}
+          {loading ? <span className="stateChip stateChipFocus">{tr(lang, 'Pricing request in progress', 'Εκτέλεση υπολογισμού τιμής')}</span> : null}
+          {executing ? <span className="stateChip stateChipFocus">{tr(lang, 'Execution in progress', 'Εκτέλεση σε εξέλιξη')}</span> : null}
         </div>
       ) : null}
     </article>
