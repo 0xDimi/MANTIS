@@ -1,6 +1,6 @@
 # Alpha Live Status
 
-Last updated: 2026-04-15 20:15 (EEST)
+Last updated: 2026-04-17 13:25 (EEST)
 
 ## Current phase
 - Week 2 markets rebuild is complete
@@ -59,6 +59,16 @@ Last updated: 2026-04-15 20:15 (EEST)
 - PASS `/api/health` telemetry readiness now reports full green for telemetry:
   - Sentry `envConfigured=true`, `sdkConfigured=true`
   - PostHog `envConfigured=true`, `sdkConfigured=true`
+- PASS completion-pass regression on canonical app after final UI pass:
+  - `npm run typecheck`
+  - `npm run test:week3`
+  - `npm run test:week5`
+  - `npm run build`
+  - `./scripts/qa-smoke-alpha.sh` with `SMOKE_VERIFY_PROFILE_RLS=1`
+- PASS smoke now explicitly validates:
+  - telemetry readiness in `/api/health`
+  - DB-backed market detail payload on `/api/markets/[slug]`
+  - market detail state reflection immediately after execute (`last_trade_at` + `volume_total`)
 
 ## In progress
 - Final-product requirement remains locked: nickname update support
@@ -108,12 +118,13 @@ Last updated: 2026-04-15 20:15 (EEST)
 - Discover-only surgical refinement deployed from `alpha` (`107b94a`, `7c4621b`) with no portfolio/admin/settlement scope changes.
 
 ## Simulation mode (active)
-- Open markets reduced from 12 to 2 for fast-cycle verification:
-  - `gre-weather-athens-heatwave` (close in ~1h from activation)
-  - `gre-weather-thessaloniki-heavy-rain` (close in ~2h from activation)
-- Simulation fee lowered to `50 bps` on both open markets (from `200 bps`) to reduce friction during rapid-cycle testing.
-- Other launch-slate markets switched to `draft` (soft hide, not deleted)
-- Immediate recheck after switch: PASS `qa-smoke-alpha` on production with `count=2`
+- Completion-pass runtime now has real open markets restored for live alpha validation:
+  - `gre-energy-power-demand-peak`
+  - `gre-politics-cabinet-reshuffle-announced`
+  - `gre-economy-inflation-below-2`
+  - `gre-economy-unemployment-rate-down`
+  - `gre-tech-ai-startup-round`
+  - `gre-tourism-arrivals-up`
 
 ## Ops runbook
 - Operator runbook finalized: `docs/ALPHA_OPERATOR_RUNBOOK.md`

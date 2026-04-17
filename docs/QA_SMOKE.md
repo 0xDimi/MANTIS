@@ -5,12 +5,15 @@
 ## What it validates
 
 1. `GET /api/health` returns `status=ok`
+   - also checks telemetry readiness flags (Sentry + PostHog env/sdk configured)
 2. `GET /api/markets` returns at least one market
+   - and selected market has DB-backed detail on `GET /api/markets/[slug]`
 3. Authenticated tester flow works end to end:
    - `GET /api/me`
    - `GET /api/portfolio/summary`
    - `POST /api/quotes/preview`
    - `POST /api/trades/execute`
+   - `GET /api/markets/[slug]` after execution to confirm market-state reflection (`last_trade_at`, volume)
    - `GET /api/portfolio/summary` after execution
    - `GET /api/trades/history`
 4. Admin lifecycle / resolution / settlement paths work on isolated smoke fixtures:

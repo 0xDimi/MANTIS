@@ -433,7 +433,9 @@ esac
 request_json GET "$BASE_URL/api/health"
 expect_status 200 'health endpoint failed'
 expect_jq '.status == "ok"' 'health endpoint did not return status=ok'
-pass "/api/health ok"
+expect_jq '.readiness.supabase.urlConfigured == true and .readiness.supabase.anonKeyConfigured == true' 'health readiness did not confirm Supabase client env'
+expect_jq '.readiness.telemetry.sentry.envConfigured == true and .readiness.telemetry.sentry.sdkConfigured == true and .readiness.telemetry.posthog.envConfigured == true and .readiness.telemetry.posthog.sdkConfigured == true' 'health readiness did not confirm telemetry wiring'
+pass "/api/health ok + telemetry ready"
 
 request_json GET "$BASE_URL/api/markets"
 expect_status 200 'markets endpoint failed'
@@ -445,6 +447,11 @@ MARKET_COUNT="$(jq -r '.markets | length' "$RESPONSE_FILE")"
 
 [ -n "$MARKET_ID" ] || fail 'could not resolve a market id from /api/markets'
 pass "/api/markets count=${MARKET_COUNT} market=${MARKET_SLUG:-$MARKET_ID}"
+
+request_json GET "$BASE_URL/api/markets/${MARKET_SLUG}"
+expect_status 200 'market detail endpoint failed for selected smoke market'
+expect_jq --arg marketId "$MARKET_ID" --arg marketSlug "$MARKET_SLUG" '.market.id == $marketId and .market.slug == $marketSlug and .state != null' 'market detail payload missing market/state for selected smoke market'
+pass "/api/markets/[slug] detail available for smoke market"
 
 require_auth_inputs
 AUTH_COOKIE="$(build_auth_cookie)" || fail 'could not mint auth cookies for tester account'
@@ -481,6 +488,7 @@ QUOTE_AVG_PRICE="$(jq -r '.quote.averagePrice' "$RESPONSE_FILE")"
 QUOTE_GROSS_AMOUNT="$(jq -r '.quote.amountEur' "$RESPONSE_FILE")"
 QUOTE_FEE_AMOUNT="$(jq -r '.quote.feeAmountEur' "$RESPONSE_FILE")"
 QUOTE_TOTAL_AMOUNT="$(jq -r '.quote.totalAmountEur' "$RESPONSE_FILE")"
+QUOTE_PRE_VOLUME="$(jq -r '.state.volumeTotal // 0' "$RESPONSE_FILE")"
 AMM_QUOTE_SUMMARY="$(expect_amm_quote_consistency "$RESPONSE_FILE" "$SMOKE_SIDE" "$SMOKE_ACTION" "$DRIFT_TOLERANCE")"
 pass "/api/quotes/preview shares=${QUOTE_SHARE_DELTA} avg=${QUOTE_AVG_PRICE} ${AMM_QUOTE_SUMMARY}"
 
@@ -499,6 +507,11 @@ expect_status 200 'trade execute failed'
 expect_jq '.status == "executed"' 'trade execute did not return executed status'
 EXECUTE_MATCH_SUMMARY="$(expect_execute_quote_match "$RESPONSE_FILE" "$QUOTE_SHARE_DELTA" "$QUOTE_AVG_PRICE" "$QUOTE_GROSS_AMOUNT" "$QUOTE_FEE_AMOUNT" "$QUOTE_TOTAL_AMOUNT")"
 pass "/api/trades/execute status=executed ${EXECUTE_MATCH_SUMMARY}"
+
+request_json GET "$BASE_URL/api/markets/${MARKET_SLUG}"
+expect_status 200 'market detail endpoint failed after execute'
+expect_jq --argjson preVol "$QUOTE_PRE_VOLUME" '.state.last_trade_at != null and (.state.volume_total | numbers) >= $preVol' 'market detail state did not reflect executed trade'
+pass "/api/markets/[slug] reflects executed trade state"
 
 request_json GET "$BASE_URL/api/portfolio/summary" '' "$AUTH_COOKIE"
 expect_status 200 'portfolio summary failed after trade'
