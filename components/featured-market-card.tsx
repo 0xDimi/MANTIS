@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { BoardMarket } from '@/lib/alpha-read-model';
-import { formatCompact, formatPercent, formatRelativeHours } from '@/lib/format';
+import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type FeaturedMarketCardProps = {
@@ -110,9 +110,9 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
         </div>
 
         <div className="featuredDistinctMeta">
-          <span>{volume > 0 ? `${tr(lang, 'Vol', 'Όγκος')} €${formatCompact(volume)}` : tr(lang, 'Fresh listing', 'Νέα εισαγωγή')}</span>
-          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
-          <span>{market.state?.lastTradeAt ? `${tr(lang, 'Trade', 'Συναλλαγή')} ${formatRelativeHours(market.state.lastTradeAt)}` : tr(lang, 'Awaiting first trade', 'Αναμένεται πρώτη συναλλαγή')}</span>
+          {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : null}
+          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(market.closeTime)}</span>
+          {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt)}</span> : null}
         </div>
 
         <div className="featuredDistinctActions">

@@ -1755,6 +1755,16 @@ code {
   color: #64748b;
 }
 
+.ticketAmountInput::-webkit-outer-spin-button,
+.ticketAmountInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ticketAmountInput[type='number'] {
+  -moz-appearance: textfield;
+}
+
 .segmentRow {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1846,6 +1856,40 @@ code {
 .ticketPreviewMetric strong {
   color: #e7edf8;
   font-size: 14px;
+}
+
+.ticketSummaryPanel {
+  gap: 10px;
+}
+
+.ticketSummaryPrimary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ticketSummarySecondary {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ticketDetailsFold {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+}
+
+.ticketDetailsFold summary {
+  list-style: none;
+  cursor: pointer;
+  color: #c8d3e7;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ticketDetailsFold summary::-webkit-details-marker {
+  display: none;
 }
 
 .quoteFreshness {
@@ -2015,6 +2059,36 @@ code {
   color: #d6def1;
 }
 
+.portfolioPositionsHead,
+.portfolioPositionRow {
+  min-width: 1020px;
+  grid-template-columns: minmax(280px, 1.7fr) repeat(6, minmax(84px, 1fr)) minmax(154px, 1.2fr);
+}
+
+.portfolioTableRowClickable {
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+
+.portfolioTableRowClickable:hover {
+  background: rgba(124, 92, 255, 0.08);
+}
+
+.portfolioRowActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.portfolioRowAction {
+  min-height: 30px;
+  border-radius: 10px;
+  padding: 0 10px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 .portfolioTableRow:nth-child(even) {
   background: rgba(255, 255, 255, 0.012);
 }
@@ -2058,6 +2132,8 @@ code {
   .twoColGrid,
   .metricGridCompact,
   .ticketQuoteGrid,
+  .ticketSummaryPrimary,
+  .ticketSummarySecondary,
   .ticketPreviewMetrics,
   .marketInfoStack {
     grid-template-columns: 1fr;

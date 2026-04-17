@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { AlphaShell } from '@/components/alpha-shell';
-import { formatDateTime, formatRelativeHours } from '@/lib/format';
+import { formatDateTime, formatRelativeClose } from '@/lib/format';
 import { loadNotificationsFeed } from '@/lib/notifications';
 import { normalizeLang, tr, type UiLang } from '@/lib/ui-lang';
 
@@ -33,7 +33,7 @@ export default async function NotificationsPage({
               <Link key={item.id} href={`/markets/${item.slug}${lang === 'el' ? '?lang=el' : ''}`} className="panelBlock">
                 <div className="statusRow statusRowStart">
                   <strong>{item.question}</strong>
-                  <span className="badgeNeutral">{formatRelativeHours(item.close_time)}</span>
+                  <span className="badgeNeutral">{formatRelativeClose(item.close_time, { calendarAfterDays: 7 })}</span>
                 </div>
                 <p className="subtle">{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(item.close_time)}</p>
               </Link>

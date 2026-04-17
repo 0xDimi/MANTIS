@@ -28,7 +28,7 @@ export default async function MorePage({
           <ul>
             <li>{tr(lang, 'Open a market and read the rules + source section first.', 'Άνοιξε μια αγορά και διάβασε πρώτα την ενότητα κανόνων και πηγών.')}</li>
             <li>{tr(lang, 'Choose BUY or SELL and then YES or NO.', 'Επίλεξε ΑΓΟΡΑ ή ΠΩΛΗΣΗ και μετά YES ή NO.')}</li>
-            <li>{tr(lang, 'Enter amount, review quote preview, then confirm.', 'Συμπλήρωσε ποσό, έλεγξε το quote preview και μετά επιβεβαίωσε.')}</li>
+            <li>{tr(lang, 'Enter amount, check the inline summary, then execute with one CTA.', 'Συμπλήρωσε ποσό, δες τη σύνοψη και εκτέλεσε με ένα CTA.')}</li>
             <li>{tr(lang, 'Track position, cash, and updates from Portfolio and Notifications.', 'Παρακολούθησε θέση, μετρητά και ενημερώσεις από Χαρτοφυλάκιο και Ειδοποιήσεις.')}</li>
           </ul>
         </article>

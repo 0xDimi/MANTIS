@@ -12,7 +12,7 @@ export default async function PortfolioPage({
 
   return (
     <AlphaShell title={tr(lang, 'Portfolio', 'Χαρτοφυλάκιο')} eyebrow={tr(lang, 'Wallet, positions, and recent trades', 'Πορτοφόλι, θέσεις και πρόσφατες συναλλαγές')} lang={lang}>
-      <PortfolioLivePanel />
+      <PortfolioLivePanel lang={lang} />
     </AlphaShell>
   );
 }

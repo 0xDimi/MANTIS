@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { BoardMarket } from '@/lib/alpha-read-model';
-import { formatCompact, formatPercent, formatRelativeHours } from '@/lib/format';
+import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type MarketCardProps = {
@@ -88,9 +88,9 @@ export function MarketCard({ market, lang }: MarketCardProps) {
         </div>
 
         <div className="marketMiniMeta">
-          {volume > 0 ? <span className="marketMiniMetaStrong">{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : <span className="marketMiniMetaStrong">{tr(lang, 'Fresh listing', 'Νέα εισαγωγή')}</span>}
-          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeHours(market.closeTime)}</span>
-          {market.state?.lastTradeAt ? <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')} {formatRelativeHours(market.state.lastTradeAt)}</span> : <span>{tr(lang, 'Awaiting flow', 'Αναμένεται ροή')}</span>}
+          {volume > 0 ? <span className="marketMiniMetaStrong">{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : null}
+          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(market.closeTime)}</span>
+          {market.state?.lastTradeAt ? <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt)}</span> : null}
         </div>
       </div>
     </article>

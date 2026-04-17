@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import type { UiLang } from '@/lib/ui-lang';
 
 type PortfolioPayload = {
   wallet?: {
@@ -95,7 +97,20 @@ function statusClass(status: string | undefined) {
   return 'badgeNo';
 }
 
-export function PortfolioLivePanel() {
+function marketHref(slug: string, lang: UiLang, options?: { action?: 'buy' | 'sell'; side?: 'yes' | 'no'; sellPreset?: '25' | '50' | 'max' }) {
+  const params = new URLSearchParams();
+
+  if (lang === 'el') params.set('lang', 'el');
+  if (options?.action) params.set('action', options.action);
+  if (options?.side) params.set('side', options.side);
+  if (options?.sellPreset) params.set('sellPreset', options.sellPreset);
+
+  const query = params.toString();
+  return `/markets/${slug}${query ? `?${query}` : ''}`;
+}
+
+export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioPayload | null>(null);
@@ -224,7 +239,7 @@ export function PortfolioLivePanel() {
           <div className="panelBlock stackXs">
             <strong>No open positions yet.</strong>
             <p className="subtle">Build exposure from the Markets board, then this table will track live chance, mark, size, and P/L.</p>
-            <Link className="button buttonGhost" href="/markets">
+            <Link className="button buttonGhost" href={lang === 'el' ? '/markets?lang=el' : '/markets'}>
               Open markets
             </Link>
           </div>
@@ -232,7 +247,7 @@ export function PortfolioLivePanel() {
 
         {openPositions.length > 0 ? (
           <div className="portfolioTableWrap">
-            <div className="portfolioTableHead">
+            <div className="portfolioTableHead portfolioPositionsHead">
               <span>Market</span>
               <span>Chance</span>
               <span>Avg entry</span>
@@ -240,6 +255,7 @@ export function PortfolioLivePanel() {
               <span>Size</span>
               <span>P/L</span>
               <span>State</span>
+              <span>Actions</span>
             </div>
 
             {openPositions.map((entry) => {
@@ -248,9 +264,26 @@ export function PortfolioLivePanel() {
               const avgEntry = totalShares > 0 ? costBasis / totalShares : null;
               const mark = totalShares > 0 ? entry.position.marketValue / totalShares : null;
               const pnlClass = entry.position.unrealizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown';
+              const marketSlug = entry.market?.slug ?? null;
+              const rowHref = marketSlug ? marketHref(marketSlug, lang) : null;
 
               return (
-                <div className="portfolioTableRow" key={entry.marketId}>
+                <div
+                  className={`portfolioTableRow portfolioPositionRow ${rowHref ? 'portfolioTableRowClickable' : ''}`}
+                  key={entry.marketId}
+                  role={rowHref ? 'button' : undefined}
+                  tabIndex={rowHref ? 0 : undefined}
+                  onClick={() => {
+                    if (rowHref) router.push(rowHref);
+                  }}
+                  onKeyDown={(event) => {
+                    if (!rowHref) return;
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      router.push(rowHref);
+                    }
+                  }}
+                >
                   <div className="portfolioMarketCol">
                     <strong>{entry.market?.question ?? entry.marketId}</strong>
                     <span>YES {entry.position.yesShares.toFixed(2)} · NO {entry.position.noShares.toFixed(2)}</span>
@@ -261,6 +294,32 @@ export function PortfolioLivePanel() {
                   <span>{fmtMoney(entry.position.marketValue)}</span>
                   <span className={pnlClass}>{fmtSignedMoney(entry.position.unrealizedPnl)}</span>
                   <span className={statusClass(entry.market?.status)}>{(entry.market?.status ?? 'open').toUpperCase()}</span>
+                  <div className="portfolioRowActions">
+                    {marketSlug && entry.position.yesShares > 0 ? (
+                      <button
+                        type="button"
+                        className="button buttonGhost portfolioRowAction"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          router.push(marketHref(marketSlug, lang, { action: 'sell', side: 'yes', sellPreset: 'max' }));
+                        }}
+                      >
+                        Sell YES
+                      </button>
+                    ) : null}
+                    {marketSlug && entry.position.noShares > 0 ? (
+                      <button
+                        type="button"
+                        className="button buttonGhost portfolioRowAction"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          router.push(marketHref(marketSlug, lang, { action: 'sell', side: 'no', sellPreset: 'max' }));
+                        }}
+                      >
+                        Sell NO
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
               );
             })}

@@ -299,7 +299,7 @@ async function createSmokeMarket({ label, adminUserId, status }) {
       source_fallback: 'https://example.com/smoke-fallback',
       void_rule: 'Void if the smoke workflow is interrupted or incomplete.',
       b_liquidity: 100,
-      fee_bps: 200,
+      fee_bps: 75,
       yes_label: 'YES',
       no_label: 'NO',
       created_by: adminUserId

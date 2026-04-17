@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { formatDateTime, formatRelativeHours } from '@/lib/format';
+import { formatDateTime, formatRelativeClose } from '@/lib/format';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import type { NotificationRow } from '@/lib/notifications';
 
@@ -80,7 +80,7 @@ export function NotificationsPopover({ count, lang, closingSoon, recentEvents, e
                   <Link key={item.id} href={hrefFor(item.slug, lang)} className="notifRow" onClick={() => setOpen(false)}>
                     <div className="notifRowTop">
                       <strong>{item.question}</strong>
-                      <span className="badgeNeutral">{formatRelativeHours(item.close_time)}</span>
+                      <span className="badgeNeutral">{formatRelativeClose(item.close_time, { calendarAfterDays: 7 })}</span>
                     </div>
                     <p>{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(item.close_time)}</p>
                   </Link>

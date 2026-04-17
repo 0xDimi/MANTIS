@@ -4,7 +4,7 @@ import { MarketTrendPanel } from '@/components/market-trend-panel';
 import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { ProbabilitySplit } from '@/components/probability-split';
 import { loadMarketDetail, loadMarketsBoard } from '@/lib/alpha-read-model';
-import { formatCompact, formatDateTime, formatPercent, formatRelativeHours } from '@/lib/format';
+import { formatCompact, formatDateTime, formatPercent, formatRelativeClose } from '@/lib/format';
 import { normalizeLang, tr } from '@/lib/ui-lang';
 
 function statusClass(status: string) {
@@ -55,7 +55,7 @@ export default async function MarketDetailPage({
   searchParams
 }: {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ lang?: string }>;
+  searchParams?: Promise<{ lang?: string; side?: string; action?: string; amount?: string; sellPreset?: string }>;
 }) {
   const { slug } = await params;
   const query = (await searchParams) ?? {};
@@ -97,7 +97,7 @@ export default async function MarketDetailPage({
                 <div className="marketSignalList">
                   <div className="marketSignalRow">
                     <span>{tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}</span>
-                    <strong>{formatDateTime(market.closeTime)} ({formatRelativeHours(market.closeTime)})</strong>
+                    <strong>{formatDateTime(market.closeTime)} ({formatRelativeClose(market.closeTime, { calendarAfterDays: 999 })})</strong>
                   </div>
                   <div className="marketSignalRow">
                     <span>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')}</span>
@@ -155,7 +155,7 @@ export default async function MarketDetailPage({
                         <span>{item.question}</span>
                         <div className="relatedMarketMeta">
                           <strong>{formatPercent(item.state?.yesPrice ?? 0.5)}</strong>
-                          <em>{tr(lang, 'Closes', 'Κλείνει')} {formatRelativeHours(item.closeTime)}</em>
+                          <em>{tr(lang, 'Closes', 'Κλείνει')} {formatRelativeClose(item.closeTime)}</em>
                         </div>
                       </Link>
                     ))}
@@ -173,6 +173,10 @@ export default async function MarketDetailPage({
                 yesLabel={market.yesLabel}
                 noLabel={market.noLabel}
                 lang={lang}
+                prefillAction={query.action}
+                prefillSide={query.side}
+                prefillAmount={query.amount}
+                prefillSellPreset={query.sellPreset}
               />
             </aside>
           </section>

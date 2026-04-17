@@ -1,9 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
+type TradeInputMode = 'gross_cash' | 'total_cash' | 'shares';
+type SellPreset = '25' | '50' | 'max';
+
 type QuotePreviewPayload = {
+  market?: {
+    feeBps?: number;
+  };
   quote?: {
     amountEur: number;
     feeAmountEur: number;
@@ -14,9 +20,14 @@ type QuotePreviewPayload = {
     postNoPrice: number;
     impact: number;
     toWinEur: number;
+    payoutIfCorrectEur?: number;
+  };
+  tradeInput?: {
+    inputMode: TradeInputMode;
+    amountEur: number | null;
+    shareAmount: number | null;
   };
   quoteHash?: string;
-  issuedAt?: string;
   expiresAt?: string;
   error?: string;
 };
@@ -29,6 +40,10 @@ type MarketQuotePreviewCardProps = {
   yesLabel: string;
   noLabel: string;
   lang?: UiLang;
+  prefillAction?: string;
+  prefillSide?: string;
+  prefillAmount?: string;
+  prefillSellPreset?: string;
 };
 
 type PortfolioSummaryPayload = {
@@ -44,17 +59,6 @@ type PortfolioSummaryPayload = {
       marketValue: number;
       unrealizedPnl: number;
     };
-  }>;
-};
-
-type TradeHistoryPayload = {
-  trades?: Array<{
-    id: string;
-    marketId: string;
-    side: 'yes' | 'no';
-    action: 'buy' | 'sell';
-    grossAmount: number;
-    createdAt: string;
   }>;
 };
 
@@ -96,7 +100,7 @@ function formatTime(value: string | null | undefined) {
 
   if (!Number.isFinite(parsed.getTime())) return '—';
 
-  return parsed.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  return parsed.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 }
 
 function normalizeOutcomeLabel(label: string | undefined, fallback: 'yes' | 'no') {
@@ -109,6 +113,25 @@ function normalizeOutcomeLabel(label: string | undefined, fallback: 'yes' | 'no'
   return value;
 }
 
+function normalizePrefillSide(value: string | undefined): 'yes' | 'no' {
+  return value === 'no' ? 'no' : 'yes';
+}
+
+function normalizePrefillAction(value: string | undefined): 'buy' | 'sell' {
+  return value === 'sell' ? 'sell' : 'buy';
+}
+
+function normalizeSellPreset(value: string | undefined): SellPreset | null {
+  if (value === '25' || value === '50' || value === 'max') return value;
+  return null;
+}
+
+function normalizePrefillAmount(value: string | undefined) {
+  const parsed = Number(value ?? '');
+  if (!Number.isFinite(parsed) || parsed <= 0) return '10';
+  return String(Math.round(parsed * 100) / 100);
+}
+
 function marketBlockedMessage(status: string, marketClosed: boolean, lang: UiLang) {
   if (marketClosed || status === 'closed') return tr(lang, 'Trading is closed for this market.', 'Η διαπραγμάτευση έχει κλείσει για αυτή την αγορά.');
   if (status === 'paused') return tr(lang, 'Trading is paused. Check back shortly.', 'Η διαπραγμάτευση είναι σε παύση. Δοκίμασε ξανά σύντομα.');
@@ -119,10 +142,24 @@ function marketBlockedMessage(status: string, marketClosed: boolean, lang: UiLan
   return null;
 }
 
+function isQuoteFresh(quote: QuotePreviewPayload | null | undefined, nowMs: number) {
+  if (!quote?.quote || !quote.quoteHash || !quote.expiresAt) return false;
+
+  const expiresMs = new Date(quote.expiresAt).getTime();
+  if (!Number.isFinite(expiresMs)) return false;
+
+  return expiresMs > nowMs + 1_000;
+}
+
 export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePreviewCardProps) {
-  const [side, setSide] = useState<'yes' | 'no'>('yes');
-  const [action, setAction] = useState<'buy' | 'sell'>('buy');
-  const [amountEur, setAmountEur] = useState('10');
+  const initialSide = normalizePrefillSide(props.prefillSide);
+  const initialAction = normalizePrefillAction(props.prefillAction);
+  const initialSellPreset = normalizeSellPreset(props.prefillSellPreset);
+
+  const [side, setSide] = useState<'yes' | 'no'>(initialSide);
+  const [action, setAction] = useState<'buy' | 'sell'>(initialAction);
+  const [amountEur, setAmountEur] = useState(normalizePrefillAmount(props.prefillAmount));
+  const [sellPreset, setSellPreset] = useState<SellPreset | null>(initialAction === 'sell' ? initialSellPreset : null);
   const [loading, setLoading] = useState(false);
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -130,59 +167,23 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   const [executionMessage, setExecutionMessage] = useState<string | null>(null);
   const [stateError, setStateError] = useState<string | null>(null);
   const [liveState, setLiveState] = useState<{ yesPrice: number; noPrice: number; lastTradeAt: string | null } | null>(null);
-  const [walletBalance, setWalletBalance] = useState<string | null>(null);
-  const [positionSnapshot, setPositionSnapshot] = useState<string | null>(null);
-  const [hasOpenPosition, setHasOpenPosition] = useState(false);
-  const [lastTradeSnapshot, setLastTradeSnapshot] = useState<string | null>(null);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [walletCurrency, setWalletCurrency] = useState<string>('PAPER_EUR');
+  const [positionSnapshot, setPositionSnapshot] = useState<{ yesShares: number; noShares: number; marketValue: number; unrealizedPnl: number } | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
 
-  useEffect(() => {
-    if (!quote?.expiresAt) return;
+  const quoteRequestRef = useRef(0);
 
-    const timer = setInterval(() => setNowMs(Date.now()), 1000);
+  useEffect(() => {
+    const timer = setInterval(() => setNowMs(Date.now()), 1_000);
     return () => clearInterval(timer);
-  }, [quote?.expiresAt]);
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function refreshLiveState() {
-      try {
-        const response = await fetch(`/api/markets/${props.marketSlug}`, { cache: 'no-store' });
-        const payload = (await response.json()) as MarketStatePayload;
-
-        if (!response.ok) {
-          if (!cancelled) setStateError(payload.error ?? `state refresh failed (${response.status})`);
-          return;
-        }
-
-        if (!cancelled) {
-          setStateError(null);
-          setLiveState(
-            payload.state
-              ? {
-                  yesPrice: Number(payload.state.yes_price ?? 0),
-                  noPrice: Number(payload.state.no_price ?? 0),
-                  lastTradeAt: payload.state.last_trade_at ?? null
-                }
-              : null
-          );
-        }
-      } catch (refreshError) {
-        if (!cancelled) {
-          setStateError(refreshError instanceof Error ? refreshError.message : 'state refresh failed');
-        }
-      }
+    if (action !== 'sell' && sellPreset) {
+      setSellPreset(null);
     }
-
-    refreshLiveState();
-    const timer = setInterval(refreshLiveState, 10_000);
-
-    return () => {
-      cancelled = true;
-      clearInterval(timer);
-    };
-  }, [props.marketSlug]);
+  }, [action, sellPreset]);
 
   const closeMs = useMemo(() => new Date(props.closeTime).getTime(), [props.closeTime]);
 
@@ -196,188 +197,344 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
     return closeMs <= nowMs ? tr(lang, 'Closed', 'Κλειστή') : formatCountdown(closeMs - nowMs, lang);
   }, [closeMs, nowMs, lang]);
 
-  const quoteExpiryText = useMemo(() => {
-    if (!quote?.expiresAt) return null;
-
-    const expiresMs = new Date(quote.expiresAt).getTime();
-    if (!Number.isFinite(expiresMs)) return tr(lang, 'invalid', 'μη έγκυρο');
-
-    return formatCountdown(expiresMs - nowMs, lang);
-  }, [quote?.expiresAt, nowMs, lang]);
-
   const blockedMessage = marketBlockedMessage(props.marketStatus, marketClosed, lang);
   const msToClose = Number.isFinite(closeMs) ? closeMs - nowMs : Infinity;
   const closingSoon = msToClose > 0 && msToClose <= 2 * 60 * 60 * 1000;
 
-  async function requestQuotePreview() {
-    setLoading(true);
-    setError(null);
-    setExecutionMessage(null);
+  const yesDisplay = normalizeOutcomeLabel(props.yesLabel, 'yes');
+  const noDisplay = normalizeOutcomeLabel(props.noLabel, 'no');
 
-    const parsedAmount = Number(amountEur);
+  const availableYesShares = Number(positionSnapshot?.yesShares ?? 0);
+  const availableNoShares = Number(positionSnapshot?.noShares ?? 0);
+  const availableShares = side === 'yes' ? availableYesShares : availableNoShares;
 
-    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
-      setLoading(false);
-      setError(tr(lang, 'Enter a valid amount above 0.', 'Συμπλήρωσε έγκυρο ποσό πάνω από 0.'));
-      return;
-    }
+  const resolveSellShareAmount = useCallback(() => {
+    if (action !== 'sell' || !sellPreset) return null;
 
+    const baseShares = side === 'yes' ? availableYesShares : availableNoShares;
+
+    if (!Number.isFinite(baseShares) || baseShares <= 0) return 0;
+
+    if (sellPreset === 'max') return Number(baseShares.toFixed(8));
+    if (sellPreset === '50') return Number((baseShares * 0.5).toFixed(8));
+
+    return Number((baseShares * 0.25).toFixed(8));
+  }, [action, sellPreset, side, availableYesShares, availableNoShares]);
+
+  const refreshLiveState = useCallback(async () => {
     try {
-      const response = await fetch('/api/quotes/preview', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          marketId: props.marketId,
-          side,
-          action,
-          amountEur: parsedAmount
-        })
-      });
-
-      const payload = (await response.json()) as QuotePreviewPayload;
+      const response = await fetch(`/api/markets/${props.marketSlug}`, { cache: 'no-store' });
+      const payload = (await response.json()) as MarketStatePayload;
 
       if (!response.ok) {
-        setQuote(null);
-        setError(payload.error ?? `Quote preview failed (${response.status})`);
+        setStateError(payload.error ?? `state refresh failed (${response.status})`);
         return;
       }
 
-      setQuote(payload);
-    } catch (requestError) {
-      setQuote(null);
-      setError(requestError instanceof Error ? requestError.message : 'Quote preview request failed');
-    } finally {
-      setLoading(false);
+      setStateError(null);
+      setLiveState(
+        payload.state
+          ? {
+              yesPrice: Number(payload.state.yes_price ?? 0),
+              noPrice: Number(payload.state.no_price ?? 0),
+              lastTradeAt: payload.state.last_trade_at ?? null
+            }
+          : null
+      );
+    } catch (refreshError) {
+      setStateError(refreshError instanceof Error ? refreshError.message : 'state refresh failed');
     }
-  }
+  }, [props.marketSlug]);
 
-  async function refreshPortfolioSnapshots() {
+  const refreshPortfolioSnapshot = useCallback(async () => {
     try {
-      const [portfolioRes, historyRes] = await Promise.all([
-        fetch('/api/portfolio/summary', { cache: 'no-store' }),
-        fetch('/api/trades/history?limit=5', { cache: 'no-store' })
-      ]);
-
+      const portfolioRes = await fetch('/api/portfolio/summary', { cache: 'no-store' });
       const portfolio = (await portfolioRes.json()) as PortfolioSummaryPayload;
-      const history = (await historyRes.json()) as TradeHistoryPayload;
 
       if (portfolioRes.ok && portfolio.wallet) {
-        setWalletBalance(`${portfolio.wallet.availableBalance.toFixed(2)} ${portfolio.wallet.currency}`);
+        setWalletBalance(Number(portfolio.wallet.availableBalance));
+        setWalletCurrency(portfolio.wallet.currency);
       }
 
       if (portfolioRes.ok && Array.isArray(portfolio.positions)) {
         const marketPosition = portfolio.positions.find((item) => item.marketId === props.marketId);
 
         if (marketPosition) {
-          const yesShares = Number(marketPosition.position.yesShares ?? 0);
-          const noShares = Number(marketPosition.position.noShares ?? 0);
-          setHasOpenPosition(yesShares > 0 || noShares > 0);
-
-          setPositionSnapshot(
-            `YES ${yesShares.toFixed(4)} · NO ${noShares.toFixed(4)} · MV €${Number(marketPosition.position.marketValue ?? 0).toFixed(2)}`
-          );
+          setPositionSnapshot({
+            yesShares: Number(marketPosition.position.yesShares ?? 0),
+            noShares: Number(marketPosition.position.noShares ?? 0),
+            marketValue: Number(marketPosition.position.marketValue ?? 0),
+            unrealizedPnl: Number(marketPosition.position.unrealizedPnl ?? 0)
+          });
         } else {
-          setHasOpenPosition(false);
           setPositionSnapshot(null);
         }
       }
+    } catch {
+      // helper refresh, keep silent
+    }
+  }, [props.marketId]);
 
-      if (historyRes.ok && Array.isArray(history.trades)) {
-        const lastMarketTrade = history.trades.find((trade) => trade.marketId === props.marketId);
+  useEffect(() => {
+    void refreshLiveState();
+    const timer = setInterval(() => {
+      void refreshLiveState();
+    }, 10_000);
 
-        if (lastMarketTrade) {
-          setLastTradeSnapshot(
-            `${lastMarketTrade.action.toUpperCase()} ${lastMarketTrade.side.toUpperCase()} €${lastMarketTrade.grossAmount.toFixed(2)} @ ${formatTime(lastMarketTrade.createdAt)}`
-          );
+    return () => clearInterval(timer);
+  }, [refreshLiveState]);
+
+  useEffect(() => {
+    void refreshPortfolioSnapshot();
+    const timer = setInterval(() => {
+      void refreshPortfolioSnapshot();
+    }, 10_000);
+
+    return () => clearInterval(timer);
+  }, [refreshPortfolioSnapshot]);
+
+  const requestQuotePreview = useCallback(
+    async ({ silent = false }: { silent?: boolean } = {}) => {
+      const requestId = quoteRequestRef.current + 1;
+      quoteRequestRef.current = requestId;
+
+      if (!silent) {
+        setError(null);
+        setExecutionMessage(null);
+      }
+
+      let payloadBody: {
+        marketId: string;
+        side: 'yes' | 'no';
+        action: 'buy' | 'sell';
+        amountEur?: number;
+        shareAmount?: number;
+      } = {
+        marketId: props.marketId,
+        side,
+        action
+      };
+
+      const presetShareAmount = resolveSellShareAmount();
+
+      if (action === 'sell' && sellPreset) {
+        if (!Number.isFinite(presetShareAmount) || (presetShareAmount ?? 0) <= 0) {
+          setQuote(null);
+          if (!silent) {
+            setError(tr(lang, 'No shares available on this side to sell.', 'Δεν υπάρχουν διαθέσιμες μετοχές σε αυτή την πλευρά για πώληση.'));
+          }
+          return null;
+        }
+
+        payloadBody = {
+          ...payloadBody,
+          shareAmount: presetShareAmount ?? undefined
+        };
+      } else {
+        const parsedAmount = Number(amountEur);
+
+        if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+          setQuote(null);
+          if (!silent) {
+            setError(tr(lang, 'Enter a valid amount above 0.', 'Συμπλήρωσε έγκυρο ποσό πάνω από 0.'));
+          }
+          return null;
+        }
+
+        payloadBody = {
+          ...payloadBody,
+          amountEur: parsedAmount
+        };
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await fetch('/api/quotes/preview', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(payloadBody)
+        });
+
+        const payload = (await response.json()) as QuotePreviewPayload;
+
+        if (requestId !== quoteRequestRef.current) {
+          return null;
+        }
+
+        if (!response.ok) {
+          setQuote(null);
+          if (!silent) {
+            setError(payload.error ?? `Quote request failed (${response.status})`);
+          }
+          return null;
+        }
+
+        setQuote(payload);
+        if (!silent) setError(null);
+        return payload;
+      } catch (requestError) {
+        if (requestId === quoteRequestRef.current) {
+          setQuote(null);
+          if (!silent) {
+            setError(requestError instanceof Error ? requestError.message : 'Quote request failed');
+          }
+        }
+        return null;
+      } finally {
+        if (requestId === quoteRequestRef.current) {
+          setLoading(false);
         }
       }
-    } catch {
-      // non-fatal helper refresh
-    }
-  }
+    },
+    [action, amountEur, lang, props.marketId, resolveSellShareAmount, sellPreset, side]
+  );
 
-  async function executeTrade() {
-    if (!quote?.quoteHash || !quote.expiresAt) {
-      setExecutionMessage(tr(lang, 'Request a fresh quote first.', 'Ζήτησε νέο quote πρώτα.'));
+  useEffect(() => {
+    if (blockedMessage) {
+      setQuote(null);
       return;
     }
 
-    setExecuting(true);
-    setExecutionMessage(null);
+    if (action === 'sell' && sellPreset && availableShares <= 0) {
+      setQuote(null);
+      return;
+    }
 
-    const parsedAmount = Number(amountEur);
+    const timer = setTimeout(() => {
+      void requestQuotePreview({ silent: true });
+    }, 320);
 
-    try {
-      const response = await fetch('/api/trades/execute', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
+    return () => clearTimeout(timer);
+  }, [action, amountEur, availableShares, blockedMessage, requestQuotePreview, sellPreset, side]);
+
+  const executeTrade = useCallback(
+    async (quotePayload?: QuotePreviewPayload | null) => {
+      const activeQuote = quotePayload ?? quote;
+
+      if (!activeQuote?.quoteHash || !activeQuote.expiresAt) {
+        setExecutionMessage(tr(lang, 'Waiting for a fresh quote.', 'Αναμονή για νέο quote.'));
+        return false;
+      }
+
+      const isFresh = isQuoteFresh(activeQuote, Date.now());
+      if (!isFresh) {
+        setExecutionMessage(tr(lang, 'Quote expired. Repricing now.', 'Το quote έληξε. Γίνεται νέα τιμολόγηση.'));
+        return false;
+      }
+
+      setExecuting(true);
+      setExecutionMessage(null);
+
+      try {
+        const executeBody: {
+          marketId: string;
+          side: 'yes' | 'no';
+          action: 'buy' | 'sell';
+          quoteHash: string;
+          quoteExpiresAt: string;
+          amountEur?: number;
+          shareAmount?: number;
+        } = {
           marketId: props.marketId,
           side,
           action,
-          amountEur: parsedAmount,
-          quoteHash: quote.quoteHash,
-          quoteExpiresAt: quote.expiresAt
-        })
-      });
+          quoteHash: activeQuote.quoteHash,
+          quoteExpiresAt: activeQuote.expiresAt
+        };
 
-      const payload = (await response.json()) as { error?: string };
+        if (activeQuote.tradeInput?.inputMode === 'shares' && Number(activeQuote.tradeInput.shareAmount ?? 0) > 0) {
+          executeBody.shareAmount = Number(activeQuote.tradeInput.shareAmount);
+        } else {
+          const requestedAmount = Number(activeQuote.tradeInput?.amountEur ?? amountEur);
+          executeBody.amountEur = requestedAmount;
+        }
 
-      if (!response.ok) {
-        setExecutionMessage(payload.error ?? `Execution failed (${response.status})`);
-        return;
-      }
-
-      setExecutionMessage(tr(lang, 'Trade executed. Portfolio updated.', 'Η συναλλαγή εκτελέστηκε. Το χαρτοφυλάκιο ενημερώθηκε.'));
-      await refreshPortfolioSnapshots();
-
-      const stateRes = await fetch(`/api/markets/${props.marketSlug}`, { cache: 'no-store' });
-      const statePayload = (await stateRes.json()) as MarketStatePayload;
-
-      if (stateRes.ok && statePayload.state) {
-        setLiveState({
-          yesPrice: Number(statePayload.state.yes_price ?? 0),
-          noPrice: Number(statePayload.state.no_price ?? 0),
-          lastTradeAt: statePayload.state.last_trade_at ?? null
+        const response = await fetch('/api/trades/execute', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(executeBody)
         });
-      }
-    } catch (executeError) {
-      setExecutionMessage(executeError instanceof Error ? executeError.message : 'Execution failed');
-    } finally {
-      setExecuting(false);
-    }
-  }
 
-  const quoteReady = Boolean(quote?.quote && quoteExpiryText !== tr(lang, 'expired', 'έληξε'));
-  const quoteExpired = Boolean(quote?.quote && quoteExpiryText === tr(lang, 'expired', 'έληξε'));
-  const failedTrade = Boolean(executionMessage && executionMessage.toLowerCase().includes('failed'));
-  const successTrade = Boolean(executionMessage && executionMessage.toLowerCase().includes('executed'));
-  const claimAvailable = props.marketStatus === 'settled' && hasOpenPosition;
+        const payload = (await response.json()) as { error?: string };
+
+        if (!response.ok) {
+          const message = payload.error ?? `Execution failed (${response.status})`;
+          setExecutionMessage(message);
+
+          if (response.status === 409) {
+            void requestQuotePreview({ silent: true });
+          }
+
+          return false;
+        }
+
+        setExecutionMessage(tr(lang, 'Trade executed. Portfolio updated.', 'Η συναλλαγή εκτελέστηκε. Το χαρτοφυλάκιο ενημερώθηκε.'));
+        await Promise.all([refreshPortfolioSnapshot(), refreshLiveState()]);
+        void requestQuotePreview({ silent: true });
+
+        return true;
+      } catch (executeError) {
+        setExecutionMessage(executeError instanceof Error ? executeError.message : 'Execution failed');
+        return false;
+      } finally {
+        setExecuting(false);
+      }
+    },
+    [action, amountEur, lang, props.marketId, quote, refreshLiveState, refreshPortfolioSnapshot, requestQuotePreview, side]
+  );
+
+  async function handlePrimaryAction() {
+    if (blockedMessage) return;
+
+    setError(null);
+
+    if (action === 'sell' && availableShares <= 0) {
+      setError(tr(lang, 'No shares available on this side to sell.', 'Δεν υπάρχουν διαθέσιμες μετοχές σε αυτή την πλευρά για πώληση.'));
+      return;
+    }
+
+    if (isQuoteFresh(quote, nowMs)) {
+      await executeTrade();
+      return;
+    }
+
+    const freshQuote = await requestQuotePreview({ silent: false });
+
+    if (!freshQuote) return;
+    if (!isQuoteFresh(freshQuote, Date.now())) {
+      setError(tr(lang, 'Quote refresh required. Try again.', 'Απαιτείται ανανέωση quote. Δοκίμασε ξανά.'));
+      return;
+    }
+
+    await executeTrade(freshQuote);
+  }
 
   const liveYes = liveState?.yesPrice ?? 0.5;
   const liveNo = liveState?.noPrice ?? 0.5;
   const yesCents = Math.round(liveYes * 100);
   const noCents = Math.round(liveNo * 100);
-  const yesDisplay = normalizeOutcomeLabel(props.yesLabel, 'yes');
-  const noDisplay = normalizeOutcomeLabel(props.noLabel, 'no');
-  const quoteExposure = quote?.quote ? quote.quote.shareDelta * quote.quote.averagePrice : 0;
-  const quoteMaxLoss = quote?.quote ? Math.max(quote.quote.totalAmountEur, quote.quote.amountEur) : 0;
-  const walletNumber = walletBalance ? Number(walletBalance.split(' ')[0]) : null;
+
+  const quoteFresh = isQuoteFresh(quote, nowMs);
+  const quoteExpired = Boolean(quote?.quote && !quoteFresh);
+
+  const quoteAmount = quote?.quote?.amountEur ?? null;
+  const quoteAvgPrice = quote?.quote?.averagePrice ?? null;
+  const quotePossibleWin = quote?.quote?.toWinEur ?? null;
+
+  const maxLoss = quote?.quote ? (action === 'buy' ? quote.quote.totalAmountEur : 0) : null;
+  const totalReturnIfCorrect = quote?.quote
+    ? Number(quote.quote.payoutIfCorrectEur ?? quote.quote.shareDelta)
+    : null;
+
+  const quoteStatusTone = quoteExpired ? 'quoteFreshness quoteFreshnessStale' : 'quoteFreshness quoteFreshnessLive';
+  const quoteStatusText = quote?.expiresAt
+    ? formatCountdown(new Date(quote.expiresAt).getTime() - nowMs, lang)
+    : tr(lang, 'waiting', 'αναμονή');
+
   const intentLabel = `${action === 'buy' ? tr(lang, 'Buy', 'Αγορά') : tr(lang, 'Sell', 'Πώληση')} ${side === 'yes' ? yesDisplay : noDisplay}`;
 
-  const previewStats = quote?.quote
-    ? [
-        { label: tr(lang, 'Avg price', 'Μέση τιμή'), value: formatPercent(quote.quote.averagePrice) },
-        { label: tr(lang, 'Estimated shares', 'Εκτιμώμενες μετοχές'), value: quote.quote.shareDelta.toFixed(4) },
-        { label: tr(lang, 'Exposure', 'Έκθεση'), value: formatMoney(quoteExposure) },
-        { label: tr(lang, 'Fee', 'Χρέωση'), value: formatMoney(quote.quote.feeAmountEur) },
-        { label: tr(lang, 'Price impact', 'Επίδραση τιμής'), value: formatPercent(quote.quote.impact) },
-        { label: tr(lang, 'Max loss', 'Μέγιστη απώλεια'), value: formatMoney(quoteMaxLoss) },
-        { label: tr(lang, 'Payout if correct', 'Πληρωμή αν επαληθευτεί'), value: formatMoney(quote.quote.toWinEur) }
-      ]
-    : [];
-
-  const quoteFreshTone = quoteExpired ? 'quoteFreshness quoteFreshnessStale' : 'quoteFreshness quoteFreshnessLive';
+  const ctaDisabled = Boolean(blockedMessage) || executing || loading || (action === 'sell' && availableShares <= 0);
 
   return (
     <article className="stackMd ticketSurfaceStack">
@@ -385,7 +542,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         <div className="stackXs">
           <span className="ticketSurfaceEyebrow">MANTIS</span>
           <strong className="ticketSurfaceTitle">{tr(lang, 'Trade ticket', 'Δελτίο συναλλαγής')}</strong>
-          <span className="ticketSurfaceHint">{tr(lang, 'Set intent first, then preview execution.', 'Όρισε πρόθεση και μετά δες προεπισκόπηση εκτέλεσης.')}</span>
+          <span className="ticketSurfaceHint">{tr(lang, 'Live quote updates while you type.', 'Το quote ενημερώνεται αυτόματα καθώς πληκτρολογείς.')}</span>
         </div>
         <div className="ticketSurfaceLive">
           <span className="ticketSurfaceLiveYes">YES {formatPercent(liveYes)}</span>
@@ -399,7 +556,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
       </div>
 
       {blockedMessage ? <div className="notice noticeWarn">{blockedMessage}</div> : null}
-      {!blockedMessage && closingSoon ? <div className="notice noticeWarn">{tr(lang, 'Closing soon. Quotes may expire quickly.', 'Η λήξη πλησιάζει. Τα quote μπορεί να λήγουν γρήγορα.')}</div> : null}
+      {!blockedMessage && closingSoon ? <div className="notice noticeWarn">{tr(lang, 'Closing soon. Quotes may refresh quickly.', 'Η λήξη πλησιάζει. Τα quote μπορεί να ανανεώνονται γρήγορα.')}</div> : null}
 
       <div className="ticketShell stackMd">
         <div className="ticketTopTabs">
@@ -445,115 +602,163 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           <div className="ticketAmountRow">
             <div className="ticketAmountCopy stackXs">
               <span className="fieldLabel ticketAmountLabel">{tr(lang, 'Amount', 'Ποσό')}</span>
-              {walletBalance ? <span className="ticketAmountBalance">{tr(lang, 'Balance', 'Υπόλοιπο')} {walletBalance}</span> : null}
+              {walletBalance != null ? <span className="ticketAmountBalance">{tr(lang, 'Balance', 'Υπόλοιπο')} {walletBalance.toFixed(2)} {walletCurrency}</span> : null}
             </div>
             <input
               className="ticketAmountInput"
               type="number"
               min="1"
-              step="1"
+              step="0.01"
               placeholder="0"
               value={amountEur}
-              onChange={(event) => setAmountEur(event.target.value)}
-              disabled={loading || Boolean(blockedMessage)}
+              onChange={(event) => {
+                setAmountEur(event.target.value);
+                setSellPreset(null);
+              }}
+              disabled={Boolean(blockedMessage)}
             />
           </div>
 
-          <div className="ticketQuickAmounts">
-            {[10, 25, 50, 100].map((value) => (
-              <button
-                key={value}
-                className={amountEur === String(value) ? 'ticketQuickAmount ticketQuickAmountActive' : 'ticketQuickAmount'}
-                type="button"
-                onClick={() => setAmountEur(String(value))}
-                disabled={loading || Boolean(blockedMessage)}
-              >
-                €{value}
-              </button>
-            ))}
+          {action === 'buy' ? (
+            <div className="ticketQuickAmounts">
+              {[10, 25, 50, 100].map((value) => (
+                <button
+                  key={value}
+                  className={amountEur === String(value) ? 'ticketQuickAmount ticketQuickAmountActive' : 'ticketQuickAmount'}
+                  type="button"
+                  onClick={() => {
+                    setAmountEur(String(value));
+                    setSellPreset(null);
+                  }}
+                  disabled={Boolean(blockedMessage)}
+                >
+                  €{value}
+                </button>
+              ))}
 
-            {walletNumber && walletNumber > 0 ? (
-              <button
-                className="ticketQuickAmount"
-                type="button"
-                onClick={() => setAmountEur(String(Math.max(1, Math.floor(walletNumber))))}
-                disabled={loading || Boolean(blockedMessage)}
-              >
-                {tr(lang, 'Max', 'Μέγιστο')}
-              </button>
-            ) : null}
-          </div>
+              {walletBalance && walletBalance > 0 ? (
+                <button
+                  className="ticketQuickAmount"
+                  type="button"
+                  onClick={() => {
+                    setAmountEur(String(Math.max(1, Math.floor(walletBalance))));
+                    setSellPreset(null);
+                  }}
+                  disabled={Boolean(blockedMessage)}
+                >
+                  {tr(lang, 'Max', 'Μέγιστο')}
+                </button>
+              ) : null}
+            </div>
+          ) : (
+            <div className="ticketQuickAmounts">
+              {([
+                { key: '25', label: '25%' },
+                { key: '50', label: '50%' },
+                { key: 'max', label: tr(lang, 'Max', 'Μέγιστο') }
+              ] as Array<{ key: SellPreset; label: string }>).map((item) => (
+                <button
+                  key={item.key}
+                  className={sellPreset === item.key ? 'ticketQuickAmount ticketQuickAmountActive' : 'ticketQuickAmount'}
+                  type="button"
+                  onClick={() => setSellPreset(item.key)}
+                  disabled={Boolean(blockedMessage) || availableShares <= 0}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {action === 'sell' ? (
+            <p className="subtle">
+              {tr(lang, 'Available', 'Διαθέσιμα')} {side.toUpperCase()} {tr(lang, 'shares', 'μετοχές')}: {availableShares.toFixed(4)}
+            </p>
+          ) : null}
         </label>
+
+        <div className="ticketPreviewPanel stackSm ticketSummaryPanel">
+          <div className="ticketPreviewHead">
+            <div>
+              <div className="splitSectionLabel">{tr(lang, 'Order summary', 'Σύνοψη εντολής')}</div>
+              <p className="subtle">{tr(lang, 'Using latest server quote', 'Χρήση του πιο πρόσφατου quote του server')}</p>
+            </div>
+            <span className={quoteStatusTone}>
+              <span />
+              {quoteStatusText}
+            </span>
+          </div>
+
+          <div className="ticketSummaryPrimary">
+            <div className="ticketPreviewMetric">
+              <span>{tr(lang, 'Amount', 'Ποσό')}</span>
+              <strong>{quoteAmount != null ? formatMoney(quoteAmount) : '—'}</strong>
+            </div>
+            <div className="ticketPreviewMetric">
+              <span>{tr(lang, 'Avg price', 'Μέση τιμή')}</span>
+              <strong>{quoteAvgPrice != null ? formatPercent(quoteAvgPrice) : '—'}</strong>
+            </div>
+            <div className="ticketPreviewMetric">
+              <span>{action === 'buy' ? tr(lang, 'Possible win', 'Πιθανό κέρδος') : tr(lang, 'Estimated proceeds', 'Εκτιμώμενα έσοδα')}</span>
+              <strong>{quote?.quote ? formatMoney(action === 'buy' ? quotePossibleWin ?? 0 : quote.quote.totalAmountEur) : '—'}</strong>
+            </div>
+          </div>
+
+          <details className="ticketDetailsFold">
+            <summary>{tr(lang, 'Trade details', 'Λεπτομέρειες συναλλαγής')}</summary>
+            <div className="ticketSummarySecondary">
+              <div className="ticketPreviewMetric">
+                <span>{tr(lang, 'Estimated shares', 'Εκτιμώμενες μετοχές')}</span>
+                <strong>{quote?.quote ? quote.quote.shareDelta.toFixed(4) : '—'}</strong>
+              </div>
+              <div className="ticketPreviewMetric">
+                <span>{tr(lang, 'Fee', 'Χρέωση')}</span>
+                <strong>{quote?.quote ? formatMoney(quote.quote.feeAmountEur) : '—'}</strong>
+              </div>
+              <div className="ticketPreviewMetric">
+                <span>{tr(lang, 'Price impact', 'Επίδραση τιμής')}</span>
+                <strong>{quote?.quote ? formatPercent(quote.quote.impact) : '—'}</strong>
+              </div>
+              <div className="ticketPreviewMetric">
+                <span>{tr(lang, 'Max loss', 'Μέγιστη απώλεια')}</span>
+                <strong>{maxLoss != null ? formatMoney(maxLoss) : '—'}</strong>
+              </div>
+              <div className="ticketPreviewMetric">
+                <span>{tr(lang, 'Total return if correct', 'Συνολική επιστροφή αν επιβεβαιωθεί')}</span>
+                <strong>{totalReturnIfCorrect != null ? formatMoney(totalReturnIfCorrect) : '—'}</strong>
+              </div>
+              <div className="ticketPreviewMetric">
+                <span>{tr(lang, 'Fee rate', 'Ποσοστό χρέωσης')}</span>
+                <strong>{quote?.market?.feeBps != null ? `${(quote.market.feeBps / 100).toFixed(2)}%` : '—'}</strong>
+              </div>
+            </div>
+          </details>
+        </div>
 
         <button
           className={side === 'yes' ? 'ticketCta ticketCtaYes' : 'ticketCta ticketCtaNo'}
           type="button"
-          onClick={requestQuotePreview}
-          disabled={loading || Boolean(blockedMessage)}
+          onClick={handlePrimaryAction}
+          disabled={ctaDisabled}
         >
-          {loading ? tr(lang, 'Requesting quote...', 'Ζητείται quote...') : `${tr(lang, 'Preview', 'Προεπισκόπηση')} · ${intentLabel}`}
+          {executing
+            ? tr(lang, 'Executing...', 'Εκτέλεση...')
+            : loading
+              ? tr(lang, 'Updating quote...', 'Ανανέωση quote...')
+              : intentLabel}
         </button>
       </div>
 
       {error ? <div className="notice noticeError">{error}</div> : null}
       {stateError ? <div className="notice noticeWarn">{stateError}</div> : null}
+      {quoteExpired ? <div className="notice noticeWarn">{tr(lang, 'Quote expired or moved. Tap once to refresh and execute.', 'Το quote έληξε ή άλλαξε η αγορά. Πάτησε μία φορά για ανανέωση και εκτέλεση.')}</div> : null}
+
+      {executionMessage ? <div className={executionMessage.toLowerCase().includes('executed') ? 'notice noticeSuccess' : 'notice noticeWarn'}>{executionMessage}</div> : null}
 
       {liveState ? (
         <div className="ticketLiveMeta">
           <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')}: {formatTime(liveState.lastTradeAt)}</span>
           <span>{tr(lang, 'Status', 'Κατάσταση')}: {props.marketStatus.toUpperCase()}</span>
-        </div>
-      ) : null}
-
-      {quote?.quote ? (
-        <div className="ticketPreviewPanel stackSm">
-          <div className="ticketPreviewHead">
-            <div>
-              <div className="splitSectionLabel">{tr(lang, 'Quote preview', 'Προεπισκόπηση quote')}</div>
-              <p className="subtle">
-                Hash: <code>{quote.quoteHash?.slice(0, 12)}...</code>
-              </p>
-            </div>
-            <span className={quoteFreshTone}>
-              <span />
-              {tr(lang, 'Refresh in', 'Ανανέωση σε')} {quoteExpiryText ?? '—'}
-            </span>
-          </div>
-
-          <div className="ticketPreviewMetrics">
-            {previewStats.map((item) => (
-              <div key={item.label} className="ticketPreviewMetric">
-                <span>{item.label}</span>
-                <strong>{item.value}</strong>
-              </div>
-            ))}
-          </div>
-
-          <button
-            className={side === 'yes' ? 'ticketCta ticketCtaYes ticketCtaConfirm' : 'ticketCta ticketCtaNo ticketCtaConfirm'}
-            type="button"
-            onClick={executeTrade}
-            disabled={executing || quoteExpired || Boolean(blockedMessage)}
-          >
-            {executing ? tr(lang, 'Executing...', 'Εκτέλεση...') : `${tr(lang, 'Confirm', 'Επιβεβαίωση')} · ${intentLabel}`}
-          </button>
-
-          {executionMessage ? (
-            <div className={successTrade ? 'notice noticeSuccess' : failedTrade ? 'notice noticeError' : 'notice noticeWarn'}>{executionMessage}</div>
-          ) : null}
-
-          {claimAvailable ? <p className="subtle">{tr(lang, 'Settlement is available for your open position.', 'Ο διακανονισμός είναι διαθέσιμος για την ανοικτή θέση σου.')}</p> : null}
-          {walletBalance ? <p className="subtle">{tr(lang, 'Wallet', 'Πορτοφόλι')}: {walletBalance}</p> : null}
-          {positionSnapshot ? <p className="subtle">{tr(lang, 'Position', 'Θέση')}: {positionSnapshot}</p> : null}
-          {lastTradeSnapshot ? <p className="subtle">{tr(lang, 'Latest trade', 'Τελευταία συναλλαγή')}: {lastTradeSnapshot}</p> : null}
-        </div>
-      ) : null}
-
-      {(quoteReady || loading || executing) ? (
-        <div className="stateChips">
-          {quoteReady ? <span className="stateChip stateChipYes">{tr(lang, 'Quote ready', 'Quote έτοιμο')}</span> : null}
-          {loading ? <span className="stateChip stateChipFocus">{tr(lang, 'Pricing request in progress', 'Εκτέλεση υπολογισμού τιμής')}</span> : null}
-          {executing ? <span className="stateChip stateChipFocus">{tr(lang, 'Execution in progress', 'Εκτέλεση σε εξέλιξη')}</span> : null}
         </div>
       ) : null}
     </article>
