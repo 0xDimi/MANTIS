@@ -52,7 +52,7 @@ code {
 }
 
 .shell {
-  width: min(calc(100% - 28px), var(--container));
+  width: min(calc(100% - 24px), var(--container));
   margin: 0 auto;
   padding: 2px 0 108px;
 }
@@ -2260,5 +2260,75 @@ code {
 @media (min-width: 901px) and (max-width: 1250px) {
   .marketList {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --container: 1360px;
+  }
+
+  .shell {
+    width: min(calc(100% - 20px), var(--container));
+  }
+
+  .headerSearch {
+    max-width: 620px;
+  }
+
+  .featuredCarouselWrap {
+    gap: 12px;
+    margin: 4px 0 18px;
+  }
+
+  .featuredSwipeLarge {
+    grid-auto-columns: minmax(48%, 620px);
+    margin-bottom: 16px;
+  }
+
+  .categoryStrip {
+    margin-bottom: 14px;
+  }
+
+  .marketList {
+    gap: 14px;
+  }
+
+  .marketHeroGrid {
+    grid-template-columns: minmax(0, 1.72fr) minmax(300px, 0.68fr);
+    gap: 16px;
+  }
+
+  .marketHeroMain {
+    gap: 12px;
+  }
+
+  .marketSignalBand {
+    padding: 9px;
+    gap: 9px;
+  }
+
+  .marketChartSurface {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .marketTrendLine {
+    height: 224px;
+  }
+
+  .marketTicketCard {
+    max-width: 390px;
+    width: 100%;
+    justify-self: end;
+  }
+
+  .ticketShell {
+    padding: 16px;
+  }
+
+  .marketInfoStack {
+    margin-top: 14px;
+    gap: 12px;
   }
 }
