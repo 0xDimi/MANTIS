@@ -64,6 +64,12 @@ function sortMarkets(markets: Awaited<ReturnType<typeof loadMarketsBoard>>['mark
   return list.sort((a, b) => withOpenPriority(a, b, (b.state?.volumeTotal ?? 0) - (a.state?.volumeTotal ?? 0)));
 }
 
+const FEATURED_PINNED_SLUGS = [
+  'gre-politics-cabinet-reshuffle-announced',
+  'gre-politics-tsipras-new-party-may15',
+  'crypto-btc-close-above-80k'
+] as const;
+
 function isInternalMarket(slug: string, question: string) {
   const target = `${slug} ${question}`.toLowerCase();
   return /(smoke|qa|test|sim|internal|ops|lifecycle|admin[-_]?)/.test(target);
@@ -87,7 +93,12 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
     ? categoryFiltered.filter((market) => localizedMarketSearchBlob(market, lang).includes(normalizedQuery))
     : categoryFiltered;
   const featuredPool = [...curatedBase].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
-  const featured = featuredPool.slice(0, 2);
+  const pinnedFeatured = FEATURED_PINNED_SLUGS
+    .map((slug) => featuredPool.find((market) => market.slug === slug))
+    .filter((market): market is (typeof featuredPool)[number] => Boolean(market));
+  const pinnedSlugs = new Set(pinnedFeatured.map((market) => market.slug));
+  const fallbackFeatured = featuredPool.filter((market) => !pinnedSlugs.has(market.slug));
+  const featured = [...pinnedFeatured, ...fallbackFeatured].slice(0, 3);
   const featuredIds = new Set(featured.map((market) => market.id));
   const gridMarkets = filtered.filter((market) => !featuredIds.has(market.id));
   const categories = Array.from(new Set(userMarkets.map((market) => market.category)));

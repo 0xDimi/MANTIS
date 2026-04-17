@@ -18,6 +18,9 @@ const categoryCopy: Record<string, { en: string; el: string }> = {
   culture: { en: 'Culture', el: 'Πολιτισμός' },
   technology: { en: 'Technology', el: 'Τεχνολογία' },
   sports: { en: 'Sports', el: 'Αθλητισμός' },
+  gas: { en: 'Gas Price', el: 'Τιμή Καυσίμων' },
+  social: { en: 'Social', el: 'Social' },
+  global: { en: 'Global', el: 'Διεθνή' },
   crypto: { en: 'Crypto', el: 'Crypto' },
   ops: { en: 'Operations', el: 'Λειτουργία' }
 };
@@ -38,6 +41,15 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     sourcePrimary: 'Επίσημη ανακοίνωση κόμματος',
     sourceFallback: 'Επιβεβαίωση από κορυφαίο ελληνικό μέσο',
     voidRule: 'Ακυρώνεται αν υπάρχουν αντικρουόμενες αναφορές χωρίς επίσημη επιβεβαίωση.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-politics-tsipras-new-party-may15': {
+    question: 'Θα ανακοινώσει ο Αλέξης Τσίπρας νέο κόμμα έως τις 15 Μαΐου 2026;',
+    description: 'Αγορά για πιθανή ανακοίνωση νέου πολιτικού φορέα.',
+    sourcePrimary: 'Επίσημη ανακοίνωση από Αλέξη Τσίπρα ή νέο κόμμα',
+    sourceFallback: 'Επιβεβαίωση από κορυφαία ελληνικά μέσα με σαφή δημόσια δήλωση',
+    voidRule: 'Ακυρώνεται αν δεν υπάρχει σαφής δημόσια ανακοίνωση έως τη λήξη.',
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
@@ -68,6 +80,15 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'gre-economy-eu-unemployment-last': {
+    question: 'Θα είναι η Ελλάδα τελευταία στην επόμενη κατάταξη ανεργίας της Eurostat (ΕΕ-27);',
+    description: 'Αγορά για συγκριτική θέση της Ελλάδας στην ανεργία στην ΕΕ.',
+    sourcePrimary: 'Eurostat unemployment table (EU-27)',
+    sourceFallback: 'ELSTAT / TradingEconomics mirror with identical ranking',
+    voidRule: 'Ακυρώνεται αν δεν δημοσιευτεί συγκρίσιμος πίνακας κατάταξης ΕΕ-27.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'gre-tourism-arrivals-up': {
     question: 'Θα ξεπεράσουν οι μηνιαίες αφίξεις τουριστών το ίδιο διάστημα του προηγούμενου έτους;',
     description: 'Αγορά για τη δυναμική του ελληνικού τουρισμού.',
@@ -95,6 +116,15 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'gre-weather-athens-30c-before-may15': {
+    question: 'Θα φτάσει η Αθήνα θερμοκρασία 30°C πριν τις 15 Μαΐου 2026;',
+    description: 'Αγορά για επίσημη μέγιστη θερμοκρασία στην Αθήνα.',
+    sourcePrimary: 'ΕΜΥ / HNMS επίσημα στοιχεία σταθμού Αθήνας',
+    sourceFallback: 'Meteo.gr ιστορικό μετρήσεων Αθήνας',
+    voidRule: 'Ακυρώνεται αν δεν υπάρχουν διαθέσιμες επίσημες μετρήσεις για το κρίσιμο διάστημα.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'gre-weather-thessaloniki-heavy-rain': {
     question: 'Θα καταγραφεί ημερήσια βροχόπτωση πάνω από 30mm στη Θεσσαλονίκη πριν το τέλος του μήνα;',
     description: 'Αγορά για έντονο καιρικό γεγονός στη Θεσσαλονίκη.',
@@ -119,6 +149,51 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     sourcePrimary: 'Επίσημη περιφερειακή λίστα πλατφόρμας',
     sourceFallback: 'Δημόσια ανακοίνωση στούντιο',
     voidRule: 'Ακυρώνεται αν η πλατφόρμα διακόψει τη δημοσίευση του chart.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-social-adonis-posts-over-300-monthend': {
+    question: 'Θα κάνει ο Άδωνις Γεωργιάδης πάνω από 300 δημοσιεύσεις στο X πριν το τέλος του μήνα;',
+    description: 'Αγορά social activity μόνο για original posts (χωρίς reposts).',
+    sourcePrimary: 'X advanced search για @AdonisGeorgiadi με φίλτρο -is:retweet',
+    sourceFallback: 'X profile post timeline και exported count από verified recorder',
+    voidRule: 'Ακυρώνεται αν το X είναι μη διαθέσιμο ή αν τα δεδομένα λείπουν για πάνω από 24 ώρες κοντά στη λήξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'global-us-iran-final-agreement-apr30': {
+    question: 'Θα καταλήξουν οι ΗΠΑ και το Ιράν σε τελική συμφωνία έως τις 30 Απριλίου 2026;',
+    description: 'Αγορά διεθνούς επικαιρότητας για επίσημη διμερή συμφωνία.',
+    sourcePrimary: 'Επίσημες ανακοινώσεις από τις κυβερνήσεις ΗΠΑ και Ιράν',
+    sourceFallback: 'Reuters / AP με ρητή αναφορά επιβεβαίωσης και από τις δύο πλευρές',
+    voidRule: 'Ακυρώνεται αν δεν υπάρχει δημόσια επιβεβαίωση τελικής συμφωνίας και από τις δύο κυβερνήσεις έως τη λήξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-gas-unleaded-above-2-monthend': {
+    question: 'Θα μείνει η μέση τιμή αμόλυβδης 95 στην Ελλάδα πάνω από €2,00/λίτρο στο τελευταίο Weekly Oil Bulletin πριν το τέλος του μήνα;',
+    description: 'Αγορά για εθνική μέση τιμή καυσίμου στην Ελλάδα.',
+    sourcePrimary: 'European Commission Weekly Oil Bulletin',
+    sourceFallback: 'data.europa.eu mirror του Oil Bulletin',
+    voidRule: 'Ακυρώνεται αν δεν δημοσιευτεί το αναμενόμενο εβδομαδιαίο δελτίο πριν το τέλος του μήνα.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-sports-aek-superleague-title': {
+    question: 'Θα κατακτήσει η ΑΕΚ τον τίτλο της Super League αυτή τη σεζόν;',
+    description: 'Αγορά αθλητικής επικαιρότητας για τον τίτλο Super League.',
+    sourcePrimary: 'Επίσημη βαθμολογία και ανακοίνωση Super League',
+    sourceFallback: 'ΕΠΟ / UEFA competition records',
+    voidRule: 'Ακυρώνεται αν η διοργάνωση διακοπεί οριστικά ή αλλάξει format χωρίς επίσημο πρωταθλητή.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'crypto-btc-close-above-80k': {
+    question: 'Θα κλείσει το BTC πάνω από $80.000 (UTC daily close) πριν το τέλος του μήνα;',
+    description: 'Αγορά για επίπεδο τιμής BTC.',
+    sourcePrimary: 'Coinbase BTC-USD official daily close (UTC)',
+    sourceFallback: 'Binance + Kraken UTC daily close confirmation',
+    voidRule: 'Ακυρώνεται αν δεν είναι διαθέσιμο αξιόπιστο UTC daily close από τουλάχιστον μία κύρια πηγή.',
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
