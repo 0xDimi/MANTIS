@@ -8,22 +8,6 @@ import { formatDateTime, formatPercent, formatRelativeClose } from '@/lib/format
 import { localizeBoardMarketCopy, localizeMarketDetailCopy, localizedCategory, localizedMarketStatus } from '@/lib/market-copy';
 import { normalizeLang, tr } from '@/lib/ui-lang';
 
-function statusClass(status: string) {
-  switch (status) {
-    case 'open':
-      return 'badgeYes';
-    case 'resolved':
-    case 'settled':
-      return 'badgeNeutral';
-    case 'paused':
-    case 'closed':
-    case 'void':
-      return 'badgeNo';
-    default:
-      return 'badgeNeutral';
-  }
-}
-
 export default async function MarketDetailPage({
   params,
   searchParams
@@ -79,7 +63,7 @@ export default async function MarketDetailPage({
                 </div>
                 <div className="marketMetaItem">
                   <span>{tr(lang, 'Market status', 'Κατάσταση αγοράς')}</span>
-                  <strong className={statusClass(market.status)}>{localizedMarketStatus(market.status, lang, 'long')}</strong>
+                  <strong>{localizedMarketStatus(market.status, lang, 'long')}</strong>
                 </div>
               </section>
 
@@ -117,7 +101,7 @@ export default async function MarketDetailPage({
               ) : null}
             </article>
 
-            <aside className="card marketTicketCard" id="trade-ticket">
+            <aside className="marketTicketCard" id="trade-ticket">
               <MarketQuotePreviewCard
                 marketId={market.id}
                 marketSlug={market.slug}

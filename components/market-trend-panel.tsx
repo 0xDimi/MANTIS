@@ -27,8 +27,8 @@ function toPoints(values: number[]) {
   if (!values.length) return [] as Array<{ x: number; y: number }>;
 
   return values.map((value, index) => {
-    const x = values.length === 1 ? 92 : 8 + (index / (values.length - 1)) * 84;
-    const y = 10 + (1 - value) * 80;
+    const x = values.length === 1 ? 94 : 6 + (index / (values.length - 1)) * 88;
+    const y = 8 + (1 - value) * 84;
     return { x, y };
   });
 }
@@ -111,12 +111,8 @@ export function MarketTrendPanel({
       <div className="marketTrendLine" aria-hidden="true">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none">
           <defs>
-            <linearGradient id={`mantisTrend-${slug}`} x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stopColor="rgba(66,169,255,0.95)" />
-              <stop offset="100%" stopColor="rgba(108,137,255,0.9)" />
-            </linearGradient>
             <linearGradient id={`mantisTrendArea-${slug}`} x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="rgba(99,102,241,0.18)" />
+              <stop offset="0%" stopColor="rgba(56,146,255,0.06)" />
               <stop offset="100%" stopColor="rgba(99,102,241,0)" />
             </linearGradient>
           </defs>
@@ -126,20 +122,20 @@ export function MarketTrendPanel({
             return (
               <line
                 key={axis}
-                x1="8"
-                x2="92"
+                x1="6"
+                x2="94"
                 y1={y.toFixed(2)}
                 y2={y.toFixed(2)}
-                stroke="rgba(199, 214, 241, 0.14)"
-                strokeDasharray="3 6"
+                stroke="rgba(199, 214, 241, 0.16)"
+                strokeDasharray="1 5"
               />
             );
           })}
 
           <path d={areaPath} fill={`url(#mantisTrendArea-${slug})`} />
-          <path d={linePath} stroke={`url(#mantisTrend-${slug})`} strokeWidth="2.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="2.7" fill="#e5edff" />
-          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="6" fill="rgba(165, 180, 252, 0.2)" />
+          <path d={linePath} stroke="#38a0ff" strokeWidth="2.35" fill="none" strokeLinecap="round" strokeLinejoin="round" shapeRendering="geometricPrecision" />
+          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="2.2" fill="#3aa3ff" />
+          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="4.8" fill="rgba(58, 163, 255, 0.16)" />
         </svg>
 
         <div className="marketTrendAxisY">
@@ -153,9 +149,6 @@ export function MarketTrendPanel({
           <span>{tr(lang, 'Now', 'Τώρα')}</span>
         </div>
 
-        <div className="marketTrendLatestTag" style={{ left: `${Math.min(94, latestPoint.x + 2)}%`, top: `${Math.max(12, latestPoint.y - 10)}%` }}>
-          {formatPercent(yesPrice)}
-        </div>
       </div>
 
       <div className="marketTrendMeta">

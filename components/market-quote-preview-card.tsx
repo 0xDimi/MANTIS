@@ -571,6 +571,9 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   }
 
   const liveYes = liveState?.yesPrice ?? 0.5;
+  const liveNo = liveState?.noPrice ?? 1 - liveYes;
+  const yesCents = Math.round(liveYes * 100);
+  const noCents = Math.round(liveNo * 100);
 
   const quoteFresh = isQuoteFresh(quote, nowMs);
   const quoteExpired = Boolean(quote?.quote && !quoteFresh);
@@ -635,6 +638,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
             onClick={() => setSide('yes')}
           >
             <span className="ticketSideLabel">{yesDisplay}</span>
+            <span className="ticketSidePrice">{yesCents}¢</span>
           </button>
           <button
             className={side === 'no' ? 'ticketSideButton ticketSideButtonNoActive' : 'ticketSideButton'}
@@ -642,6 +646,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
             onClick={() => setSide('no')}
           >
             <span className="ticketSideLabel">{noDisplay}</span>
+            <span className="ticketSidePrice">{noCents}¢</span>
           </button>
         </div>
 
