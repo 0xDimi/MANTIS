@@ -133,9 +133,9 @@ export function MarketTrendPanel({
           })}
 
           <path d={areaPath} fill={`url(#mantisTrendArea-${slug})`} />
-          <path d={linePath} stroke="#38a0ff" strokeWidth="2.35" fill="none" strokeLinecap="round" strokeLinejoin="round" shapeRendering="geometricPrecision" />
-          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="2.2" fill="#3aa3ff" />
-          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="4.8" fill="rgba(58, 163, 255, 0.16)" />
+          <path d={linePath} stroke="#38a0ff" strokeWidth="1.75" fill="none" strokeLinecap="round" strokeLinejoin="round" shapeRendering="geometricPrecision" />
+          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="1.8" fill="#3aa3ff" />
+          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="3.9" fill="rgba(58, 163, 255, 0.12)" />
         </svg>
 
         <div className="marketTrendAxisY">
