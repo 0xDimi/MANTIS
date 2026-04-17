@@ -59,7 +59,7 @@ create table if not exists markets (
   source_fallback text,
   void_rule text not null,
   b_liquidity numeric(18,6) not null default 100,
-  fee_bps integer not null default 75,
+  fee_bps integer not null default 50,
   yes_label text not null default 'YES',
   no_label text not null default 'NO',
   created_by uuid,
