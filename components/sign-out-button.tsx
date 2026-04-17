@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { tr, type UiLang } from '@/lib/ui-lang';
 
-export function SignOutButton({ nextPath = '/' }: { nextPath?: string }) {
+export function SignOutButton({ nextPath = '/', lang = 'en' }: { nextPath?: string; lang?: UiLang }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +22,7 @@ export function SignOutButton({ nextPath = '/' }: { nextPath?: string }) {
 
       window.location.assign(nextPath);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to sign out');
+      setError(err instanceof Error ? err.message : tr(lang, 'Unable to sign out', 'Αδυναμία αποσύνδεσης'));
       setPending(false);
     }
   }
@@ -29,7 +30,7 @@ export function SignOutButton({ nextPath = '/' }: { nextPath?: string }) {
   return (
     <div className="stackXs">
       <button className="button buttonGhost" disabled={pending} onClick={handleClick} type="button">
-        {pending ? 'Signing out…' : 'Sign out'}
+        {pending ? tr(lang, 'Signing out…', 'Αποσύνδεση…') : tr(lang, 'Sign out', 'Αποσύνδεση')}
       </button>
       {error ? <div className="notice noticeError">{error}</div> : null}
     </div>

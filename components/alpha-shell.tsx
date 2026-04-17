@@ -15,9 +15,13 @@ const nav = [
   { href: '/more', en: 'More', el: 'Περισσότερα' }
 ] as const;
 
-function formatMoney(value: number | null) {
+function formatMoney(value: number | null, lang: UiLang) {
   if (value == null) return '—';
-  return `€${value.toFixed(2)}`;
+  return new Intl.NumberFormat(lang === 'el' ? 'el-GR' : 'en-GB', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 2
+  }).format(value);
 }
 
 export async function AlphaShell({
@@ -60,17 +64,17 @@ export async function AlphaShell({
         <div className="headerRightGroup">
           <Link className="miniStat" href={lang === 'el' ? '/portfolio?lang=el' : '/portfolio'}>
             <span className="miniStatLabel">{tr(lang, 'Portfolio', 'Χαρτοφυλάκιο')}</span>
-            <strong className="miniStatValue">{formatMoney(summary.portfolio)}</strong>
+            <strong className="miniStatValue">{formatMoney(summary.portfolio, lang)}</strong>
           </Link>
 
           <Link className="miniStat" href={lang === 'el' ? '/portfolio?lang=el' : '/portfolio'}>
             <span className="miniStatLabel">{tr(lang, 'Cash', 'Μετρητά')}</span>
-            <strong className="miniStatValue">{formatMoney(summary.cash)}</strong>
+            <strong className="miniStatValue">{formatMoney(summary.cash, lang)}</strong>
           </Link>
 
           <Suspense
             fallback={
-              <div className="langToggle" role="group" aria-label="Language">
+              <div className="langToggle" role="group" aria-label={tr(lang, 'Language', 'Γλώσσα')}>
                 <span className="langToggleItem langToggleItemActive">EN</span>
                 <span className="langToggleItem">ΕΛ</span>
               </div>
@@ -108,7 +112,7 @@ export async function AlphaShell({
 
       {children}
 
-      <nav className="bottomDock" aria-label="Primary">
+      <nav className="bottomDock" aria-label={tr(lang, 'Primary', 'Κύρια πλοήγηση')}>
         <div className="bottomDockInner">
           {nav.map((item) => {
             const href = lang === 'el' ? `${item.href}?lang=el` : item.href;

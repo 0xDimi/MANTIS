@@ -5,6 +5,7 @@ import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { ProbabilitySplit } from '@/components/probability-split';
 import { loadMarketDetail, loadMarketsBoard } from '@/lib/alpha-read-model';
 import { formatCompact, formatDateTime, formatPercent, formatRelativeClose } from '@/lib/format';
+import { localizeBoardMarketCopy, localizeMarketDetailCopy, localizedCategory, localizedMarketStatus } from '@/lib/market-copy';
 import { normalizeLang, tr } from '@/lib/ui-lang';
 
 function statusClass(status: string) {
@@ -23,31 +24,10 @@ function statusClass(status: string) {
   }
 }
 
-function labelize(value: string) {
-  return value
-    .replace(/[-_]/g, ' ')
-    .replace(/\w\S*/g, (part) => part.charAt(0).toUpperCase() + part.slice(1));
-}
-
-function marketStatusCopy(status: string, lang: 'en' | 'el') {
-  switch (status) {
-    case 'open':
-      return tr(lang, 'Open for trading', 'Ανοικτή για συναλλαγή');
-    case 'draft':
-      return tr(lang, 'Preparing market', 'Προετοιμασία αγοράς');
-    case 'paused':
-      return tr(lang, 'Temporarily paused', 'Προσωρινά σε παύση');
-    case 'closed':
-      return tr(lang, 'Trading closed', 'Η διαπραγμάτευση έκλεισε');
-    case 'resolved':
-      return tr(lang, 'Resolved', 'Επιλυμένη');
-    case 'settled':
-      return tr(lang, 'Settled', 'Διακανονισμένη');
-    case 'void':
-      return tr(lang, 'Voided', 'Ακυρωμένη');
-    default:
-      return labelize(status);
-  }
+function resolutionOutcomeLabel(outcome: 'yes' | 'no' | 'void', lang: 'en' | 'el') {
+  if (outcome === 'yes') return tr(lang, 'Yes', 'Ναι');
+  if (outcome === 'no') return tr(lang, 'No', 'Όχι');
+  return tr(lang, 'Void', 'Άκυρο');
 }
 
 export default async function MarketDetailPage({
@@ -60,13 +40,15 @@ export default async function MarketDetailPage({
   const { slug } = await params;
   const query = (await searchParams) ?? {};
   const lang = normalizeLang(query.lang);
-  const [{ market, state, error }, board] = await Promise.all([
+  const [{ market: marketRaw, state, error }, board] = await Promise.all([
     loadMarketDetail(slug),
     loadMarketsBoard({ scope: 'all' })
   ]);
+  const market = marketRaw ? localizeMarketDetailCopy(marketRaw, lang) : null;
   const relatedMarkets = market
     ? (board.markets ?? [])
         .filter((item) => item.slug !== market.slug && item.category === market.category && item.status === 'open')
+        .map((item) => localizeBoardMarketCopy(item, lang))
         .slice(0, 3)
     : [];
 
@@ -84,7 +66,7 @@ export default async function MarketDetailPage({
         <>
           <section className="marketHeroGrid">
             <article className="marketHeroMain">
-              <p className="eyebrow">{labelize(market.category)}</p>
+              <p className="eyebrow">{localizedCategory(market.category, lang)}</p>
               <h1 className="marketTitle">{market.question}</h1>
               {market.description ? <p className="marketContextLine">{market.description}</p> : null}
 
@@ -92,16 +74,16 @@ export default async function MarketDetailPage({
                 <div className="marketSignalPrimary">
                   <span>{tr(lang, 'Live chance', 'Ζωντανή πιθανότητα')}</span>
                   <strong>{formatPercent(state?.yesPrice ?? 0.5)}</strong>
-                  <em>YES</em>
+                  <em>{market.yesLabel}</em>
                 </div>
                 <div className="marketSignalList">
                   <div className="marketSignalRow">
                     <span>{tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}</span>
-                    <strong>{formatDateTime(market.closeTime)} ({formatRelativeClose(market.closeTime, { calendarAfterDays: 999 })})</strong>
+                    <strong>{formatDateTime(market.closeTime, lang)} ({formatRelativeClose(market.closeTime, { calendarAfterDays: 999, lang })})</strong>
                   </div>
                   <div className="marketSignalRow">
                     <span>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')}</span>
-                    <strong>{market.resolutionTime ? formatDateTime(market.resolutionTime) : '—'}</strong>
+                    <strong>{market.resolutionTime ? formatDateTime(market.resolutionTime, lang) : '—'}</strong>
                   </div>
                   <div className="marketSignalRow">
                     <span>{tr(lang, 'Primary source', 'Κύρια πηγή')}</span>
@@ -109,16 +91,9 @@ export default async function MarketDetailPage({
                   </div>
                   <div className="marketSignalRow">
                     <span>{tr(lang, 'Market status', 'Κατάσταση αγοράς')}</span>
-                    <strong className={statusClass(market.status)}>{marketStatusCopy(market.status, lang)}</strong>
+                    <strong className={statusClass(market.status)}>{localizedMarketStatus(market.status, lang, 'long')}</strong>
                   </div>
                 </div>
-              </div>
-
-              <div className="marketActionStrip">
-                <span>{tr(lang, 'Review the trend, then execute from the ticket.', 'Δες την τάση και εκτέλεσε από το ticket.')}</span>
-                <Link className="button buttonGhost" href="#trade-ticket">
-                  {tr(lang, 'Open trade ticket', 'Άνοιγμα trade ticket')}
-                </Link>
               </div>
 
               <section className="marketChartSurface">
@@ -138,13 +113,18 @@ export default async function MarketDetailPage({
                   liquidity={market.liquidity}
                   participants={state?.participantsCount ?? 0}
                   lang={lang}
+                  yesLabel={market.yesLabel}
                 />
 
                 <div className="marketMetaFoot">
-                  <span>{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(market.closeTime)}</span>
-                  <span>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')} {market.resolutionTime ? formatDateTime(market.resolutionTime) : '—'}</span>
+                  <span>{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(market.closeTime, lang)}</span>
+                  <span>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')} {market.resolutionTime ? formatDateTime(market.resolutionTime, lang) : '—'}</span>
                 </div>
               </section>
+
+              <Link className="button buttonGhost marketTicketJumpButton" href="#trade-ticket">
+                {tr(lang, 'Open trade ticket', 'Μετάβαση στο δελτίο συναλλαγής')}
+              </Link>
 
               {relatedMarkets.length > 0 ? (
                 <section className="relatedMarketsRail" aria-label={tr(lang, 'Related markets', 'Σχετικές αγορές')}>
@@ -155,7 +135,7 @@ export default async function MarketDetailPage({
                         <span>{item.question}</span>
                         <div className="relatedMarketMeta">
                           <strong>{formatPercent(item.state?.yesPrice ?? 0.5)}</strong>
-                          <em>{tr(lang, 'Closes', 'Κλείνει')} {formatRelativeClose(item.closeTime)}</em>
+                          <em>{tr(lang, 'Closes', 'Κλείνει')} {formatRelativeClose(item.closeTime, { lang })}</em>
                         </div>
                       </Link>
                     ))}
@@ -186,8 +166,8 @@ export default async function MarketDetailPage({
               <h3>{tr(lang, 'Resolution framework', 'Πλαίσιο επίλυσης')}</h3>
               <p>{tr(lang, 'Primary source', 'Κύρια πηγή')}: {market.sourcePrimary}</p>
               {market.sourceFallback ? <p>{tr(lang, 'Fallback source', 'Εναλλακτική πηγή')}: {market.sourceFallback}</p> : null}
-              <p>{tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}: {formatDateTime(market.closeTime)}</p>
-              <p>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')}: {market.resolutionTime ? formatDateTime(market.resolutionTime) : '—'}</p>
+              <p>{tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}: {formatDateTime(market.closeTime, lang)}</p>
+              <p>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')}: {market.resolutionTime ? formatDateTime(market.resolutionTime, lang) : '—'}</p>
             </article>
 
             <article className="marketInfoSection">
@@ -203,9 +183,9 @@ export default async function MarketDetailPage({
             {market.resolution ? (
               <article className="marketInfoSection">
                 <h3>{tr(lang, 'Resolution record', 'Αρχείο επίλυσης')}</h3>
-                <p>{tr(lang, 'Outcome', 'Αποτέλεσμα')}: {market.resolution.outcome.toUpperCase()}</p>
+                <p>{tr(lang, 'Outcome', 'Αποτέλεσμα')}: {resolutionOutcomeLabel(market.resolution.outcome, lang)}</p>
                 <p>{market.resolution.evidenceSummary}</p>
-                <p>{formatDateTime(market.resolution.createdAt)}</p>
+                <p>{formatDateTime(market.resolution.createdAt, lang)}</p>
               </article>
             ) : null}
 
@@ -213,7 +193,7 @@ export default async function MarketDetailPage({
               <article className="marketInfoSection">
                 <h3>{tr(lang, 'Settlement record', 'Αρχείο διακανονισμού')}</h3>
                 <p>
-                  {tr(lang, 'Payout', 'Πληρωμή')} €{formatCompact(market.settlement.totalPayout)} · {tr(lang, 'Refund', 'Επιστροφή')} €{formatCompact(market.settlement.totalRefund)}
+                  {tr(lang, 'Payout', 'Πληρωμή')} €{formatCompact(market.settlement.totalPayout, lang)} · {tr(lang, 'Refund', 'Επιστροφή')} €{formatCompact(market.settlement.totalRefund, lang)}
                 </p>
               </article>
             ) : null}

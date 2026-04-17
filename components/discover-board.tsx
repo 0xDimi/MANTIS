@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { loadMarketsBoard } from '@/lib/alpha-read-model';
+import { localizeBoardMarketCopy, localizedCategory, localizedMarketSearchBlob } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import { MarketCard } from '@/components/market-card';
 import { FeaturedMarketsCarousel } from '@/components/featured-markets-carousel';
@@ -19,12 +20,6 @@ function normalizeView(value: string | null | undefined): DiscoverView {
   }
 
   return 'trending';
-}
-
-function labelize(value: string) {
-  return value
-    .replace(/[-_]/g, ' ')
-    .replace(/\w\S*/g, (part) => part.charAt(0).toUpperCase() + part.slice(1));
 }
 
 function statusPriority(status: string) {
@@ -76,7 +71,9 @@ function isInternalMarket(slug: string, question: string) {
 
 export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
   const { markets, error } = await loadMarketsBoard({ scope: 'all' });
-  const userMarkets = markets.filter((market) => !isInternalMarket(market.slug, market.question));
+  const userMarkets = markets
+    .filter((market) => !isInternalMarket(market.slug, market.question))
+    .map((market) => localizeBoardMarketCopy(market, lang));
   const normalizedView = normalizeView(view);
   const sorted = sortMarkets(userMarkets, normalizedView);
   const activeMarkets = sorted.filter((market) => market.status === 'open' || market.status === 'paused');
@@ -87,7 +84,7 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
   const normalizedQuery = (query ?? '').trim().toLowerCase();
   const categoryFiltered = category ? curatedBase.filter((market) => market.category === category) : curatedBase;
   const filtered = normalizedQuery
-    ? categoryFiltered.filter((market) => `${market.question} ${market.category}`.toLowerCase().includes(normalizedQuery))
+    ? categoryFiltered.filter((market) => localizedMarketSearchBlob(market, lang).includes(normalizedQuery))
     : categoryFiltered;
   const featuredPool = [...curatedBase].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
   const featured = featuredPool.slice(0, 2);
@@ -130,7 +127,7 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
             className={category === item ? 'categoryPill categoryPillActive' : 'categoryPill'}
             href={hrefWith(lang, view, item, normalizedQuery)}
           >
-            {labelize(item)}
+            {localizedCategory(item, lang)}
           </Link>
         ))}
       </section>

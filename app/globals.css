@@ -1184,28 +1184,18 @@ code {
   font-size: 10px;
 }
 
-.marketActionStrip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 4px;
-  color: #aab6cc;
-  font-size: 13px;
-}
-
 .marketChartSurface {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.015);
-  padding: 14px;
+  background: rgba(255, 255, 255, 0.018);
+  padding: 16px;
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .marketTrendPanel {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .marketTrendHead {
@@ -1218,30 +1208,31 @@ code {
 .marketTrendHeadRight {
   display: grid;
   justify-items: end;
-  gap: 6px;
+  gap: 8px;
 }
 
 .marketTrendLabel {
   margin: 0;
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-3);
+  color: #9eaac0;
 }
 
 .marketTrendValue {
-  margin: 4px 0 0;
-  font-size: clamp(28px, 2.6vw, 34px);
+  margin: 6px 0 0;
+  font-size: clamp(30px, 2.8vw, 36px);
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
 .marketTrendDelta {
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
-  padding: 5px 9px;
-  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #c2cde1;
 }
 
 .marketTrendDeltaUp {
@@ -1255,11 +1246,11 @@ code {
 }
 
 .marketTrendLine {
-  height: 190px;
+  height: 208px;
   position: relative;
-  border-radius: 11px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: linear-gradient(180deg, rgba(53, 120, 255, 0.14) 0%, rgba(53, 120, 255, 0.01) 72%), rgba(255, 255, 255, 0.012);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(58, 125, 255, 0.16) 0%, rgba(58, 125, 255, 0.02) 72%), rgba(255, 255, 255, 0.014);
   overflow: hidden;
 }
 
@@ -1270,13 +1261,13 @@ code {
 
 .marketTrendAxisY {
   position: absolute;
-  right: 8px;
+  right: 10px;
   top: 12px;
-  bottom: 22px;
+  bottom: 26px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: rgba(206, 216, 237, 0.58);
+  color: rgba(214, 224, 241, 0.62);
   font-size: 10px;
 }
 
@@ -1284,23 +1275,27 @@ code {
   position: absolute;
   left: 12px;
   right: 12px;
-  bottom: 6px;
+  bottom: 8px;
   display: flex;
   justify-content: space-between;
-  color: rgba(206, 216, 237, 0.54);
+  color: rgba(206, 216, 237, 0.62);
   font-size: 10px;
 }
 
 .marketTrendRangeTabs {
   display: inline-flex;
   gap: 4px;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .marketTrendRangeButton {
   min-height: 24px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  background: transparent;
   color: #9ea9bf;
   font-size: 10px;
   font-weight: 650;
@@ -1311,19 +1306,19 @@ code {
 }
 
 .marketTrendRangeButtonActive {
-  border-color: rgba(124, 92, 255, 0.42);
-  background: rgba(124, 92, 255, 0.16);
+  border-color: rgba(124, 92, 255, 0.5);
+  background: rgba(124, 92, 255, 0.22);
   color: #e8e3ff;
 }
 
 .marketTrendLatestTag {
   position: absolute;
-  transform: translate(-100%, -100%);
+  transform: translate(-100%, -92%);
   min-height: 20px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(5, 8, 22, 0.84);
-  color: #d5e4ff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(6, 10, 24, 0.88);
+  color: #e0eaff;
   font-size: 10px;
   font-weight: 700;
   display: inline-flex;
@@ -1336,9 +1331,13 @@ code {
 .marketTrendMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   color: var(--text-3);
   font-size: 12px;
+}
+
+.marketTicketJumpButton {
+  display: none;
 }
 
 .relatedMarketsRail {
@@ -2252,9 +2251,9 @@ code {
     height: 150px;
   }
 
-  .marketActionStrip {
-    flex-direction: column;
-    align-items: flex-start;
+  .marketTicketJumpButton {
+    display: inline-flex;
+    width: 100%;
   }
 }
 

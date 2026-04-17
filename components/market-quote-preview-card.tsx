@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type TradeInputMode = 'gross_cash' | 'total_cash' | 'shares';
@@ -71,8 +72,12 @@ type MarketStatePayload = {
   error?: string;
 };
 
-function formatMoney(value: number) {
-  return `€${value.toFixed(2)}`;
+function formatMoney(value: number, lang: UiLang) {
+  return new Intl.NumberFormat(lang === 'el' ? 'el-GR' : 'en-GB', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 2
+  }).format(value);
 }
 
 function formatPercent(value: number) {
@@ -93,24 +98,14 @@ function formatCountdown(ms: number, lang: UiLang) {
   return `${seconds}s`;
 }
 
-function formatTime(value: string | null | undefined) {
+function formatTime(value: string | null | undefined, lang: UiLang) {
   if (!value) return '—';
 
   const parsed = new Date(value);
 
   if (!Number.isFinite(parsed.getTime())) return '—';
 
-  return parsed.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-}
-
-function normalizeOutcomeLabel(label: string | undefined, fallback: 'yes' | 'no') {
-  const baseline = fallback === 'yes' ? 'Yes' : 'No';
-  const value = (label ?? '').trim();
-
-  if (!value) return baseline;
-  if (value.toLowerCase() === fallback) return baseline;
-
-  return value;
+  return parsed.toLocaleTimeString(lang === 'el' ? 'el-GR' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
 }
 
 function normalizePrefillSide(value: string | undefined): 'yes' | 'no' {
@@ -149,6 +144,38 @@ function isQuoteFresh(quote: QuotePreviewPayload | null | undefined, nowMs: numb
   if (!Number.isFinite(expiresMs)) return false;
 
   return expiresMs > nowMs + 1_000;
+}
+
+function translateTradeError(rawMessage: string, lang: UiLang) {
+  const message = rawMessage.toLowerCase();
+
+  if (message.includes('quote request failed')) return tr(lang, 'Quote request failed.', 'Αποτυχία αιτήματος quote.');
+  if (message.includes('execution failed')) return tr(lang, 'Execution failed.', 'Αποτυχία εκτέλεσης.');
+  if (message.includes('state refresh failed')) return tr(lang, 'Live state refresh failed.', 'Αποτυχία ανανέωσης live κατάστασης.');
+  if (message.includes('auth required')) return tr(lang, 'Sign in required for trading.', 'Απαιτείται σύνδεση για συναλλαγές.');
+  if (message.includes('amounteur must be > 0')) return tr(lang, 'Enter an amount above 0.', 'Συμπλήρωσε ποσό πάνω από 0.');
+  if (message.includes('shareamount must be > 0')) return tr(lang, 'Enter shares above 0.', 'Συμπλήρωσε μετοχές πάνω από 0.');
+  if (message.includes('market not found')) return tr(lang, 'Market not found.', 'Η αγορά δεν βρέθηκε.');
+  if (message.includes('market trading window has closed') || message.includes('market is closed') || message.includes('market is settled') || message.includes('market is resolved')) {
+    return tr(lang, 'Market is not tradeable right now.', 'Η αγορά δεν είναι διαθέσιμη για συναλλαγές αυτή τη στιγμή.');
+  }
+  if (message.includes('quote expired') || message.includes('quote hash mismatch') || message.includes('fresh quote')) {
+    return tr(lang, 'Re-quote needed before execution.', 'Απαιτείται νέο quote πριν την εκτέλεση.');
+  }
+  if (message.includes('insufficient') && message.includes('shares')) {
+    return tr(lang, 'Insufficient shares for this sell order.', 'Μη επαρκείς μετοχές για αυτή την εντολή πώλησης.');
+  }
+  if (message.includes('insufficient') && message.includes('balance')) {
+    return tr(lang, 'Insufficient balance.', 'Μη επαρκές υπόλοιπο.');
+  }
+  if (message.includes('exceeds max single trade')) {
+    return tr(lang, 'Order exceeds max single trade size.', 'Η εντολή υπερβαίνει το μέγιστο μέγεθος ανά συναλλαγή.');
+  }
+  if (message.includes('max user exposure')) {
+    return tr(lang, 'Order exceeds per-market exposure limit.', 'Η εντολή υπερβαίνει το όριο έκθεσης ανά αγορά.');
+  }
+
+  return rawMessage;
 }
 
 export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePreviewCardProps) {
@@ -201,8 +228,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   const msToClose = Number.isFinite(closeMs) ? closeMs - nowMs : Infinity;
   const closingSoon = msToClose > 0 && msToClose <= 2 * 60 * 60 * 1000;
 
-  const yesDisplay = normalizeOutcomeLabel(props.yesLabel, 'yes');
-  const noDisplay = normalizeOutcomeLabel(props.noLabel, 'no');
+  const yesDisplay = localizedOutcomeLabel(props.yesLabel, 'yes', lang);
+  const noDisplay = localizedOutcomeLabel(props.noLabel, 'no', lang);
 
   const availableYesShares = Number(positionSnapshot?.yesShares ?? 0);
   const availableNoShares = Number(positionSnapshot?.noShares ?? 0);
@@ -227,7 +254,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
       const payload = (await response.json()) as MarketStatePayload;
 
       if (!response.ok) {
-        setStateError(payload.error ?? `state refresh failed (${response.status})`);
+        const message = payload.error ?? `state refresh failed (${response.status})`;
+        setStateError(translateTradeError(message, lang));
         return;
       }
 
@@ -242,9 +270,10 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           : null
       );
     } catch (refreshError) {
-      setStateError(refreshError instanceof Error ? refreshError.message : 'state refresh failed');
+      const message = refreshError instanceof Error ? refreshError.message : 'state refresh failed';
+      setStateError(translateTradeError(message, lang));
     }
-  }, [props.marketSlug]);
+  }, [lang, props.marketSlug]);
 
   const refreshPortfolioSnapshot = useCallback(async () => {
     try {
@@ -365,7 +394,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         if (!response.ok) {
           setQuote(null);
           if (!silent) {
-            setError(payload.error ?? `Quote request failed (${response.status})`);
+            const message = payload.error ?? `Quote request failed (${response.status})`;
+            setError(translateTradeError(message, lang));
           }
           return null;
         }
@@ -377,7 +407,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         if (requestId === quoteRequestRef.current) {
           setQuote(null);
           if (!silent) {
-            setError(requestError instanceof Error ? requestError.message : 'Quote request failed');
+            const message = requestError instanceof Error ? requestError.message : 'Quote request failed';
+            setError(translateTradeError(message, lang));
           }
         }
         return null;
@@ -475,7 +506,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
 
         return true;
       } catch (executeError) {
-        setExecutionMessage(executeError instanceof Error ? executeError.message : 'Execution failed');
+        const message = executeError instanceof Error ? executeError.message : 'Execution failed';
+        setExecutionMessage(translateTradeError(message, lang));
         return false;
       } finally {
         setExecuting(false);
@@ -545,8 +577,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           <span className="ticketSurfaceHint">{tr(lang, 'Live quote updates while you type.', 'Το quote ενημερώνεται αυτόματα καθώς πληκτρολογείς.')}</span>
         </div>
         <div className="ticketSurfaceLive">
-          <span className="ticketSurfaceLiveYes">YES {formatPercent(liveYes)}</span>
-          <span className="ticketSurfaceLiveNo">NO {formatPercent(liveNo)}</span>
+          <span className="ticketSurfaceLiveYes">{yesDisplay} {formatPercent(liveYes)}</span>
+          <span className="ticketSurfaceLiveNo">{noDisplay} {formatPercent(liveNo)}</span>
           <span className="ticketSurfaceClose">{tr(lang, 'Close', 'Λήξη')} {closeCountdown}</span>
         </div>
       </div>
@@ -576,7 +608,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
               {tr(lang, 'Sell', 'Πώληση')}
             </button>
           </div>
-          <span className="ticketOrderType">{tr(lang, 'Market', 'Αγορά')}</span>
+          <span className="ticketOrderType">{tr(lang, 'Market order', 'Εντολή αγοράς')}</span>
         </div>
 
         <div className="ticketSideGrid">
@@ -672,7 +704,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
 
           {action === 'sell' ? (
             <p className="subtle">
-              {tr(lang, 'Available', 'Διαθέσιμα')} {side.toUpperCase()} {tr(lang, 'shares', 'μετοχές')}: {availableShares.toFixed(4)}
+              {tr(lang, 'Available', 'Διαθέσιμα')} {side === 'yes' ? yesDisplay : noDisplay} {tr(lang, 'shares', 'μετοχές')}: {availableShares.toFixed(4)}
             </p>
           ) : null}
         </label>
@@ -692,7 +724,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           <div className="ticketSummaryPrimary">
             <div className="ticketPreviewMetric">
               <span>{tr(lang, 'Amount', 'Ποσό')}</span>
-              <strong>{quoteAmount != null ? formatMoney(quoteAmount) : '—'}</strong>
+              <strong>{quoteAmount != null ? formatMoney(quoteAmount, lang) : '—'}</strong>
             </div>
             <div className="ticketPreviewMetric">
               <span>{tr(lang, 'Avg price', 'Μέση τιμή')}</span>
@@ -700,7 +732,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
             </div>
             <div className="ticketPreviewMetric">
               <span>{action === 'buy' ? tr(lang, 'Possible win', 'Πιθανό κέρδος') : tr(lang, 'Estimated proceeds', 'Εκτιμώμενα έσοδα')}</span>
-              <strong>{quote?.quote ? formatMoney(action === 'buy' ? quotePossibleWin ?? 0 : quote.quote.totalAmountEur) : '—'}</strong>
+              <strong>{quote?.quote ? formatMoney(action === 'buy' ? quotePossibleWin ?? 0 : quote.quote.totalAmountEur, lang) : '—'}</strong>
             </div>
           </div>
 
@@ -713,7 +745,7 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
               </div>
               <div className="ticketPreviewMetric">
                 <span>{tr(lang, 'Fee', 'Χρέωση')}</span>
-                <strong>{quote?.quote ? formatMoney(quote.quote.feeAmountEur) : '—'}</strong>
+                <strong>{quote?.quote ? formatMoney(quote.quote.feeAmountEur, lang) : '—'}</strong>
               </div>
               <div className="ticketPreviewMetric">
                 <span>{tr(lang, 'Price impact', 'Επίδραση τιμής')}</span>
@@ -721,11 +753,11 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
               </div>
               <div className="ticketPreviewMetric">
                 <span>{tr(lang, 'Max loss', 'Μέγιστη απώλεια')}</span>
-                <strong>{maxLoss != null ? formatMoney(maxLoss) : '—'}</strong>
+                <strong>{maxLoss != null ? formatMoney(maxLoss, lang) : '—'}</strong>
               </div>
               <div className="ticketPreviewMetric">
                 <span>{tr(lang, 'Total return if correct', 'Συνολική επιστροφή αν επιβεβαιωθεί')}</span>
-                <strong>{totalReturnIfCorrect != null ? formatMoney(totalReturnIfCorrect) : '—'}</strong>
+                <strong>{totalReturnIfCorrect != null ? formatMoney(totalReturnIfCorrect, lang) : '—'}</strong>
               </div>
               <div className="ticketPreviewMetric">
                 <span>{tr(lang, 'Fee rate', 'Ποσοστό χρέωσης')}</span>
@@ -749,16 +781,20 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         </button>
       </div>
 
-      {error ? <div className="notice noticeError">{error}</div> : null}
+      {error ? <div className="notice noticeError">{translateTradeError(error, lang)}</div> : null}
       {stateError ? <div className="notice noticeWarn">{stateError}</div> : null}
       {quoteExpired ? <div className="notice noticeWarn">{tr(lang, 'Quote expired or moved. Tap once to refresh and execute.', 'Το quote έληξε ή άλλαξε η αγορά. Πάτησε μία φορά για ανανέωση και εκτέλεση.')}</div> : null}
 
-      {executionMessage ? <div className={executionMessage.toLowerCase().includes('executed') ? 'notice noticeSuccess' : 'notice noticeWarn'}>{executionMessage}</div> : null}
+      {executionMessage ? (
+        <div className={executionMessage.toLowerCase().includes('executed') || executionMessage.toLowerCase().includes('εκτελέ') ? 'notice noticeSuccess' : 'notice noticeWarn'}>
+          {translateTradeError(executionMessage, lang)}
+        </div>
+      ) : null}
 
       {liveState ? (
         <div className="ticketLiveMeta">
-          <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')}: {formatTime(liveState.lastTradeAt)}</span>
-          <span>{tr(lang, 'Status', 'Κατάσταση')}: {props.marketStatus.toUpperCase()}</span>
+          <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')}: {formatTime(liveState.lastTradeAt, lang)}</span>
+          <span>{tr(lang, 'Status', 'Κατάσταση')}: {localizedMarketStatus(props.marketStatus, lang, 'short')}</span>
         </div>
       ) : null}
     </article>

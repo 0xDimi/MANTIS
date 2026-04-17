@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
+import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type MarketCardProps = {
@@ -8,37 +9,10 @@ type MarketCardProps = {
   lang: UiLang;
 };
 
-function labelize(value: string) {
-  return value
-    .replace(/[-_]/g, ' ')
-    .replace(/\w\S*/g, (part) => part.charAt(0).toUpperCase() + part.slice(1));
-}
-
 function statusTone(status: string) {
   if (status === 'open') return 'badgeYes';
   if (status === 'resolved' || status === 'settled') return 'badgeNeutral';
   return 'badgeNo';
-}
-
-function statusLabel(status: string, lang: UiLang) {
-  switch (status) {
-    case 'open':
-      return tr(lang, 'Open', 'Ανοιχτή');
-    case 'draft':
-      return tr(lang, 'Draft', 'Πρόχειρη');
-    case 'resolved':
-      return tr(lang, 'Resolved', 'Επιλυμένη');
-    case 'settled':
-      return tr(lang, 'Settled', 'Διακανονισμένη');
-    case 'void':
-      return 'VOID';
-    case 'closed':
-      return tr(lang, 'Closed', 'Κλειστή');
-    case 'paused':
-      return tr(lang, 'Paused', 'Σε παύση');
-    default:
-      return labelize(status);
-  }
 }
 
 function marketHref(slug: string, lang: UiLang, side?: 'yes' | 'no') {
@@ -58,6 +32,8 @@ export function MarketCard({ market, lang }: MarketCardProps) {
   const href = marketHref(market.slug, lang);
   const isMuted = market.status !== 'open';
   const volume = market.state?.volumeTotal ?? 0;
+  const yesLabel = localizedOutcomeLabel('yes', 'yes', lang);
+  const noLabel = localizedOutcomeLabel('no', 'no', lang);
 
   return (
     <article className={`card marketListCard marketCardPoly${isMuted ? ' marketCardMuted' : ''}`}>
@@ -65,8 +41,8 @@ export function MarketCard({ market, lang }: MarketCardProps) {
 
       <div className="marketCardContent">
         <div className="marketMetaRow marketMetaRowTight">
-          <span className="marketCategory">{labelize(market.category)}</span>
-          <span className={statusTone(market.status)}>{statusLabel(market.status, lang)}</span>
+          <span className="marketCategory">{localizedCategory(market.category, lang)}</span>
+          <span className={statusTone(market.status)}>{localizedMarketStatus(market.status, lang)}</span>
         </div>
 
         <h3 className="marketQuestion">
@@ -77,20 +53,20 @@ export function MarketCard({ market, lang }: MarketCardProps) {
           <div className="probabilityPrimary">{formatPercent(yesProb)}</div>
           <div className="buttonRow marketCardActionRow">
             <Link className="button buttonYes marketMiniButton" href={marketHref(market.slug, lang, 'yes')}>
-              <span>YES</span>
+              <span>{yesLabel}</span>
               <strong>{yesCents}¢</strong>
             </Link>
             <Link className="button buttonNo marketMiniButton" href={marketHref(market.slug, lang, 'no')}>
-              <span>NO</span>
+              <span>{noLabel}</span>
               <strong>{noCents}¢</strong>
             </Link>
           </div>
         </div>
 
         <div className="marketMiniMeta">
-          {volume > 0 ? <span className="marketMiniMetaStrong">{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : null}
-          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(market.closeTime)}</span>
-          {market.state?.lastTradeAt ? <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt)}</span> : null}
+          {volume > 0 ? <span className="marketMiniMetaStrong">{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume, lang)}</span> : null}
+          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(market.closeTime, { lang })}</span>
+          {market.state?.lastTradeAt ? <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt, lang)}</span> : null}
         </div>
       </div>
     </article>

@@ -2,13 +2,16 @@
 
 import { useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { tr, type UiLang } from '@/lib/ui-lang';
 
 export function AuthEmailForm({
   nextPath,
+  lang = 'en',
   title = 'Sign in to trade',
   description = 'Use your invited email. We will send a magic link and keep the wallet server-side.'
 }: {
   nextPath: string;
+  lang?: UiLang;
   title?: string;
   description?: string;
 }) {
@@ -39,9 +42,9 @@ export function AuthEmailForm({
         throw error;
       }
 
-      setMessage('Magic link sent. Open it from the same browser to continue.');
+      setMessage(tr(lang, 'Magic link sent. Open it from the same browser to continue.', 'Το magic link στάλθηκε. Άνοιξέ το από τον ίδιο browser για συνέχεια.'));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to send sign-in link');
+      setError(err instanceof Error ? err.message : tr(lang, 'Unable to send sign-in link', 'Δεν ήταν δυνατή η αποστολή του συνδέσμου σύνδεσης'));
     } finally {
       setPending(false);
     }
@@ -50,13 +53,13 @@ export function AuthEmailForm({
   return (
     <article className="card stackSm">
       <div>
-        <p className="eyebrow">Access</p>
+        <p className="eyebrow">{tr(lang, 'Access', 'Πρόσβαση')}</p>
         <h3>{title}</h3>
         <p className="subtle">{description}</p>
       </div>
       <form className="stackSm" onSubmit={handleSubmit}>
         <label className="fieldLabel" htmlFor="email">
-          Invited email
+          {tr(lang, 'Invited email', 'Email πρόσκλησης')}
         </label>
         <input
           id="email"
@@ -70,7 +73,7 @@ export function AuthEmailForm({
           required
         />
         <button className="button buttonPrimary" disabled={pending} type="submit">
-          {pending ? 'Sending link…' : 'Email magic link'}
+          {pending ? tr(lang, 'Sending link…', 'Αποστολή συνδέσμου…') : tr(lang, 'Email magic link', 'Αποστολή magic link')}
         </button>
       </form>
       {message ? <div className="notice noticeSuccess">{message}</div> : null}

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AlphaShell } from '@/components/alpha-shell';
 import { formatDateTime, formatRelativeClose } from '@/lib/format';
+import { localizedMarketStatus, localizedQuestionFromSlug } from '@/lib/market-copy';
 import { loadNotificationsFeed } from '@/lib/notifications';
 import { normalizeLang, tr, type UiLang } from '@/lib/ui-lang';
 
@@ -32,10 +33,10 @@ export default async function NotificationsPage({
             {closingSoon.map((item) => (
               <Link key={item.id} href={`/markets/${item.slug}${lang === 'el' ? '?lang=el' : ''}`} className="panelBlock">
                 <div className="statusRow statusRowStart">
-                  <strong>{item.question}</strong>
-                  <span className="badgeNeutral">{formatRelativeClose(item.close_time, { calendarAfterDays: 7 })}</span>
+                  <strong>{localizedQuestionFromSlug(item.slug, item.question, lang)}</strong>
+                  <span className="badgeNeutral">{formatRelativeClose(item.close_time, { calendarAfterDays: 7, lang })}</span>
                 </div>
-                <p className="subtle">{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(item.close_time)}</p>
+                <p className="subtle">{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(item.close_time, lang)}</p>
               </Link>
             ))}
             {closingSoon.length === 0 ? <p className="subtle">{tr(lang, 'No markets closing in the next 6 hours.', 'Δεν υπάρχουν αγορές που λήγουν στις επόμενες 6 ώρες.')}</p> : null}
@@ -49,10 +50,10 @@ export default async function NotificationsPage({
               <Link key={item.id} href={`/markets/${item.slug}${lang === 'el' ? '?lang=el' : ''}`} className="panelBlock">
                 <div className="statusRow statusRowStart">
                   <strong>{eventLabel(item.status, lang)}</strong>
-                  <span className="badgeNeutral">{item.status}</span>
+                  <span className="badgeNeutral">{localizedMarketStatus(item.status, lang, 'short')}</span>
                 </div>
-                <p className="panelText">{item.question}</p>
-                <p className="subtle">{tr(lang, 'Updated', 'Ενημερώθηκε')} {formatDateTime(item.updated_at ?? item.close_time)}</p>
+                <p className="panelText">{localizedQuestionFromSlug(item.slug, item.question, lang)}</p>
+                <p className="subtle">{tr(lang, 'Updated', 'Ενημερώθηκε')} {formatDateTime(item.updated_at ?? item.close_time, lang)}</p>
               </Link>
             ))}
             {recentEvents.length === 0 ? <p className="subtle">{tr(lang, 'No recent close, resolution, or settlement updates.', 'Δεν υπάρχουν πρόσφατα updates για κλείσιμο, επίλυση ή διακανονισμό.')}</p> : null}

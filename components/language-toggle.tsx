@@ -22,7 +22,7 @@ export function LanguageToggle() {
   const current = params.get('lang') === 'el' ? 'el' : 'en';
 
   return (
-    <div className="langToggle" role="group" aria-label="Language">
+    <div className="langToggle" role="group" aria-label={current === 'el' ? 'Γλώσσα' : 'Language'}>
       <Link className={current === 'en' ? 'langToggleItem langToggleItemActive' : 'langToggleItem'} href={hrefWithLang(pathname, params, 'en')}>
         EN
       </Link>

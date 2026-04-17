@@ -146,20 +146,20 @@ export default async function ProfilePage({
           <section className="metricsGrid accountMetricsGrid">
             <article className="card stackSm">
               <p className="eyebrow">{tr(lang, 'Wallet balance', 'Υπόλοιπο πορτοφολιού')}</p>
-              <div className="metricValue">{viewer.wallet ? formatEur(Number(viewer.wallet.available_balance ?? 0)) : '—'}</div>
+              <div className="metricValue">{viewer.wallet ? formatEur(Number(viewer.wallet.available_balance ?? 0), lang) : '—'}</div>
               <p className="subtle">{tr(lang, 'Available to trade now', 'Διαθέσιμο για συναλλαγές τώρα')}</p>
             </article>
 
             <article className="card stackSm">
               <p className="eyebrow">{tr(lang, 'Realized PnL', 'Πραγματοποιημένο PnL')}</p>
-              <div className="metricValue">{viewer.wallet ? formatEur(Number(viewer.wallet.realized_pnl ?? 0)) : '—'}</div>
+              <div className="metricValue">{viewer.wallet ? formatEur(Number(viewer.wallet.realized_pnl ?? 0), lang) : '—'}</div>
               <p className="subtle">{tr(lang, 'Closed outcomes and settled markets', 'Κλεισμένα αποτελέσματα και διακανονισμένες αγορές')}</p>
             </article>
 
             <article className="card stackSm">
               <p className="eyebrow">{tr(lang, 'Role', 'Ρόλος')}</p>
               <div className="accountRolePill badgeNeutral">{viewer.profile?.role?.toUpperCase() ?? 'USER'}</div>
-              <p className="subtle">{tr(lang, 'Session updated', 'Ενημέρωση συνεδρίας')} {formatDateTime(viewer.wallet?.updated_at ?? viewer.profile?.created_at)}</p>
+              <p className="subtle">{tr(lang, 'Session updated', 'Ενημέρωση συνεδρίας')} {formatDateTime(viewer.wallet?.updated_at ?? viewer.profile?.created_at, lang)}</p>
             </article>
           </section>
 
@@ -210,14 +210,14 @@ export default async function ProfilePage({
                 </div>
                 <div className="statusRow">
                   <span>{tr(lang, 'Account created', 'Δημιουργία λογαριασμού')}</span>
-                  <span className="badgeNeutral">{formatDateTime(viewer.profile?.created_at)}</span>
+                  <span className="badgeNeutral">{formatDateTime(viewer.profile?.created_at, lang)}</span>
                 </div>
                 <div className="statusRow">
                   <span>{tr(lang, 'Wallet currency', 'Νόμισμα πορτοφολιού')}</span>
                   <span className="badgeNeutral">{viewer.wallet?.currency ?? 'EUR'}</span>
                 </div>
               </div>
-              <SignOutButton nextPath={lang === 'el' ? '/profile?lang=el' : '/profile'} />
+              <SignOutButton nextPath={lang === 'el' ? '/profile?lang=el' : '/profile'} lang={lang} />
             </article>
 
             <article className="card stackSm">
@@ -268,6 +268,7 @@ export default async function ProfilePage({
 
           <AuthEmailForm
             nextPath={lang === 'el' ? '/profile?lang=el' : '/profile'}
+            lang={lang}
             title={tr(lang, 'Sign in to MANTIS', 'Σύνδεση στο MANTIS')}
             description={tr(
               lang,

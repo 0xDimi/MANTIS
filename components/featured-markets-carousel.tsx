@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import type { BoardMarket } from '@/lib/alpha-read-model';
+import { tr } from '@/lib/ui-lang';
 import type { UiLang } from '@/lib/ui-lang';
 import { FeaturedMarketCard } from '@/components/featured-market-card';
 
@@ -21,8 +22,8 @@ export function FeaturedMarketsCarousel({ markets, lang }: FeaturedMarketsCarous
   }
 
   return (
-    <section className="featuredCarouselWrap" aria-label="Featured markets">
-      <button className="featuredNavButton" type="button" onClick={() => scrollByDirection('prev')} aria-label="Previous featured market">
+    <section className="featuredCarouselWrap" aria-label={tr(lang, 'Featured markets', 'Προτεινόμενες αγορές')}>
+      <button className="featuredNavButton" type="button" onClick={() => scrollByDirection('prev')} aria-label={tr(lang, 'Previous featured market', 'Προηγούμενη προτεινόμενη αγορά')}>
         ‹
       </button>
 
@@ -32,7 +33,7 @@ export function FeaturedMarketsCarousel({ markets, lang }: FeaturedMarketsCarous
         ))}
       </div>
 
-      <button className="featuredNavButton" type="button" onClick={() => scrollByDirection('next')} aria-label="Next featured market">
+      <button className="featuredNavButton" type="button" onClick={() => scrollByDirection('next')} aria-label={tr(lang, 'Next featured market', 'Επόμενη προτεινόμενη αγορά')}>
         ›
       </button>
     </section>

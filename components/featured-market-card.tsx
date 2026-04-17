@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
+import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type FeaturedMarketCardProps = {
@@ -28,37 +29,10 @@ const contextByCategory: Record<string, { en: string; el: string }> = {
   }
 };
 
-function labelize(value: string) {
-  return value
-    .replace(/[-_]/g, ' ')
-    .replace(/\w\S*/g, (part) => part.charAt(0).toUpperCase() + part.slice(1));
-}
-
 function statusTone(status: string) {
   if (status === 'open') return 'badgeYes';
   if (status === 'resolved' || status === 'settled') return 'badgeNeutral';
   return 'badgeNo';
-}
-
-function statusLabel(status: string, lang: UiLang) {
-  switch (status) {
-    case 'open':
-      return tr(lang, 'Open', 'Ανοιχτή');
-    case 'draft':
-      return tr(lang, 'Draft', 'Πρόχειρη');
-    case 'resolved':
-      return tr(lang, 'Resolved', 'Επιλυμένη');
-    case 'settled':
-      return tr(lang, 'Settled', 'Διακανονισμένη');
-    case 'void':
-      return 'VOID';
-    case 'closed':
-      return tr(lang, 'Closed', 'Κλειστή');
-    case 'paused':
-      return tr(lang, 'Paused', 'Σε παύση');
-    default:
-      return labelize(status);
-  }
 }
 
 function marketHref(slug: string, lang: UiLang, side?: 'yes' | 'no') {
@@ -77,6 +51,8 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
   const noCents = Math.round(noProb * 100);
   const href = marketHref(market.slug, lang);
   const volume = market.state?.volumeTotal ?? 0;
+  const yesLabel = localizedOutcomeLabel('yes', 'yes', lang);
+  const noLabel = localizedOutcomeLabel('no', 'no', lang);
   const context = contextByCategory[market.category.toLowerCase()] ?? {
     en: 'Watch for new verified updates, this market can reprice quickly close to deadline.',
     el: 'Παρακολούθησε τις νέες επιβεβαιωμένες ενημερώσεις, αυτή η αγορά μπορεί να ανατιμολογηθεί γρήγορα κοντά στη λήξη.'
@@ -88,8 +64,8 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
 
       <div className="featuredDistinctShell">
         <div className="featuredDistinctTop">
-          <span className="marketCategory">{labelize(market.category)}</span>
-          <span className={statusTone(market.status)}>{statusLabel(market.status, lang)}</span>
+          <span className="marketCategory">{localizedCategory(market.category, lang)}</span>
+          <span className={statusTone(market.status)}>{localizedMarketStatus(market.status, lang)}</span>
         </div>
 
         <div className="featuredDistinctBody">
@@ -110,18 +86,18 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
         </div>
 
         <div className="featuredDistinctMeta">
-          {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume)}</span> : null}
-          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(market.closeTime)}</span>
-          {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt)}</span> : null}
+          {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume, lang)}</span> : null}
+          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(market.closeTime, { lang })}</span>
+          {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt, lang)}</span> : null}
         </div>
 
         <div className="featuredDistinctActions">
           <Link className="button buttonYes featuredActionBtn" href={marketHref(market.slug, lang, 'yes')}>
-            <span>YES</span>
+            <span>{yesLabel}</span>
             <strong>{yesCents}¢</strong>
           </Link>
           <Link className="button buttonNo featuredActionBtn" href={marketHref(market.slug, lang, 'no')}>
-            <span>NO</span>
+            <span>{noLabel}</span>
             <strong>{noCents}¢</strong>
           </Link>
         </div>

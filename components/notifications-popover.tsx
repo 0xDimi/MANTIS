@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { formatDateTime, formatRelativeClose } from '@/lib/format';
+import { localizedMarketStatus, localizedQuestionFromSlug } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import type { NotificationRow } from '@/lib/notifications';
 
@@ -79,10 +80,10 @@ export function NotificationsPopover({ count, lang, closingSoon, recentEvents, e
                 closingSoon.map((item) => (
                   <Link key={item.id} href={hrefFor(item.slug, lang)} className="notifRow" onClick={() => setOpen(false)}>
                     <div className="notifRowTop">
-                      <strong>{item.question}</strong>
-                      <span className="badgeNeutral">{formatRelativeClose(item.close_time, { calendarAfterDays: 7 })}</span>
+                      <strong>{localizedQuestionFromSlug(item.slug, item.question, lang)}</strong>
+                      <span className="badgeNeutral">{formatRelativeClose(item.close_time, { calendarAfterDays: 7, lang })}</span>
                     </div>
-                    <p>{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(item.close_time)}</p>
+                    <p>{tr(lang, 'Closes', 'Κλείνει')} {formatDateTime(item.close_time, lang)}</p>
                   </Link>
                 ))
               ) : (
@@ -97,10 +98,10 @@ export function NotificationsPopover({ count, lang, closingSoon, recentEvents, e
                   <Link key={item.id} href={hrefFor(item.slug, lang)} className="notifRow" onClick={() => setOpen(false)}>
                     <div className="notifRowTop">
                       <strong>{eventLabel(item.status, lang)}</strong>
-                      <span className="badgeNeutral">{item.status}</span>
+                      <span className="badgeNeutral">{localizedMarketStatus(item.status, lang, 'short')}</span>
                     </div>
-                    <p>{item.question}</p>
-                    <p>{tr(lang, 'Updated', 'Ενημερώθηκε')} {formatDateTime(item.updated_at ?? item.close_time)}</p>
+                    <p>{localizedQuestionFromSlug(item.slug, item.question, lang)}</p>
+                    <p>{tr(lang, 'Updated', 'Ενημερώθηκε')} {formatDateTime(item.updated_at ?? item.close_time, lang)}</p>
                   </Link>
                 ))
               ) : (
