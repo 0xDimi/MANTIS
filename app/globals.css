@@ -1196,7 +1196,7 @@ code {
 }
 
 .marketTrendLine {
-  height: 208px;
+  height: 224px;
   position: relative;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.04);
@@ -1218,7 +1218,7 @@ code {
   flex-direction: column;
   justify-content: space-between;
   color: rgba(214, 224, 241, 0.74);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .marketTrendAxisX {
@@ -1229,7 +1229,7 @@ code {
   display: flex;
   justify-content: space-between;
   color: rgba(206, 216, 237, 0.64);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .marketTrendRangeTabs {
@@ -2335,7 +2335,7 @@ code {
   }
 
   .marketTrendLine {
-    height: 206px;
+    height: 244px;
   }
 
   .marketTicketCard {
