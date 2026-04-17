@@ -7,7 +7,6 @@ import { tr, type UiLang } from '@/lib/ui-lang';
 type MarketTrendPanelProps = {
   slug: string;
   yesPrice: number;
-  noPrice: number;
   volumeTotal: number;
   liquidity: number;
   participants: number;
@@ -54,7 +53,6 @@ function toAreaPath(points: Array<{ x: number; y: number }>) {
 export function MarketTrendPanel({
   slug,
   yesPrice,
-  noPrice,
   volumeTotal,
   liquidity,
   participants,
@@ -85,7 +83,7 @@ export function MarketTrendPanel({
     <section className="marketTrendPanel">
       <div className="marketTrendHead">
         <div>
-          <p className="marketTrendLabel">{tr(lang, 'Live chance', 'Ζωντανή πιθανότητα')} {yesLabel}</p>
+          <p className="marketTrendLabel">{tr(lang, 'Forecast', 'Πρόβλεψη')} {yesLabel}</p>
           <p className="marketTrendValue">{formatPercent(yesPrice)}</p>
         </div>
 
@@ -114,11 +112,11 @@ export function MarketTrendPanel({
         <svg viewBox="0 0 100 100" preserveAspectRatio="none">
           <defs>
             <linearGradient id={`mantisTrend-${slug}`} x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stopColor="rgba(56,189,248,0.94)" />
-              <stop offset="100%" stopColor="rgba(139,92,246,0.88)" />
+              <stop offset="0%" stopColor="rgba(66,169,255,0.95)" />
+              <stop offset="100%" stopColor="rgba(108,137,255,0.9)" />
             </linearGradient>
             <linearGradient id={`mantisTrendArea-${slug}`} x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="rgba(99,102,241,0.24)" />
+              <stop offset="0%" stopColor="rgba(99,102,241,0.18)" />
               <stop offset="100%" stopColor="rgba(99,102,241,0)" />
             </linearGradient>
           </defs>
@@ -132,16 +130,16 @@ export function MarketTrendPanel({
                 x2="92"
                 y1={y.toFixed(2)}
                 y2={y.toFixed(2)}
-                stroke="rgba(220, 230, 248, 0.12)"
-                strokeDasharray="2 4"
+                stroke="rgba(199, 214, 241, 0.14)"
+                strokeDasharray="3 6"
               />
             );
           })}
 
           <path d={areaPath} fill={`url(#mantisTrendArea-${slug})`} />
-          <path d={linePath} stroke={`url(#mantisTrend-${slug})`} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="2.5" fill="#e5edff" />
-          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="5.3" fill="rgba(165, 180, 252, 0.22)" />
+          <path d={linePath} stroke={`url(#mantisTrend-${slug})`} strokeWidth="2.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="2.7" fill="#e5edff" />
+          <circle cx={latestPoint.x.toFixed(2)} cy={latestPoint.y.toFixed(2)} r="6" fill="rgba(165, 180, 252, 0.2)" />
         </svg>
 
         <div className="marketTrendAxisY">
@@ -161,8 +159,6 @@ export function MarketTrendPanel({
       </div>
 
       <div className="marketTrendMeta">
-        <span>{tr(lang, 'Chance', 'Πιθανότητα')} {yesLabel}: {formatPercent(yesPrice)}</span>
-        <span>{tr(lang, 'NO chance', 'Πιθανότητα Όχι')} {formatPercent(noPrice)}</span>
         <span>{tr(lang, 'Volume', 'Όγκος')} €{formatCompact(volumeTotal, lang)}</span>
         <span>{tr(lang, 'Liquidity', 'Ρευστότητα')} €{formatCompact(liquidity, lang)}</span>
         <span>{tr(lang, 'Participants', 'Συμμετέχοντες')} {participants}</span>

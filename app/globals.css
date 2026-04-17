@@ -1106,91 +1106,41 @@ code {
   color: #ccd5e8;
 }
 
-.marketSignalBand {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.015);
-  padding: 10px;
+.marketMetaStrip {
   display: grid;
-  grid-template-columns: minmax(180px, 0.52fr) minmax(0, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
+  padding: 2px 0 4px;
 }
 
-.marketSignalPrimary {
-  border-radius: 11px;
-  border: 1px solid rgba(124, 92, 255, 0.34);
-  background: rgba(124, 92, 255, 0.12);
-  padding: 9px 10px;
+.marketMetaItem {
+  min-height: 58px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: grid;
-  gap: 2px;
+  align-content: center;
+  gap: 4px;
+  padding-bottom: 8px;
 }
 
-.marketSignalPrimary span {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #d9d1ff;
-}
-
-.marketSignalPrimary strong {
-  font-size: clamp(32px, 3.4vw, 40px);
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-.marketSignalPrimary em {
-  font-style: normal;
-  color: #a8f4c6;
-  font-size: 12px;
-}
-
-.marketSignalList {
-  display: grid;
-  gap: 0;
-}
-
-.marketSignalRow {
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.marketSignalRow:first-child {
-  border-top: 0;
-}
-
-.marketSignalRow span {
+.marketMetaItem span {
   font-size: 11px;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: #91a0ba;
 }
 
-.marketSignalRow strong {
+.marketMetaItem strong {
   font-size: 13px;
   color: #dbe4f4;
-  text-align: right;
-}
-
-.marketSignalRow .badgeYes,
-.marketSignalRow .badgeNo,
-.marketSignalRow .badgeNeutral {
-  width: fit-content;
-  padding: 3px 8px;
-  font-size: 10px;
 }
 
 .marketChartSurface {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.018);
-  padding: 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 4px 0 0;
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .marketTrendPanel {
@@ -1248,9 +1198,9 @@ code {
 .marketTrendLine {
   height: 208px;
   position: relative;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(58, 125, 255, 0.16) 0%, rgba(58, 125, 255, 0.02) 72%), rgba(255, 255, 255, 0.014);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.006);
   overflow: hidden;
 }
 
@@ -1267,7 +1217,7 @@ code {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: rgba(214, 224, 241, 0.62);
+  color: rgba(214, 224, 241, 0.72);
   font-size: 10px;
 }
 
@@ -1278,7 +1228,7 @@ code {
   bottom: 8px;
   display: flex;
   justify-content: space-between;
-  color: rgba(206, 216, 237, 0.62);
+  color: rgba(206, 216, 237, 0.7);
   font-size: 10px;
 }
 
@@ -1316,8 +1266,8 @@ code {
   transform: translate(-100%, -92%);
   min-height: 20px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(6, 10, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(6, 10, 24, 0.9);
   color: #e0eaff;
   font-size: 10px;
   font-weight: 700;
@@ -1332,7 +1282,7 @@ code {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  color: var(--text-3);
+  color: #a4b0c8;
   font-size: 12px;
 }
 
@@ -1407,29 +1357,86 @@ code {
   top: 10px;
 }
 
-.marketInfoStack {
-  margin-top: 18px;
+.marketTrustLayer {
+  margin-top: 10px;
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.marketTrustTabs {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.marketTrustTab {
+  min-height: 34px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #96a2bb;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.marketTrustTabActive {
+  border-color: rgba(124, 92, 255, 0.46);
+  background: rgba(124, 92, 255, 0.14);
+  color: #f1f4fa;
+}
+
+.marketTrustContent {
+  min-height: 170px;
+}
+
+.marketTrustSection {
+  max-width: 1040px;
+}
+
+.marketTrustLead {
+  margin: 0;
+  color: #bdc8dc;
+}
+
+.marketTrustSection p {
+  margin: 0;
+  color: #cfd8ea;
+  line-height: 1.5;
+}
+
+.marketTrustResolutionGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
-.marketInfoSection {
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.015);
-  padding: 12px;
+.marketTrustResolutionGrid div {
+  display: grid;
+  gap: 4px;
 }
 
-.marketInfoSection h3 {
-  margin: 0 0 6px;
-  font-size: 16px;
+.marketTrustResolutionGrid span {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8d9bb5;
 }
 
-.marketInfoSection p {
-  margin: 0 0 8px;
-  color: var(--text-2);
-  line-height: 1.45;
+.marketTrustResolutionGrid strong {
+  color: #dbe4f4;
+  font-size: 13px;
+}
+
+.marketTrustSubSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+  display: grid;
+  gap: 8px;
 }
 
 .marketCategory,
@@ -1539,8 +1546,12 @@ code {
 .ticketSurfaceHead {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
+}
+
+.ticketSurfaceHeadCompact {
+  padding-bottom: 2px;
 }
 
 .ticketSurfaceEyebrow {
@@ -1577,8 +1588,22 @@ code {
 }
 
 .ticketSurfaceClose {
-  color: var(--text-3);
+  color: #9aa6bf;
+  font-size: 11px;
+}
+
+.ticketSurfaceStatus {
+  min-height: 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: #d3ddee;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
   font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .ticketSurfaceRail {
@@ -1684,13 +1709,12 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0;
   padding: 0 12px;
   transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 }
 
-.ticketSideLabel,
-.ticketSidePrice {
+.ticketSideLabel {
   font-size: clamp(15px, 1.1vw, 19px);
   font-weight: 650;
   letter-spacing: -0.03em;
@@ -1811,7 +1835,7 @@ code {
 
 .ticketLiveMeta {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 10px;
   flex-wrap: wrap;
   color: #8f9db7;
@@ -2133,8 +2157,7 @@ code {
   .ticketQuoteGrid,
   .ticketSummaryPrimary,
   .ticketSummarySecondary,
-  .ticketPreviewMetrics,
-  .marketInfoStack {
+  .ticketPreviewMetrics {
     grid-template-columns: 1fr;
   }
 
@@ -2239,7 +2262,7 @@ code {
     align-items: flex-start;
   }
 
-  .marketSignalBand {
+  .marketMetaStrip {
     grid-template-columns: 1fr;
   }
 
@@ -2249,6 +2272,10 @@ code {
 
   .marketTrendLine {
     height: 150px;
+  }
+
+  .marketTrustResolutionGrid {
+    grid-template-columns: 1fr;
   }
 
   .marketTicketJumpButton {
@@ -2303,14 +2330,13 @@ code {
     gap: 12px;
   }
 
-  .marketSignalBand {
-    padding: 9px;
-    gap: 9px;
+  .marketMetaStrip {
+    gap: 12px;
   }
 
   .marketChartSurface {
-    padding: 14px;
-    gap: 12px;
+    padding: 6px 0 0;
+    gap: 10px;
   }
 
   .marketTrendLine {
@@ -2327,8 +2353,8 @@ code {
     padding: 16px;
   }
 
-  .marketInfoStack {
-    margin-top: 14px;
-    gap: 12px;
+  .marketTrustLayer {
+    margin-top: 12px;
+    gap: 10px;
   }
 }

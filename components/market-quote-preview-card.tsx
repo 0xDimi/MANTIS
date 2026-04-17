@@ -98,6 +98,34 @@ function formatCountdown(ms: number, lang: UiLang) {
   return `${seconds}s`;
 }
 
+function formatCloseCountdown(closeTime: string, nowMs: number, lang: UiLang) {
+  const closeMs = new Date(closeTime).getTime();
+  if (!Number.isFinite(closeMs)) return '—';
+
+  const diffMs = closeMs - nowMs;
+  if (diffMs <= 0) return tr(lang, 'Closed', 'Κλειστή');
+
+  const diffMinutes = Math.ceil(diffMs / 60_000);
+  if (diffMinutes < 60) {
+    return lang === 'el' ? `σε ${Math.max(diffMinutes, 1)}λ` : `${Math.max(diffMinutes, 1)}m`;
+  }
+
+  const diffHours = Math.ceil(diffMinutes / 60);
+  if (diffHours < 24) {
+    return lang === 'el' ? `σε ${diffHours}ω` : `${diffHours}h`;
+  }
+
+  const diffDays = Math.ceil(diffHours / 24);
+  if (diffDays <= 6) {
+    return lang === 'el' ? `σε ${diffDays}η` : `${diffDays}d`;
+  }
+
+  return new Intl.DateTimeFormat(lang === 'el' ? 'el-GR' : 'en-GB', {
+    day: '2-digit',
+    month: 'short'
+  }).format(new Date(closeMs));
+}
+
 function formatTime(value: string | null | undefined, lang: UiLang) {
   if (!value) return '—';
 
@@ -221,8 +249,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
 
   const closeCountdown = useMemo(() => {
     if (!Number.isFinite(closeMs)) return '—';
-    return closeMs <= nowMs ? tr(lang, 'Closed', 'Κλειστή') : formatCountdown(closeMs - nowMs, lang);
-  }, [closeMs, nowMs, lang]);
+    return formatCloseCountdown(props.closeTime, nowMs, lang);
+  }, [closeMs, nowMs, lang, props.closeTime]);
 
   const blockedMessage = marketBlockedMessage(props.marketStatus, marketClosed, lang);
   const msToClose = Number.isFinite(closeMs) ? closeMs - nowMs : Infinity;
@@ -543,9 +571,6 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
   }
 
   const liveYes = liveState?.yesPrice ?? 0.5;
-  const liveNo = liveState?.noPrice ?? 0.5;
-  const yesCents = Math.round(liveYes * 100);
-  const noCents = Math.round(liveNo * 100);
 
   const quoteFresh = isQuoteFresh(quote, nowMs);
   const quoteExpired = Boolean(quote?.quote && !quoteFresh);
@@ -570,17 +595,9 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
 
   return (
     <article className="stackMd ticketSurfaceStack">
-      <div className="ticketSurfaceHead">
-        <div className="stackXs">
-          <span className="ticketSurfaceEyebrow">MANTIS</span>
-          <strong className="ticketSurfaceTitle">{tr(lang, 'Trade ticket', 'Δελτίο συναλλαγής')}</strong>
-          <span className="ticketSurfaceHint">{tr(lang, 'Live quote updates while you type.', 'Το quote ενημερώνεται αυτόματα καθώς πληκτρολογείς.')}</span>
-        </div>
-        <div className="ticketSurfaceLive">
-          <span className="ticketSurfaceLiveYes">{yesDisplay} {formatPercent(liveYes)}</span>
-          <span className="ticketSurfaceLiveNo">{noDisplay} {formatPercent(liveNo)}</span>
-          <span className="ticketSurfaceClose">{tr(lang, 'Close', 'Λήξη')} {closeCountdown}</span>
-        </div>
+      <div className="ticketSurfaceHead ticketSurfaceHeadCompact">
+        <span className="ticketSurfaceClose">{tr(lang, 'Close', 'Λήξη')} {closeCountdown}</span>
+        <span className="ticketSurfaceStatus">{localizedMarketStatus(props.marketStatus, lang, 'short')}</span>
       </div>
 
       <div className="ticketSurfaceRail" aria-hidden="true">
@@ -618,7 +635,6 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
             onClick={() => setSide('yes')}
           >
             <span className="ticketSideLabel">{yesDisplay}</span>
-            <span className="ticketSidePrice">{yesCents}¢</span>
           </button>
           <button
             className={side === 'no' ? 'ticketSideButton ticketSideButtonNoActive' : 'ticketSideButton'}
@@ -626,7 +642,6 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
             onClick={() => setSide('no')}
           >
             <span className="ticketSideLabel">{noDisplay}</span>
-            <span className="ticketSidePrice">{noCents}¢</span>
           </button>
         </div>
 
@@ -794,7 +809,6 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
       {liveState ? (
         <div className="ticketLiveMeta">
           <span>{tr(lang, 'Last trade', 'Τελευταία συναλλαγή')}: {formatTime(liveState.lastTradeAt, lang)}</span>
-          <span>{tr(lang, 'Status', 'Κατάσταση')}: {localizedMarketStatus(props.marketStatus, lang, 'short')}</span>
         </div>
       ) : null}
     </article>
