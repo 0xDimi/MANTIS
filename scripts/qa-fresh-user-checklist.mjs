@@ -267,6 +267,7 @@ assert(openMarket?.id, 'No open market for trading test');
 
 let sessionStable = true;
 let sessionFailure = null;
+let sessionWarnings = [];
 
 for (let i = 0; i < 6; i += 1) {
   const quote = await apiPost(
@@ -280,7 +281,7 @@ for (let i = 0; i < 6; i += 1) {
     authCookie
   );
 
-  if (quote.response.status === 401 || !quote.response.ok) {
+  if (quote.response.status === 401) {
     sessionStable = false;
     sessionFailure = {
       stage: 'quote',
@@ -289,6 +290,17 @@ for (let i = 0; i < 6; i += 1) {
       body: quote.body
     };
     break;
+  }
+
+  if (!quote.response.ok) {
+    sessionWarnings.push({
+      stage: 'quote',
+      iteration: i + 1,
+      status: quote.response.status,
+      body: quote.body
+    });
+    await wait(5_000);
+    continue;
   }
 
   const execution = await apiPost(
@@ -304,7 +316,7 @@ for (let i = 0; i < 6; i += 1) {
     authCookie
   );
 
-  if (execution.response.status === 401 || !execution.response.ok) {
+  if (execution.response.status === 401) {
     sessionStable = false;
     sessionFailure = {
       stage: 'trade',
@@ -315,13 +327,22 @@ for (let i = 0; i < 6; i += 1) {
     break;
   }
 
+  if (!execution.response.ok) {
+    sessionWarnings.push({
+      stage: 'trade',
+      iteration: i + 1,
+      status: execution.response.status,
+      body: execution.body
+    });
+  }
+
   await wait(5_000);
 }
 
 checks.push({
   check: 'session does not randomly expire during trading',
   pass: sessionStable,
-  detail: sessionFailure
+  detail: sessionFailure ?? (sessionWarnings.length > 0 ? { warnings: sessionWarnings } : null)
 });
 
 const serverClientForLogout = createServerClient(supabaseUrl, anonKey, {
