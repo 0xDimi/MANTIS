@@ -42,7 +42,6 @@ export async function AlphaShell({
   const profileHref = lang === 'el' ? '/profile?lang=el' : '/profile';
   const signInHref = lang === 'el' ? '/access?lang=el' : '/access';
   const notificationsHref = lang === 'el' ? '/notifications?lang=el' : '/notifications';
-  const notificationsCount = notifications.closingSoon.length + notifications.recentEvents.length;
 
   return (
     <div className="shell">
@@ -85,7 +84,7 @@ export async function AlphaShell({
           </Suspense>
 
           <NotificationsPopover
-            count={notificationsCount}
+            viewerId={summary.viewer.id}
             lang={lang}
             closingSoon={notifications.closingSoon}
             recentEvents={notifications.recentEvents}

@@ -18,6 +18,7 @@ export async function loadHeaderSummary() {
         cash: null as number | null,
         portfolio: null as number | null,
         viewer: {
+          id: null as string | null,
           displayName: null as string | null,
           email: null as string | null,
           initials: 'ME'
@@ -88,6 +89,7 @@ export async function loadHeaderSummary() {
       cash: round2(Number((wallet as any)?.available_balance ?? 0)),
       portfolio: round2(marketValueTotal),
       viewer: {
+        id: user.id,
         displayName,
         email,
         initials
@@ -99,6 +101,7 @@ export async function loadHeaderSummary() {
       cash: null as number | null,
       portfolio: null as number | null,
       viewer: {
+        id: null as string | null,
         displayName: null as string | null,
         email: null as string | null,
         initials: 'ME'

@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatDateTime, formatRelativeClose } from '@/lib/format';
 import { localizedMarketStatus, localizedQuestionFromSlug } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 import type { NotificationRow } from '@/lib/notifications';
 
 type NotificationsPopoverProps = {
-  count: number;
+  viewerId?: string | null;
   lang: UiLang;
   closingSoon: Array<NotificationRow & { kind: 'closing' }>;
   recentEvents: Array<NotificationRow & { kind: 'event' }>;
@@ -26,12 +26,44 @@ function hrefFor(slug: string, lang: UiLang) {
   return `/markets/${slug}${lang === 'el' ? '?lang=el' : ''}`;
 }
 
-export function NotificationsPopover({ count, lang, closingSoon, recentEvents, error }: NotificationsPopoverProps) {
+export function NotificationsPopover({ viewerId, lang, closingSoon, recentEvents, error }: NotificationsPopoverProps) {
   const [open, setOpen] = useState(false);
+  const [seenAtMs, setSeenAtMs] = useState(0);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const storageKey = `mantis_notifications_seen_at:${viewerId ?? 'anon'}`;
+
+  const unreadCount = useMemo(() => {
+    const itemTimes = [
+      ...closingSoon.map((item) => new Date(item.close_time).getTime()),
+      ...recentEvents.map((item) => new Date(item.updated_at ?? item.close_time).getTime())
+    ].filter((value) => Number.isFinite(value));
+
+    if (itemTimes.length === 0) return 0;
+    if (!seenAtMs) return itemTimes.length;
+
+    return itemTimes.filter((value) => value > seenAtMs).length;
+  }, [closingSoon, recentEvents, seenAtMs]);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      const parsed = raw ? Number(raw) : 0;
+      setSeenAtMs(Number.isFinite(parsed) ? parsed : 0);
+    } catch {
+      setSeenAtMs(0);
+    }
+  }, [storageKey]);
 
   useEffect(() => {
     if (!open) return;
+
+    const now = Date.now();
+    setSeenAtMs(now);
+    try {
+      window.localStorage.setItem(storageKey, String(now));
+    } catch {
+      // ignore storage failures
+    }
 
     function onClickOutside(event: MouseEvent) {
       if (!rootRef.current) return;
@@ -50,7 +82,7 @@ export function NotificationsPopover({ count, lang, closingSoon, recentEvents, e
       document.removeEventListener('mousedown', onClickOutside);
       document.removeEventListener('keydown', onEscape);
     };
-  }, [open]);
+  }, [open, storageKey]);
 
   return (
     <div className="notifPopoverRoot" ref={rootRef}>
@@ -62,7 +94,7 @@ export function NotificationsPopover({ count, lang, closingSoon, recentEvents, e
         onClick={() => setOpen((value) => !value)}
       >
         <span aria-hidden="true">🔔</span>
-        {count > 0 ? <span className="notifBadge">{Math.min(count, 99)}</span> : null}
+        {unreadCount > 0 ? <span className="notifBadge">{Math.min(unreadCount, 99)}</span> : null}
       </button>
 
       {open ? (
