@@ -511,7 +511,8 @@ code {
   position: fixed;
   inset: 0;
   z-index: 120;
-  background: rgba(6, 8, 13, 0.72);
+  background: rgba(4, 6, 11, 0.84);
+  backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
   padding: 16px;
@@ -519,6 +520,18 @@ code {
 
 .alphaModalCard {
   width: min(560px, 100%);
+  border: 1px solid rgba(155, 169, 255, 0.26);
+  background: linear-gradient(180deg, rgba(12, 17, 34, 0.98) 0%, rgba(9, 13, 28, 0.98) 100%);
+  box-shadow: 0 18px 42px rgba(2, 4, 10, 0.62);
+}
+
+.alphaModalCard h2,
+.alphaModalCard li {
+  color: #eef3ff;
+}
+
+.alphaModalCard .panelText {
+  color: #d9e3fb;
 }
 
 .alphaOnboardingSteps {
