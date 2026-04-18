@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { buildAmmV0Quote, type TradeAction, type TradeInputMode, type TradeSide } from '@/lib/amm-v0';
 import { alphaGuardrails } from '@/lib/alpha-guardrails';
 import { buildQuoteHash } from '@/lib/quote-hash';
@@ -64,6 +65,9 @@ export async function POST(request: Request) {
     const { data: market, error: marketError } = await marketQuery.maybeSingle();
 
     if (marketError) {
+      Sentry.captureException(new Error(marketError.message), {
+        tags: { route: 'api/quotes/preview' }
+      });
       return NextResponse.json({ error: marketError.message }, { status: 500 });
     }
 
@@ -86,6 +90,9 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (stateError) {
+      Sentry.captureException(new Error(stateError.message), {
+        tags: { route: 'api/quotes/preview' }
+      });
       return NextResponse.json({ error: stateError.message }, { status: 500 });
     }
 
@@ -131,6 +138,10 @@ export async function POST(request: Request) {
       data: { user }
     } = await supabase.auth.getUser();
 
+    if (user) {
+      Sentry.setUser({ id: user.id });
+    }
+
     let userLimits: {
       openExposureEur: number;
       exposureAfterEur: number | null;
@@ -147,6 +158,9 @@ export async function POST(request: Request) {
         .maybeSingle();
 
       if (positionError) {
+        Sentry.captureException(new Error(positionError.message), {
+          tags: { route: 'api/quotes/preview' }
+        });
         return NextResponse.json({ error: positionError.message }, { status: 500 });
       }
 
@@ -227,6 +241,10 @@ export async function POST(request: Request) {
     if (error instanceof TradeRequestError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode });
     }
+
+    Sentry.captureException(error, {
+      tags: { route: 'api/quotes/preview' }
+    });
 
     return NextResponse.json(
       {

@@ -1,5 +1,7 @@
 import { AlphaShell } from '@/components/alpha-shell';
-import { normalizeLang, tr } from '@/lib/ui-lang';
+import { cleanUrl } from '@/lib/env-clean';
+import { resolveServerLang } from '@/lib/ui-lang-server';
+import { tr } from '@/lib/ui-lang';
 
 export default async function MorePage({
   searchParams
@@ -7,7 +9,8 @@ export default async function MorePage({
   searchParams?: Promise<{ lang?: string }>;
 }) {
   const params = (await searchParams) ?? {};
-  const lang = normalizeLang(params.lang);
+  const lang = await resolveServerLang({ searchParam: params.lang });
+  const feedbackFormUrl = cleanUrl(process.env.NEXT_PUBLIC_FEEDBACK_FORM_URL);
 
   return (
     <AlphaShell title={tr(lang, 'More', 'Περισσότερα')} eyebrow={tr(lang, 'How MANTIS works', 'Πώς λειτουργεί το MANTIS')} lang={lang}>
@@ -79,6 +82,24 @@ export default async function MorePage({
               'Αυτό είναι περιβάλλον alpha με paper-trading για δοκιμές προϊόντος και επικύρωση UX. Δεν γίνεται μεταφορά πραγματικών χρημάτων σε αυτή τη λειτουργία.'
             )}
           </p>
+        </article>
+
+        <article className="card stackSm">
+          <p className="eyebrow">{tr(lang, 'Feedback', 'Feedback')}</p>
+          <p className="panelText">
+            {tr(
+              lang,
+              'Help us improve onboarding, trading clarity, and reliability. Share friction points after your first trade.',
+              'Βοήθησέ μας να βελτιώσουμε onboarding, σαφήνεια στο trading και αξιοπιστία. Μοιράσου σημεία τριβής μετά την πρώτη συναλλαγή.'
+            )}
+          </p>
+          {feedbackFormUrl ? (
+            <a className="button buttonPrimary" href={feedbackFormUrl} target="_blank" rel="noreferrer">
+              {tr(lang, 'Open feedback form', 'Άνοιγμα φόρμας feedback')}
+            </a>
+          ) : (
+            <p className="subtle">{tr(lang, 'Feedback form will appear here once NEXT_PUBLIC_FEEDBACK_FORM_URL is set.', 'Η φόρμα feedback θα εμφανιστεί εδώ μόλις οριστεί το NEXT_PUBLIC_FEEDBACK_FORM_URL.')}</p>
+          )}
         </article>
       </section>
     </AlphaShell>

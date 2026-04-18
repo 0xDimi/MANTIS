@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { captureEvent } from '@/lib/client-telemetry';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type HeaderAccountMenuProps = {
@@ -58,6 +59,12 @@ export function HeaderAccountMenu({
       const supabase = getSupabaseBrowserClient();
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
+      captureEvent('logout', {
+        source: 'header_account_menu',
+        nextPath: profileHref
+      });
+
       window.location.assign(profileHref);
     } catch (err) {
       setError(err instanceof Error ? err.message : tr(lang, 'Unable to sign out', 'Αδυναμία αποσύνδεσης'));

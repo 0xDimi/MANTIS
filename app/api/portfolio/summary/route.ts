@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 function round2(value: number) {
@@ -17,6 +18,8 @@ export async function GET() {
       return NextResponse.json({ error: 'auth required' }, { status: 401 });
     }
 
+    Sentry.setUser({ id: user.id });
+
     const [{ data: wallet, error: walletError }, { data: positions, error: positionsError }] = await Promise.all([
       supabase
         .from('wallet_accounts')
@@ -32,10 +35,16 @@ export async function GET() {
     ]);
 
     if (walletError) {
+      Sentry.captureException(new Error(walletError.message), {
+        tags: { route: 'api/portfolio/summary' }
+      });
       return NextResponse.json({ error: walletError.message }, { status: 500 });
     }
 
     if (positionsError) {
+      Sentry.captureException(new Error(positionsError.message), {
+        tags: { route: 'api/portfolio/summary' }
+      });
       return NextResponse.json({ error: positionsError.message }, { status: 500 });
     }
 
@@ -59,10 +68,16 @@ export async function GET() {
     ]);
 
     if (marketsResult.error) {
+      Sentry.captureException(new Error(marketsResult.error.message), {
+        tags: { route: 'api/portfolio/summary' }
+      });
       return NextResponse.json({ error: marketsResult.error.message }, { status: 500 });
     }
 
     if (statesResult.error) {
+      Sentry.captureException(new Error(statesResult.error.message), {
+        tags: { route: 'api/portfolio/summary' }
+      });
       return NextResponse.json({ error: statesResult.error.message }, { status: 500 });
     }
 
@@ -145,6 +160,10 @@ export async function GET() {
       { status: 200 }
     );
   } catch (error) {
+    Sentry.captureException(error, {
+      tags: { route: 'api/portfolio/summary' }
+    });
+
     return NextResponse.json(
       {
         error: 'portfolio summary unavailable',

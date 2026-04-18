@@ -14,5 +14,12 @@ const nextConfig: NextConfig = {
 };
 
 export default withSentryConfig(nextConfig, {
-  silent: true
+  silent: true,
+  reactComponentAnnotation: {
+    enabled: true
+  },
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true
+  },
+  disableLogger: true
 });

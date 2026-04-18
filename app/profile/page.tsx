@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { AuthEmailForm } from '@/components/auth-email-form';
+import { FirstLoginOnboardingModal } from '@/components/first-login-onboarding-modal';
 import { SignOutButton } from '@/components/sign-out-button';
 import { AlphaShell } from '@/components/alpha-shell';
 import { formatDateTime, formatEur } from '@/lib/format';
 import { ensureViewerBootstrap } from '@/lib/supabase/bootstrap';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
-import { normalizeLang, tr } from '@/lib/ui-lang';
+import { resolveServerLang } from '@/lib/ui-lang-server';
+import { tr } from '@/lib/ui-lang';
 
 type ViewerAccess = {
   user: {
@@ -113,11 +115,14 @@ function getInitials(nameOrEmail: string | null | undefined) {
 export default async function ProfilePage({
   searchParams
 }: {
-  searchParams?: Promise<{ auth?: string; message?: string; lang?: string }>;
+  searchParams?: Promise<{ auth?: string; message?: string; lang?: string; invite?: string }>;
 }) {
   const params = (await searchParams) ?? {};
-  const lang = normalizeLang(params.lang);
   const viewer = await loadViewerAccess();
+  const lang = await resolveServerLang({
+    searchParam: params.lang,
+    profileLocale: viewer.profile?.locale ?? null
+  });
 
   const profileName = viewer.profile?.display_name ?? viewer.profile?.username ?? viewer.user?.email ?? tr(lang, 'Account owner', 'Κάτοχος λογαριασμού');
   const initials = getInitials(profileName);
@@ -134,6 +139,15 @@ export default async function ProfilePage({
 
       {viewer.user ? (
         <section className="stackMd accountPageShell">
+          <FirstLoginOnboardingModal
+            lang={lang}
+            userId={viewer.user.id}
+            authStatus={params.auth}
+            inviteOpened={params.invite === '1'}
+            showOnboarding={params.auth === 'ok'}
+            walletVisible={Boolean(viewer.wallet)}
+          />
+
           <article className="card accountIdentityCard">
             <div className="accountIdentityAvatar">{initials}</div>
             <div className="stackXs">

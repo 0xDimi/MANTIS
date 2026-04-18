@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { buildAmmV0Quote } from '@/lib/amm-v0';
 import { alphaGuardrails } from '@/lib/alpha-guardrails';
 import { buildQuoteHash } from '@/lib/quote-hash';
@@ -78,6 +79,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'auth required for trade execution' }, { status: 401 });
     }
 
+    Sentry.setUser({ id: user.id });
+
     const { data: market, error: marketError } = await supabase
       .from('markets')
       .select('id,status,b_liquidity,fee_bps,close_time')
@@ -86,6 +89,9 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (marketError) {
+      Sentry.captureException(new Error(marketError.message), {
+        tags: { route: 'api/trades/execute' }
+      });
       return NextResponse.json({ error: marketError.message }, { status: 500 });
     }
 
@@ -111,6 +117,9 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (stateError) {
+      Sentry.captureException(new Error(stateError.message), {
+        tags: { route: 'api/trades/execute' }
+      });
       return NextResponse.json({ error: stateError.message }, { status: 500 });
     }
 
@@ -186,6 +195,9 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (positionError) {
+      Sentry.captureException(new Error(positionError.message), {
+        tags: { route: 'api/trades/execute' }
+      });
       return NextResponse.json({ error: positionError.message }, { status: 500 });
     }
 
@@ -235,6 +247,12 @@ export async function POST(request: Request) {
           ? 409
           : 500;
 
+      if (status >= 500) {
+        Sentry.captureException(new Error(detail), {
+          tags: { route: 'api/trades/execute' }
+        });
+      }
+
       return NextResponse.json(
         {
           error: 'atomic trade execution failed',
@@ -261,6 +279,10 @@ export async function POST(request: Request) {
     if (error instanceof TradeRequestError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode });
     }
+
+    Sentry.captureException(error, {
+      tags: { route: 'api/trades/execute' }
+    });
 
     return NextResponse.json(
       {

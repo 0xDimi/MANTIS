@@ -1,6 +1,7 @@
 import { AlphaShell } from '@/components/alpha-shell';
 import { DiscoverBoard } from '@/components/discover-board';
-import { normalizeLang, tr } from '@/lib/ui-lang';
+import { resolveServerLang } from '@/lib/ui-lang-server';
+import { tr } from '@/lib/ui-lang';
 
 export default async function MarketsPage({
   searchParams
@@ -8,7 +9,7 @@ export default async function MarketsPage({
   searchParams?: Promise<{ lang?: string; view?: string; cat?: string; q?: string }>;
 }) {
   const params = (await searchParams) ?? {};
-  const lang = normalizeLang(params.lang);
+  const lang = await resolveServerLang({ searchParam: params.lang });
   const view = (params.view as 'trending' | 'new' | 'liquid' | 'ending' | undefined) ?? 'trending';
 
   return (

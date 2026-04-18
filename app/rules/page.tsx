@@ -1,5 +1,6 @@
 import { AlphaShell } from '@/components/alpha-shell';
-import { normalizeLang, tr } from '@/lib/ui-lang';
+import { resolveServerLang } from '@/lib/ui-lang-server';
+import { tr } from '@/lib/ui-lang';
 
 export default async function RulesPage({
   searchParams
@@ -7,7 +8,7 @@ export default async function RulesPage({
   searchParams?: Promise<{ lang?: string }>;
 }) {
   const params = (await searchParams) ?? {};
-  const lang = normalizeLang(params.lang);
+  const lang = await resolveServerLang({ searchParam: params.lang });
 
   return (
     <AlphaShell title={tr(lang, 'Rules and resolution', 'Κανόνες και επίλυση')} eyebrow={tr(lang, 'Source hierarchy and clear outcomes', 'Ιεραρχία πηγών και καθαρά αποτελέσματα')} lang={lang}>

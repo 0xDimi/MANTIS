@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { captureEvent } from '@/lib/client-telemetry';
+import { resolvePublicAppUrl } from '@/lib/env-clean';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 export function AuthEmailForm({
@@ -29,8 +31,14 @@ export function AuthEmailForm({
     try {
       const supabase = getSupabaseBrowserClient();
       const origin = window.location.origin;
-      const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? origin).replace(/\/$/, '');
-      const redirectTarget = `${appUrl}/auth/callback`;
+      const appUrl = resolvePublicAppUrl(origin);
+      const redirectTarget = `${appUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+
+      captureEvent('signup started', {
+        redirectTarget,
+        nextPath
+      });
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {

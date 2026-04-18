@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { captureEvent } from '@/lib/client-telemetry';
 import { localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
@@ -404,6 +405,16 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         };
       }
 
+      if (!silent) {
+        captureEvent('quote requested', {
+          marketId: props.marketId,
+          marketSlug: props.marketSlug,
+          action,
+          side,
+          inputMode: payloadBody.shareAmount != null ? 'shares' : 'gross_cash'
+        });
+      }
+
       setLoading(true);
 
       try {
@@ -520,6 +531,14 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         if (!response.ok) {
           const message = payload.error ?? `Execution failed (${response.status})`;
           setExecutionMessage(message);
+          captureEvent('trade failed', {
+            marketId: props.marketId,
+            marketSlug: props.marketSlug,
+            action,
+            side,
+            status: response.status,
+            message
+          });
 
           if (response.status === 409) {
             void requestQuotePreview({ silent: true });
@@ -529,6 +548,12 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
         }
 
         setExecutionMessage(tr(lang, 'Trade executed. Portfolio updated.', 'Η συναλλαγή εκτελέστηκε. Το χαρτοφυλάκιο ενημερώθηκε.'));
+        captureEvent('trade executed', {
+          marketId: props.marketId,
+          marketSlug: props.marketSlug,
+          action,
+          side
+        });
         await Promise.all([refreshPortfolioSnapshot(), refreshLiveState()]);
         void requestQuotePreview({ silent: true });
 
@@ -536,6 +561,14 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
       } catch (executeError) {
         const message = executeError instanceof Error ? executeError.message : 'Execution failed';
         setExecutionMessage(translateTradeError(message, lang));
+        captureEvent('trade failed', {
+          marketId: props.marketId,
+          marketSlug: props.marketSlug,
+          action,
+          side,
+          status: 'network',
+          message
+        });
         return false;
       } finally {
         setExecuting(false);

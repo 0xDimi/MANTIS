@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { ensureViewerBootstrap } from '@/lib/supabase/bootstrap';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -39,6 +40,8 @@ export async function GET() {
       return NextResponse.json({ user: null }, { status: 200 });
     }
 
+    Sentry.setUser({ id: user.id });
+
     let { profile, wallet, error: bootstrapError } = await readViewerBootstrap(supabase, user.id);
 
     if (!bootstrapError && (!profile || !wallet)) {
@@ -59,6 +62,10 @@ export async function GET() {
       { status: 200 }
     );
   } catch (error) {
+    Sentry.captureException(error, {
+      tags: { route: 'api/me' }
+    });
+
     return NextResponse.json(
       {
         error: 'me API unavailable',

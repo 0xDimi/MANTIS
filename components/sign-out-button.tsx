@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { captureEvent } from '@/lib/client-telemetry';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 export function SignOutButton({ nextPath = '/', lang = 'en' }: { nextPath?: string; lang?: UiLang }) {
@@ -19,6 +20,11 @@ export function SignOutButton({ nextPath = '/', lang = 'en' }: { nextPath?: stri
       if (error) {
         throw error;
       }
+
+      captureEvent('logout', {
+        source: 'profile_signout_button',
+        nextPath
+      });
 
       window.location.assign(nextPath);
     } catch (err) {

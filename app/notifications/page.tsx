@@ -3,7 +3,8 @@ import { AlphaShell } from '@/components/alpha-shell';
 import { formatDateTime, formatRelativeClose } from '@/lib/format';
 import { localizedMarketStatus, localizedQuestionFromSlug } from '@/lib/market-copy';
 import { loadNotificationsFeed } from '@/lib/notifications';
-import { normalizeLang, tr, type UiLang } from '@/lib/ui-lang';
+import { resolveServerLang } from '@/lib/ui-lang-server';
+import { tr, type UiLang } from '@/lib/ui-lang';
 
 function eventLabel(status: string, lang: UiLang) {
   if (status === 'closed') return tr(lang, 'Market closed', 'Η αγορά έκλεισε');
@@ -19,7 +20,7 @@ export default async function NotificationsPage({
   searchParams?: Promise<{ lang?: string }>;
 }) {
   const params = (await searchParams) ?? {};
-  const lang = normalizeLang(params.lang);
+  const lang = await resolveServerLang({ searchParam: params.lang });
   const { closingSoon, recentEvents, error } = await loadNotificationsFeed();
 
   return (

@@ -6,7 +6,8 @@ import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { loadMarketDetail, loadMarketsBoard } from '@/lib/alpha-read-model';
 import { formatDateTime, formatPercent, formatRelativeClose } from '@/lib/format';
 import { localizeBoardMarketCopy, localizeMarketDetailCopy, localizedCategory, localizedMarketStatus } from '@/lib/market-copy';
-import { normalizeLang, tr } from '@/lib/ui-lang';
+import { resolveServerLang } from '@/lib/ui-lang-server';
+import { tr } from '@/lib/ui-lang';
 
 export default async function MarketDetailPage({
   params,
@@ -17,7 +18,7 @@ export default async function MarketDetailPage({
 }) {
   const { slug } = await params;
   const query = (await searchParams) ?? {};
-  const lang = normalizeLang(query.lang);
+  const lang = await resolveServerLang({ searchParam: query.lang });
   const [{ market: marketRaw, state, error }, board] = await Promise.all([
     loadMarketDetail(slug),
     loadMarketsBoard({ scope: 'all' })

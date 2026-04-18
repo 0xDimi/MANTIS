@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 function isMissingSettlementTableError(message: string) {
@@ -21,6 +22,9 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
       .maybeSingle();
 
     if (marketError) {
+      Sentry.captureException(new Error(marketError.message), {
+        tags: { route: 'api/markets/[slug]' }
+      });
       return NextResponse.json({ error: marketError.message }, { status: 500 });
     }
 
@@ -53,14 +57,23 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
       ]);
 
     if (stateError) {
+      Sentry.captureException(new Error(stateError.message), {
+        tags: { route: 'api/markets/[slug]' }
+      });
       return NextResponse.json({ error: stateError.message }, { status: 500 });
     }
 
     if (resolutionError) {
+      Sentry.captureException(new Error(resolutionError.message), {
+        tags: { route: 'api/markets/[slug]' }
+      });
       return NextResponse.json({ error: resolutionError.message }, { status: 500 });
     }
 
     if (settlementError && !isMissingSettlementTableError(settlementError.message ?? '')) {
+      Sentry.captureException(new Error(settlementError.message), {
+        tags: { route: 'api/markets/[slug]' }
+      });
       return NextResponse.json({ error: settlementError.message }, { status: 500 });
     }
 
@@ -108,6 +121,10 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
       { status: 200 }
     );
   } catch (error) {
+    Sentry.captureException(error, {
+      tags: { route: 'api/markets/[slug]' }
+    });
+
     return NextResponse.json(
       {
         error: 'market detail API unavailable',

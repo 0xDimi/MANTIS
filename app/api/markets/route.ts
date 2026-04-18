@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function GET(request: Request) {
@@ -22,6 +23,9 @@ export async function GET(request: Request) {
     const { data, error } = await query;
 
     if (error) {
+      Sentry.captureException(new Error(error.message), {
+        tags: { route: 'api/markets' }
+      });
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
@@ -51,6 +55,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ markets }, { status: 200 });
   } catch (error) {
+    Sentry.captureException(error, {
+      tags: { route: 'api/markets' }
+    });
+
     return NextResponse.json(
       {
         error: 'Markets API unavailable. Check Supabase env wiring.',
