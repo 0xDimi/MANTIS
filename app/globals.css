@@ -198,6 +198,12 @@ code {
   letter-spacing: 0.04em;
 }
 
+.profileAvatarIcon {
+  width: 14px;
+  height: 14px;
+  color: #9fb9ff;
+}
+
 .profileButtonCaret {
   color: #9ba6bb;
   font-size: 12px;
