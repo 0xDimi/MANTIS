@@ -29,23 +29,34 @@ Move from build validation to launch operations support.
   2. Patch + hot deploy
   3. Confirm with smoke pass
 
-## 4) Tester Comms Pack
+## 4) Resolution Mechanics (Phase 1 Testing)
+- Resolution ownership: **Alfred-managed** (manual admin flow)
+- No autonomous AI resolution in phase 1
+- No unattended auto-settlement in phase 1
+- Resolution flow per market:
+  1. Confirm official source/evidence
+  2. Record YES/NO/VOID in admin panel with evidence summary + URL
+  3. Run settlement
+  4. Verify payout/refund totals and status=settled
+  5. Post concise tester update
+
+## 5) Tester Comms Pack
 - Launch message template
 - Known-issues template
 - Incident update template
 - Resolved template
 
-## 5) Rollback Readiness
+## 6) Rollback Readiness
 - Keep last known good deployment URL pinned
 - Keep one-command rollback path ready
 - Re-run 3-5 min sanity smoke immediately after rollback
 
-## 6) Daily Ops During Week 1
+## 7) Daily Ops During Week 1
 - Morning: health + key flow smoke
 - Midday: monitor quote/trade error rates
 - EOD: summarize issues, fixes, and next actions
 
-## 7) Morning Next Steps
+## 8) Morning Next Steps
 1. Finalize tester message templates
 2. Finalize incident update templates
 3. Pin rollback target + owner responsibilities
