@@ -110,7 +110,7 @@ function createCookieJar() {
   };
 }
 
-async function generateMagicLink(redirectNext = '/profile?invite=1') {
+async function generateMagicLink(redirectNext = '/access?invite=1') {
   const redirectTo = `${appOrigin}/auth/callback?next=${encodeURIComponent(redirectNext)}`;
 
   const generated = await admin.auth.admin.generateLink({
@@ -175,7 +175,7 @@ async function apiPost(path, payload, cookieHeader) {
 
 const checks = [];
 
-const firstLink = await generateMagicLink('/profile?invite=1');
+const firstLink = await generateMagicLink('/access?invite=1');
 const redirectHost = new URL(firstLink.redirectTo).host;
 const actionUrl = new URL(firstLink.actionLink);
 const actionRedirect = clean(actionUrl.searchParams.get('redirect_to'));
@@ -355,7 +355,7 @@ if (signOutResult.error) {
 
 const meAfterLogout = await apiGet('/api/me', firstSession.cookieHeader());
 
-const secondLink = await generateMagicLink('/profile');
+const secondLink = await generateMagicLink('/access');
 assert(secondLink.emailOtp, 'second magic link email OTP missing');
 const secondSession = await loginWithMagicLinkOtp(secondLink.emailOtp);
 const meAfterRelogin = await apiGet('/api/me', secondSession.cookieHeader());

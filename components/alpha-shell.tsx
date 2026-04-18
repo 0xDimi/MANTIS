@@ -40,6 +40,7 @@ export async function AlphaShell({
   const [summary, notifications] = await Promise.all([loadHeaderSummary(), loadNotificationsFeed()]);
   const homeHref = lang === 'el' ? '/?lang=el' : '/';
   const profileHref = lang === 'el' ? '/profile?lang=el' : '/profile';
+  const signInHref = lang === 'el' ? '/access?lang=el' : '/access';
   const notificationsHref = lang === 'el' ? '/notifications?lang=el' : '/notifications';
   const notificationsCount = notifications.closingSoon.length + notifications.recentEvents.length;
 
@@ -94,6 +95,7 @@ export async function AlphaShell({
           <HeaderAccountMenu
             lang={lang}
             profileHref={profileHref}
+            signInHref={signInHref}
             notificationsHref={notificationsHref}
             initials={summary.viewer.initials}
             displayName={summary.viewer.displayName}

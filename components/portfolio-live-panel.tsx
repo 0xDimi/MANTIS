@@ -198,7 +198,7 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
     return (
       <section className="card stackSm">
         <div className="notice noticeWarn">{error}</div>
-        <p className="subtle">{tr(lang, 'If this says auth required, sign in through /profile first.', 'Αν αναφέρει ότι απαιτείται σύνδεση, μπες πρώτα από το /profile.')}</p>
+        <p className="subtle">{tr(lang, 'If this says auth required, sign in through /access first.', 'Αν αναφέρει ότι απαιτείται σύνδεση, μπες πρώτα από το /access.')}</p>
         <div className="buttonRow">
           <button className="button buttonGhost" type="button" onClick={refresh}>
             {tr(lang, 'Retry', 'Επανάληψη')}

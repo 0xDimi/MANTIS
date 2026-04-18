@@ -9,6 +9,7 @@ import { tr, type UiLang } from '@/lib/ui-lang';
 type HeaderAccountMenuProps = {
   lang: UiLang;
   profileHref: string;
+  signInHref: string;
   notificationsHref: string;
   initials: string;
   displayName?: string | null;
@@ -19,6 +20,7 @@ type HeaderAccountMenuProps = {
 export function HeaderAccountMenu({
   lang,
   profileHref,
+  signInHref,
   notificationsHref,
   initials,
   displayName,
@@ -62,10 +64,10 @@ export function HeaderAccountMenu({
 
       captureEvent('logout', {
         source: 'header_account_menu',
-        nextPath: profileHref
+        nextPath: signInHref
       });
 
-      window.location.assign(profileHref);
+      window.location.assign(signInHref);
     } catch (err) {
       setError(err instanceof Error ? err.message : tr(lang, 'Unable to sign out', 'Αδυναμία αποσύνδεσης'));
       setPendingSignOut(false);
@@ -111,7 +113,7 @@ export function HeaderAccountMenu({
                 {pendingSignOut ? tr(lang, 'Signing out…', 'Αποσύνδεση…') : tr(lang, 'Sign out', 'Αποσύνδεση')}
               </button>
             ) : (
-              <Link className="accountMenuItem" href={profileHref} role="menuitem" onClick={() => setOpen(false)}>
+              <Link className="accountMenuItem" href={signInHref} role="menuitem" onClick={() => setOpen(false)}>
                 {tr(lang, 'Sign in', 'Σύνδεση')}
               </Link>
             )}

@@ -5,7 +5,7 @@ import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 function normalizeNextPath(input: string | null) {
   if (!input || !input.startsWith('/')) {
-    return '/profile';
+    return '/';
   }
 
   return input;

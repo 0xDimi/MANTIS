@@ -18,6 +18,7 @@ export const routeMap = [
   '/markets',
   '/markets/[slug]',
   '/portfolio',
+  '/access',
   '/profile',
   '/rules',
   '/admin',
