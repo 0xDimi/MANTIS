@@ -11,29 +11,62 @@ function normalizeNextPath(input: string | null) {
   return input;
 }
 
+type EmailOtpType = 'signup' | 'invite' | 'magiclink' | 'recovery' | 'email_change' | 'email';
+
+function parseEmailOtpType(input: string | null): EmailOtpType | null {
+  if (!input) {
+    return null;
+  }
+
+  const allowedTypes: EmailOtpType[] = ['signup', 'invite', 'magiclink', 'recovery', 'email_change', 'email'];
+  return allowedTypes.includes(input as EmailOtpType) ? (input as EmailOtpType) : null;
+}
+
+function redirectWithAuthFailure(redirectUrl: URL, message: string) {
+  Sentry.captureException(new Error(message), {
+    tags: { route: 'auth/callback' }
+  });
+
+  redirectUrl.searchParams.set('auth', 'failed');
+  redirectUrl.searchParams.set('message', message);
+  return NextResponse.redirect(redirectUrl);
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
+  const tokenHash = url.searchParams.get('token_hash');
+  const otpType = parseEmailOtpType(url.searchParams.get('type'));
   const nextPath = normalizeNextPath(url.searchParams.get('next'));
   const redirectUrl = new URL(nextPath, url.origin);
 
-  if (!code) {
-    redirectUrl.searchParams.set('auth', 'missing-code');
-    return NextResponse.redirect(redirectUrl);
-  }
-
   try {
     const supabase = await getSupabaseServerClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (error) {
-      Sentry.captureException(new Error(error.message), {
-        tags: { route: 'auth/callback' }
+    if (code) {
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+      if (error) {
+        return redirectWithAuthFailure(redirectUrl, error.message);
+      }
+    } else if (tokenHash && otpType) {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: tokenHash,
+        type: otpType
       });
 
-      redirectUrl.searchParams.set('auth', 'failed');
-      redirectUrl.searchParams.set('message', error.message);
-      return NextResponse.redirect(redirectUrl);
+      if (error) {
+        return redirectWithAuthFailure(redirectUrl, error.message);
+      }
+    } else {
+      const {
+        data: { user: existingUser }
+      } = await supabase.auth.getUser();
+
+      if (!existingUser) {
+        redirectUrl.searchParams.set('auth', 'missing-code');
+        return NextResponse.redirect(redirectUrl);
+      }
     }
 
     const {
