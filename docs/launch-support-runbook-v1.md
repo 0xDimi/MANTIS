@@ -56,6 +56,14 @@ Move from build validation to launch operations support.
 - Midday: monitor quote/trade error rates
 - EOD: summarize issues, fixes, and next actions
 
+## 9) Market + News Monitoring Cadence (Locked)
+- Ownership: **Alfred** runs checks and drafts actions, **Dimi** supervises and intervenes only on disputed/high-impact decisions.
+- Baseline cadence: **every 2 hours** from **09:00 to 23:00 Europe/Athens**.
+- High-risk cadence: **every 30-45 minutes** when a market is inside 24h to close, or on major event/news days.
+- Overnight cadence: one light sweep at **02:00-03:00 Europe/Athens** unless a high-risk market is active.
+- Breaking-news override: trigger an immediate ad-hoc check outside schedule.
+- Resolution policy reminder: outcomes remain manual admin decisions (no autonomous AI resolution in phase 1).
+
 ## 8) Morning Next Steps
 1. Finalize tester message templates
 2. Finalize incident update templates

@@ -21,6 +21,13 @@
 - Tester activation must include a clear "first trade" walkthrough flow
 - Walkthrough testing is scheduled post-UI-polish and pre-launch
 
+## Market operations cadence
+- Market + news monitoring owner: **Alfred** (execution), **Dimi** (supervisory interventions only when needed)
+- Baseline market/news checks: every 2 hours (09:00-23:00 Europe/Athens)
+- High-risk checks (market <24h to close or major event day): every 30-45 minutes
+- Overnight: one light check around 02:00-03:00 Europe/Athens
+- Breaking-news override: immediate ad-hoc check outside schedule
+
 ## Resend
 - Keep test sender identity first
 - Move to domain setup after core trading/admin flows are stable
