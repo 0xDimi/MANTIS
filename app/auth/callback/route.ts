@@ -39,6 +39,12 @@ export async function GET(request: Request) {
   const otpType = parseEmailOtpType(url.searchParams.get('type'));
   const nextPath = normalizeNextPath(url.searchParams.get('next'));
   const redirectUrl = new URL(nextPath, url.origin);
+  const accessRedirectUrl = new URL('/access', url.origin);
+
+  const nextLang = redirectUrl.searchParams.get('lang');
+  if (nextLang === 'el') {
+    accessRedirectUrl.searchParams.set('lang', 'el');
+  }
 
   try {
     const supabase = await getSupabaseServerClient();
@@ -47,7 +53,7 @@ export async function GET(request: Request) {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        return redirectWithAuthFailure(redirectUrl, error.message);
+        return redirectWithAuthFailure(accessRedirectUrl, error.message);
       }
     } else if (tokenHash && otpType) {
       const { error } = await supabase.auth.verifyOtp({
@@ -56,7 +62,7 @@ export async function GET(request: Request) {
       });
 
       if (error) {
-        return redirectWithAuthFailure(redirectUrl, error.message);
+        return redirectWithAuthFailure(accessRedirectUrl, error.message);
       }
     } else {
       const {
@@ -64,8 +70,8 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (!existingUser) {
-        redirectUrl.searchParams.set('auth', 'missing-code');
-        return NextResponse.redirect(redirectUrl);
+        accessRedirectUrl.searchParams.set('auth', 'missing-code');
+        return NextResponse.redirect(accessRedirectUrl);
       }
     }
 
@@ -86,6 +92,11 @@ export async function GET(request: Request) {
         .maybeSingle();
 
       preferredLang = parseUiLang((profile as { locale?: string | null } | null)?.locale ?? null);
+    } else {
+      return redirectWithAuthFailure(
+        accessRedirectUrl,
+        'Sign-in session was not established. Please open the magic link in the same browser where you requested it.'
+      );
     }
 
     if (!redirectUrl.searchParams.get('lang') && preferredLang === 'el') {
