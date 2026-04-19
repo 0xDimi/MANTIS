@@ -64,7 +64,20 @@ Move from build validation to launch operations support.
 - Breaking-news override: trigger an immediate ad-hoc check outside schedule.
 - Resolution policy reminder: outcomes remain manual admin decisions (no autonomous AI resolution in phase 1).
 
-## 8) Morning Next Steps
+## 10) House Liquidity Bot Parameters (Locked)
+- Goal: increase tradability while staying market-neutral and transparent.
+- Daily market target: **3-4 low-volume markets** (open status only).
+- Order size: **€5-€10** per order.
+- Daily limits:
+  - **Per-market cap:** €40 gross notional
+  - **Global cap:** €140 gross notional
+- Behavior constraints:
+  - symmetric/mirror YES-NO activity only
+  - no operation in the final pre-resolution window
+  - full audit tagging on each trade
+  - immediate kill-switch available at all times
+
+## 11) Morning Next Steps
 1. Finalize tester message templates
 2. Finalize incident update templates
 3. Pin rollback target + owner responsibilities

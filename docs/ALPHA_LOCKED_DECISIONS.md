@@ -28,6 +28,16 @@
 - Overnight: one light check around 02:00-03:00 Europe/Athens
 - Breaking-news override: immediate ad-hoc check outside schedule
 
+## House liquidity bot guardrails (phase 1)
+- Purpose: improve tradability only, not directional prediction or sentiment shaping.
+- Market selection: **3-4 low-volume open markets per day**.
+- Order sizing: **€5-€10 per order**.
+- Execution mode: symmetric/mirror behavior across YES/NO with cool-down windows.
+- Budget caps:
+  - **Per market daily cap:** €40 gross notional
+  - **Global daily cap:** €140 gross notional
+- Safety rails: disable near resolution windows, keep full audit tags, and retain manual kill-switch.
+
 ## Resend
 - Keep test sender identity first
 - Move to domain setup after core trading/admin flows are stable
