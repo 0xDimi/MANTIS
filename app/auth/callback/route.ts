@@ -95,7 +95,7 @@ export async function GET(request: Request) {
     } else {
       return redirectWithAuthFailure(
         accessRedirectUrl,
-        'Sign-in session was not established. Please open the magic link in the same browser where you requested it.'
+        'Sign-in session was not established. Please request a fresh magic link and try again.'
       );
     }
 

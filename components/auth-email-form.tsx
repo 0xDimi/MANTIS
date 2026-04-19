@@ -50,7 +50,7 @@ export function AuthEmailForm({
         throw error;
       }
 
-      setMessage(tr(lang, 'Magic link sent. Open it from the same browser to continue.', 'Το magic link στάλθηκε. Άνοιξέ το από τον ίδιο browser για συνέχεια.'));
+      setMessage(tr(lang, 'Magic link sent. Open it from your email to continue.', 'Το magic link στάλθηκε. Άνοιξέ το από το email σου για συνέχεια.'));
     } catch (err) {
       setError(err instanceof Error ? err.message : tr(lang, 'Unable to send sign-in link', 'Δεν ήταν δυνατή η αποστολή του συνδέσμου σύνδεσης'));
     } finally {
