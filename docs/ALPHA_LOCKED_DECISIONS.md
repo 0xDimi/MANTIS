@@ -40,7 +40,7 @@
 - Runtime implementation is now wired through protected ops routes:
   - `GET /api/ops/market-checks/run`
   - `GET /api/ops/house-liquidity/run`
-  - scheduled by `vercel.json` with cadence gating and audit snapshots in `mission_control_runtime`.
+  - schedule execution is handled by Alfred/host automation; snapshots write to `mission_control_runtime`.
 
 ## Resend
 - Keep test sender identity first

@@ -78,9 +78,12 @@ Move from build validation to launch operations support.
   - immediate kill-switch available at all times
 
 ## 11) Automation Runtime (Live)
-- Scheduled endpoints are wired via `vercel.json`:
-  - `/api/ops/market-checks/run` every 30 minutes (internal schedule gating enforces baseline/high-risk/overnight cadence)
-  - `/api/ops/house-liquidity/run` hourly at minute 15
+- Ops endpoints are live:
+  - `/api/ops/market-checks/run` (internal schedule gating enforces baseline/high-risk/overnight cadence)
+  - `/api/ops/house-liquidity/run`
+- Scheduler source:
+  - host-side automation (Alfred/cron) triggers these endpoints on cadence
+  - note: Vercel Hobby cron cannot run sub-daily schedules
 - Trigger auth:
   - preferred: `Authorization: Bearer $CRON_SECRET`
   - fallback: `OPS_RUN_KEY` via bearer / `x-ops-key` / `?key=`
@@ -97,7 +100,8 @@ Move from build validation to launch operations support.
 
 ## 12) Morning Next Steps
 1. Set `CRON_SECRET` and `HOUSE_LIQUIDITY_USER_ID` in production envs
-2. Finalize tester message templates
-3. Finalize incident update templates
-4. Pin rollback target + owner responsibilities
-5. Prepare Day-1 monitoring checklist
+2. Ensure host-side scheduler is active and logging each trigger
+3. Finalize tester message templates
+4. Finalize incident update templates
+5. Pin rollback target + owner responsibilities
+6. Prepare Day-1 monitoring checklist
