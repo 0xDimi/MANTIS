@@ -77,8 +77,27 @@ Move from build validation to launch operations support.
   - full audit tagging on each trade
   - immediate kill-switch available at all times
 
-## 11) Morning Next Steps
-1. Finalize tester message templates
-2. Finalize incident update templates
-3. Pin rollback target + owner responsibilities
-4. Prepare Day-1 monitoring checklist
+## 11) Automation Runtime (Live)
+- Scheduled endpoints are wired via `vercel.json`:
+  - `/api/ops/market-checks/run` every 30 minutes (internal schedule gating enforces baseline/high-risk/overnight cadence)
+  - `/api/ops/house-liquidity/run` hourly at minute 15
+- Trigger auth:
+  - preferred: `Authorization: Bearer $CRON_SECRET`
+  - fallback: `OPS_RUN_KEY` via bearer / `x-ops-key` / `?key=`
+  - if neither secret exists in production, endpoint accepts calls (temporary compatibility mode)
+- House-liquidity runtime defaults:
+  - user id: `HOUSE_LIQUIDITY_USER_ID` (fallback synthetic internal id)
+  - enable/disable: `HOUSE_LIQUIDITY_BOT_ENABLED=true|false` (kill switch)
+  - order amount: `HOUSE_LIQUIDITY_ORDER_EUR` (clamped 5-10)
+  - daily caps: `HOUSE_LIQUIDITY_PER_MARKET_DAILY_CAP_EUR`, `HOUSE_LIQUIDITY_GLOBAL_DAILY_CAP_EUR`
+  - target markets/day: `HOUSE_LIQUIDITY_TARGET_MARKETS` (max 4)
+- Runtime writes latest snapshots to `mission_control_runtime`:
+  - `ops_market_checks_latest`
+  - `house_liquidity_latest`
+
+## 12) Morning Next Steps
+1. Set `CRON_SECRET` and `HOUSE_LIQUIDITY_USER_ID` in production envs
+2. Finalize tester message templates
+3. Finalize incident update templates
+4. Pin rollback target + owner responsibilities
+5. Prepare Day-1 monitoring checklist

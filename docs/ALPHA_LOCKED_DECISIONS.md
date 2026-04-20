@@ -37,6 +37,10 @@
   - **Per market daily cap:** €40 gross notional
   - **Global daily cap:** €140 gross notional
 - Safety rails: disable near resolution windows, keep full audit tags, and retain manual kill-switch.
+- Runtime implementation is now wired through protected ops routes:
+  - `GET /api/ops/market-checks/run`
+  - `GET /api/ops/house-liquidity/run`
+  - scheduled by `vercel.json` with cadence gating and audit snapshots in `mission_control_runtime`.
 
 ## Resend
 - Keep test sender identity first
