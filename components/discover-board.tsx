@@ -71,8 +71,8 @@ const FEATURED_PINNED_SLUGS = [
 ] as const;
 
 function isInternalMarket(slug: string, question: string) {
-  const target = `${slug} ${question}`.toLowerCase();
-  return /(smoke|qa|test|sim|internal|ops|lifecycle|admin[-_]?)/.test(target);
+  const target = `${slug} ${question}`.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
+  return /\b(smoke|qa|test|sim|internal|ops|lifecycle|admin)\b/.test(target);
 }
 
 export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
