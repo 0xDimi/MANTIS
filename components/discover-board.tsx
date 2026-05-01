@@ -4,6 +4,7 @@ import { localizeBoardMarketCopy, localizedCategory, localizedMarketSearchBlob }
 import { tr, type UiLang } from '@/lib/ui-lang';
 import { MarketCard } from '@/components/market-card';
 import { FeaturedMarketsCarousel } from '@/components/featured-markets-carousel';
+import { DISCOVER_BOARD_SCOPE, isInternalMarket } from '@/lib/discover-board-config';
 
 type DiscoverView = 'trending' | 'new' | 'liquid' | 'ending';
 
@@ -70,13 +71,8 @@ const FEATURED_PINNED_SLUGS = [
   'crypto-btc-close-above-80k'
 ] as const;
 
-function isInternalMarket(slug: string, question: string) {
-  const target = `${slug} ${question}`.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
-  return /\b(smoke|qa|test|sim|internal|ops|lifecycle|admin)\b/.test(target);
-}
-
 export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
-  const { markets, error } = await loadMarketsBoard({ scope: 'open' });
+  const { markets, error } = await loadMarketsBoard({ scope: DISCOVER_BOARD_SCOPE });
   const userMarkets = markets
     .filter((market) => !isInternalMarket(market.slug, market.question))
     .map((market) => localizeBoardMarketCopy(market, lang));

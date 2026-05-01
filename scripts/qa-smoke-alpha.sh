@@ -448,6 +448,9 @@ MARKET_COUNT="$(jq -r '.markets | length' "$RESPONSE_FILE")"
 [ -n "$MARKET_ID" ] || fail 'could not resolve a market id from /api/markets'
 pass "/api/markets count=${MARKET_COUNT} market=${MARKET_SLUG:-$MARKET_ID}"
 
+node ./scripts/qa-check-live-board.mjs "$BASE_URL" || fail 'live homepage board visibility check failed'
+pass "/ live-board matches open-market API"
+
 request_json GET "$BASE_URL/api/markets/${MARKET_SLUG}"
 expect_status 200 'market detail endpoint failed for selected smoke market'
 expect_jq --arg marketId "$MARKET_ID" --arg marketSlug "$MARKET_SLUG" '.market.id == $marketId and .market.slug == $marketSlug and .state != null' 'market detail payload missing market/state for selected smoke market'

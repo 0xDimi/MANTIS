@@ -7,6 +7,8 @@
 1. `GET /api/health` returns `status=ok`
    - also checks telemetry readiness flags (Sentry + PostHog env/sdk configured)
 2. `GET /api/markets` returns at least one market
+   - homepage `/` count banner matches the real open-market API count
+   - every real open market appears on the discover board
    - and selected market has DB-backed detail on `GET /api/markets/[slug]`
 3. Authenticated tester flow works end to end:
    - `GET /api/me`
@@ -30,6 +32,8 @@
    - fee-on-gross math still reconciles through execute, wallet delta, and trade history
 
 The script exits non-zero on the first failure and prints concise `PASS` / `FAIL` checkpoints.
+
+Board visibility is now explicitly guarded by `scripts/qa-check-live-board.mjs`, which compares homepage SSR output against the live `/api/markets` feed so hidden-open-market regressions fail fast.
 
 By default the script now also runs the Week 5 admin pack through `scripts/qa-smoke-admin-pack.mjs`. Set `SMOKE_INCLUDE_ADMIN_PACK=0` only when you intentionally want the lighter auth/trading-only smoke path.
 
@@ -59,6 +63,7 @@ If your CI or ops runner already has a valid tester session, you can skip the Su
 ## Other env
 
 - `APP_BASE_URL` optional, defaults to `https://xyz-labs-demo.vercel.app`
+- `SMOKE_INCLUDE_BOARD_CHECK` is not needed because board validation is on by default inside `qa-smoke-alpha.sh`
 - `SMOKE_TRADE_AMOUNT_EUR` optional, defaults to `5`
 - `SMOKE_SIDE` optional, defaults to `yes`
 - `SMOKE_ACTION` optional, defaults to `buy`
