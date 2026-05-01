@@ -76,7 +76,7 @@ function isInternalMarket(slug: string, question: string) {
 }
 
 export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
-  const { markets, error } = await loadMarketsBoard({ scope: 'all' });
+  const { markets, error } = await loadMarketsBoard({ scope: 'open' });
   const userMarkets = markets
     .filter((market) => !isInternalMarket(market.slug, market.question))
     .map((market) => localizeBoardMarketCopy(market, lang));
@@ -101,7 +101,9 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
   const featured = [...pinnedFeatured, ...fallbackFeatured].slice(0, 3);
   const featuredIds = new Set(featured.map((market) => market.id));
   const gridMarkets = filtered.filter((market) => !featuredIds.has(market.id));
+  const featuredWithinFilterCount = filtered.filter((market) => featuredIds.has(market.id)).length;
   const categories = Array.from(new Set(userMarkets.map((market) => market.category)));
+  const liveMarketCount = userMarkets.filter((market) => market.status === 'open' || market.status === 'paused').length;
 
   const tabs: Array<{ key: DiscoverView; en: string; el: string }> = [
     { key: 'trending', en: 'Trending', el: 'Τάση' },
@@ -148,6 +150,20 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
           {tr(lang, 'Results for', 'Αποτελέσματα για')} <strong>{query}</strong>
         </p>
       ) : null}
+
+      <p className="subtle searchResultHint">
+        {normalizedQuery || category || normalizedView !== 'trending'
+          ? tr(
+              lang,
+              `Showing ${filtered.length} markets. ${featuredWithinFilterCount} featured above, ${gridMarkets.length} in the list below.`,
+              `Εμφανίζονται ${filtered.length} αγορές. ${featuredWithinFilterCount} προτεινόμενες πιο πάνω, ${gridMarkets.length} στη λίστα πιο κάτω.`
+            )
+          : tr(
+              lang,
+              `Live now: ${liveMarketCount} markets. ${featured.length} featured above, ${gridMarkets.length} more in the list below.`,
+              `Live τώρα: ${liveMarketCount} αγορές. ${featured.length} προτεινόμενες πιο πάνω, ${gridMarkets.length} ακόμη στη λίστα πιο κάτω.`
+            )}
+      </p>
 
       <section className="marketList" aria-label={tr(lang, 'Market list', 'Λίστα αγορών')}>
         {gridMarkets.map((market) => (
