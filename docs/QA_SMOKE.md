@@ -7,7 +7,6 @@
 1. `GET /api/health` returns `status=ok`
    - also checks telemetry readiness flags (Sentry + PostHog env/sdk configured)
 2. `GET /api/markets` returns at least one market
-   - homepage `/` count banner matches the real open-market API count
    - every real open market appears on the discover board
    - and selected market has DB-backed detail on `GET /api/markets/[slug]`
 3. Authenticated tester flow works end to end:

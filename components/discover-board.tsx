@@ -99,7 +99,6 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
   const gridMarkets = filtered.filter((market) => !featuredIds.has(market.id));
   const featuredWithinFilterCount = filtered.filter((market) => featuredIds.has(market.id)).length;
   const categories = Array.from(new Set(userMarkets.map((market) => market.category)));
-  const liveMarketCount = userMarkets.filter((market) => market.status === 'open' || market.status === 'paused').length;
 
   const tabs: Array<{ key: DiscoverView; en: string; el: string }> = [
     { key: 'trending', en: 'Trending', el: 'Τάση' },
@@ -147,19 +146,15 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
         </p>
       ) : null}
 
-      <p className="subtle searchResultHint">
-        {normalizedQuery || category || normalizedView !== 'trending'
-          ? tr(
-              lang,
-              `Showing ${filtered.length} markets. ${featuredWithinFilterCount} featured above, ${gridMarkets.length} in the list below.`,
-              `Εμφανίζονται ${filtered.length} αγορές. ${featuredWithinFilterCount} προτεινόμενες πιο πάνω, ${gridMarkets.length} στη λίστα πιο κάτω.`
-            )
-          : tr(
-              lang,
-              `Live now: ${liveMarketCount} markets. ${featured.length} featured above, ${gridMarkets.length} more in the list below.`,
-              `Live τώρα: ${liveMarketCount} αγορές. ${featured.length} προτεινόμενες πιο πάνω, ${gridMarkets.length} ακόμη στη λίστα πιο κάτω.`
-            )}
-      </p>
+      {normalizedQuery || category || normalizedView !== 'trending' ? (
+        <p className="subtle searchResultHint">
+          {tr(
+            lang,
+            `Showing ${filtered.length} markets. ${featuredWithinFilterCount} featured above, ${gridMarkets.length} in the list below.`,
+            `Εμφανίζονται ${filtered.length} αγορές. ${featuredWithinFilterCount} προτεινόμενες πιο πάνω, ${gridMarkets.length} στη λίστα πιο κάτω.`
+          )}
+        </p>
+      ) : null}
 
       <section className="marketList" aria-label={tr(lang, 'Market list', 'Λίστα αγορών')}>
         {gridMarkets.map((market) => (

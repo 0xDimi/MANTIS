@@ -15,12 +15,6 @@ if (realOpenMarkets.length === 0) {
 }
 
 const expectedCount = realOpenMarkets.length;
-const englishCountLine = `Live now: ${expectedCount} markets.`;
-const greekCountLine = `Live τώρα: ${expectedCount} αγορές.`;
-if (!html.includes(englishCountLine) && !html.includes(greekCountLine)) {
-  fail(`homepage count banner does not match open API count ${expectedCount}`);
-}
-
 const missingQuestions = realOpenMarkets.filter((market) => !html.includes(market.question)).map((market) => market.slug);
 if (missingQuestions.length > 0) {
   fail(`homepage is missing real open markets: ${missingQuestions.join(', ')}`);
