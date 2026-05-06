@@ -25,9 +25,11 @@ type AnchorCandidate = {
   text: string;
 };
 
-const supportedDetectors = new Set(['gre-sports-euroleague-final4']);
+const supportedDetectors = new Set(['gre-sports-euroleague-final4', 'gre-sports-euroleague-final']);
 
 const finalFourPattern = /final\s*(four|4)/i;
+const euroleaguePattern = /(euroleague|ευρωλιγκ)/i;
+const finalPattern = /(\bfinal\b(?!\s*(four|4))|τελικ)/i;
 const qualificationPatterns = [
   /προκρι/,
   /εξασφαλι/,
@@ -39,6 +41,13 @@ const qualificationPatterns = [
   /berth/,
   /spot\s+(?:in|at)\s+the\s+final\s*(?:four|4)/,
   /final\s*(?:four|4)\s+appearance/
+];
+
+const finalQualificationPatterns = [
+  /\bfinal\b(?!\s*(four|4))/i,
+  /championship game/i,
+  /title game/i,
+  /τελικ/
 ];
 
 const clubSources: ClubSource[] = [
@@ -120,10 +129,25 @@ export function pickFinalFourArticleCandidates(html: string, baseUrl: string) {
   return extractAnchorCandidates(html, baseUrl).filter((anchor) => finalFourPattern.test(anchor.text)).slice(0, 8);
 }
 
+export function pickFinalArticleCandidates(html: string, baseUrl: string) {
+  return extractAnchorCandidates(html, baseUrl).filter((anchor) => finalPattern.test(anchor.text)).slice(0, 8);
+}
+
 export function articleConfirmsQualification(text: string, teamPattern: RegExp) {
   const normalized = normalizeForMatch(text);
 
   return finalFourPattern.test(normalized) && teamPattern.test(normalized) && qualificationPatterns.some((pattern) => pattern.test(normalized));
+}
+
+export function articleConfirmsFinalQualification(text: string, teamPattern: RegExp) {
+  const normalized = normalizeForMatch(text);
+
+  return (
+    euroleaguePattern.test(normalized) &&
+    teamPattern.test(normalized) &&
+    qualificationPatterns.some((pattern) => pattern.test(normalized)) &&
+    finalQualificationPatterns.some((pattern) => pattern.test(normalized))
+  );
 }
 
 async function fetchHtml(url: string, fetcher: FetchLike) {
@@ -179,6 +203,33 @@ async function detectGreekTeamEuroleagueFinalFour(fetcher: FetchLike): Promise<E
   return null;
 }
 
+async function detectGreekTeamEuroleagueFinal(fetcher: FetchLike): Promise<EarlyResolutionDecision | null> {
+  for (const source of clubSources) {
+    for (const homepage of source.homepages) {
+      const homepageHtml = await fetchHtml(homepage, fetcher);
+      const candidates = pickFinalArticleCandidates(homepageHtml, homepage);
+
+      for (const candidate of candidates) {
+        const articleHtml = await fetchHtml(candidate.href, fetcher);
+        const articleText = stripHtml(articleHtml);
+
+        if (!articleConfirmsFinalQualification(articleText, source.teamPattern)) {
+          continue;
+        }
+
+        return {
+          outcome: 'yes',
+          evidenceSummary: `${source.club} BC official report confirms ${source.club} reached the EuroLeague Final, so a Greek team qualified for the title game.`,
+          evidenceUrl: candidate.href,
+          detector: 'club-official-final-qualification'
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
 export async function detectEarlyResolutionDecision(
   market: EarlyResolutionMarket,
   fetcher: FetchLike = fetch
@@ -190,6 +241,8 @@ export async function detectEarlyResolutionDecision(
   switch (market.slug) {
     case 'gre-sports-euroleague-final4':
       return detectGreekTeamEuroleagueFinalFour(fetcher);
+    case 'gre-sports-euroleague-final':
+      return detectGreekTeamEuroleagueFinal(fetcher);
     default:
       return null;
   }

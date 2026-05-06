@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  articleConfirmsFinalQualification,
   articleConfirmsQualification,
   detectEarlyResolutionDecision,
   extractAnchorCandidates,
   hasEarlyResolutionDetector,
   normalizeForMatch,
+  pickFinalArticleCandidates,
   pickFinalFourArticleCandidates
 } from '../lib/ops-early-resolution.ts';
 import { resolveSchedule } from '../lib/ops-market-checks.ts';
@@ -66,6 +68,22 @@ test('final four article picker filters unrelated anchors', () => {
   ]);
 });
 
+test('final article picker finds title-game candidates without matching Final Four only copy', () => {
+  const html = `
+    <div>
+      <a href="/one">Ο Θρύλος ξανά στο Final Four!</a>
+      <a href="/two">Ο Ολυμπιακός στον τελικό της EuroLeague!</a>
+    </div>
+  `;
+
+  assert.deepEqual(pickFinalArticleCandidates(html, 'https://www.olympiacosbc.gr/el/'), [
+    {
+      href: 'https://www.olympiacosbc.gr/two',
+      text: 'Ο Ολυμπιακός στον τελικό της EuroLeague!'
+    }
+  ]);
+});
+
 test('article qualification matcher accepts official Greek and English phrasing', () => {
   const greekText =
     'Δημοσιεύθηκε 05 Μάι 2026 Ο Θρύλος με 100άρα ξανά στο Final Four! Ο Ολυμπιακός κέρδισε την Μονακό και εξασφαλίζοντας έτσι την πρόκρισή του στο Final Four της Αθήνας.';
@@ -77,7 +95,19 @@ test('article qualification matcher accepts official Greek and English phrasing'
   assert.equal(articleConfirmsQualification('Olympiacos won, but the Final Four race stays open.', /(olympiacos|ολυμπιακ)/i), false);
 });
 
-test('early resolution detector returns YES with official club evidence', async () => {
+test('final qualification matcher accepts official title-game phrasing and rejects final-four only copy', () => {
+  const greekFinalText =
+    'Ο Ολυμπιακός νίκησε στον ημιτελικό και εξασφάλισε την πρόκρισή του στον τελικό της EuroLeague.';
+  const englishFinalText =
+    'Panathinaikos BC official report confirms Panathinaikos secured its place in the EuroLeague final after the semifinal win.';
+  const falsePositive = 'Olympiacos booked its place in the EuroLeague Final Four after the playoff sweep.';
+
+  assert.equal(articleConfirmsFinalQualification(greekFinalText, /(olympiacos|ολυμπιακ)/i), true);
+  assert.equal(articleConfirmsFinalQualification(englishFinalText, /(panathinaikos|παναθηναικ)/i), true);
+  assert.equal(articleConfirmsFinalQualification(falsePositive, /(olympiacos|ολυμπιακ)/i), false);
+});
+
+test('early resolution detector returns YES with official club evidence for final four', async () => {
   const homepageHtml = `
     <html>
       <body>
@@ -115,10 +145,13 @@ test('early resolution detector returns YES with official club evidence', async 
     throw new Error(`unexpected url: ${url}`);
   };
 
-  const decision = await detectEarlyResolutionDecision({
-    slug: 'gre-sports-euroleague-final4',
-    question: 'Will a Greek team reach the EuroLeague Final Four?'
-  }, fetcher);
+  const decision = await detectEarlyResolutionDecision(
+    {
+      slug: 'gre-sports-euroleague-final4',
+      question: 'Will a Greek team reach the EuroLeague Final Four?'
+    },
+    fetcher
+  );
 
   assert.equal(hasEarlyResolutionDetector('gre-sports-euroleague-final4'), true);
   assert.equal(decision?.outcome, 'yes');
@@ -126,6 +159,56 @@ test('early resolution detector returns YES with official club evidence', async 
   assert.equal(
     decision?.evidenceUrl,
     'https://www.olympiacosbc.gr/el/nea/eidiseis/19499-oi-diloseis-ton-proedron-meta-tin-prokrisi-sto-final-four-tis-athinas.html'
+  );
+});
+
+test('early resolution detector returns YES with official club evidence for the final market', async () => {
+  const homepageHtml = `
+    <html>
+      <body>
+        <a href="/el/nea/game-news/19540-olympiacos-in-the-euroleague-final.html">Ο Ολυμπιακός στον τελικό της EuroLeague!</a>
+      </body>
+    </html>
+  `;
+  const articleHtml = `
+    <html>
+      <body>
+        <article>
+          <h1>Ο Ολυμπιακός στον τελικό της EuroLeague!</h1>
+          <p>Ο Ολυμπιακός κέρδισε στον ημιτελικό και εξασφάλισε την πρόκρισή του στον τελικό της EuroLeague.</p>
+        </article>
+      </body>
+    </html>
+  `;
+
+  const fetcher: typeof fetch = async (input) => {
+    const url = String(input);
+
+    if (url === 'https://www.olympiacosbc.gr/el/') {
+      return new Response(homepageHtml, { status: 200 });
+    }
+
+    if (url === 'https://www.olympiacosbc.gr/el/nea/game-news/19540-olympiacos-in-the-euroleague-final.html') {
+      return new Response(articleHtml, { status: 200 });
+    }
+
+    throw new Error(`unexpected url: ${url}`);
+  };
+
+  const decision = await detectEarlyResolutionDecision(
+    {
+      slug: 'gre-sports-euroleague-final',
+      question: 'Will a Greek team reach the EuroLeague Final?'
+    },
+    fetcher
+  );
+
+  assert.equal(hasEarlyResolutionDetector('gre-sports-euroleague-final'), true);
+  assert.equal(decision?.outcome, 'yes');
+  assert.match(decision?.evidenceSummary ?? '', /qualified for the title game/i);
+  assert.equal(
+    decision?.evidenceUrl,
+    'https://www.olympiacosbc.gr/el/nea/game-news/19540-olympiacos-in-the-euroleague-final.html'
   );
 });
 
