@@ -19,6 +19,7 @@ The system should:
 - detect upcoming and overdue markets automatically
 - prep evidence before close
 - execute lifecycle transitions immediately after close when evidence is clear
+- close/resolve/settle early when an official source makes the outcome knowable before `close_time`
 - settle and verify public readback
 - post only meaningful alerts or completion updates
 
@@ -33,6 +34,7 @@ Backlog guard mode for ops sanity:
 Default responsibility:
 - upcoming open markets inside lookahead window -> prepare
 - overdue open markets -> close immediately and resolve if evidence is ready
+- open markets with early official outcome evidence -> close immediately, resolve, settle
 - unresolved closed markets -> resolve
 - resolved/void unsettled markets -> settle
 

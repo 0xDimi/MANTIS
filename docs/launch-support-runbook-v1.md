@@ -79,7 +79,7 @@ Move from build validation to launch operations support.
 
 ## 11) Automation Runtime (Live)
 - Ops endpoints are live:
-  - `/api/ops/market-checks/run` (internal schedule gating enforces baseline/high-risk/overnight cadence)
+  - `/api/ops/market-checks/run` (internal schedule gating enforces baseline/high-risk/overnight cadence and now owns auto closeout for overdue, early-decided, and settle-ready markets)
   - `/api/ops/house-liquidity/run`
 - Scheduler source:
   - host-side automation (Alfred/cron) triggers these endpoints on cadence

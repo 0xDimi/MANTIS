@@ -1,11 +1,23 @@
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
+import { detectEarlyResolutionDecision, hasEarlyResolutionDetector, type EarlyResolutionDecision } from '@/lib/ops-early-resolution';
+import {
+  diffMinutes,
+  isHighRiskCloseWindow,
+  isOverdueMarket,
+  normalizeMarketState,
+  resolveSchedule,
+  summarizeStaleOpenMarkets,
+  type MarketCheckMode
+} from '@/lib/ops-market-checks';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 import { getAthensNowParts, isOpsAuthorized, parseBoolean } from '@/lib/ops-automation';
 
-type OpenMarketRow = {
+type ActiveMarketRow = {
   id: string;
   slug: string;
+  question: string;
+  status: 'open' | 'paused';
   close_time: string;
   updated_at: string;
   market_state:
@@ -20,13 +32,43 @@ type OpenMarketRow = {
     | null;
 };
 
-type MarketCheckMode = 'baseline' | 'high_risk' | 'overnight';
+type TerminalMarketRow = {
+  id: string;
+  slug: string;
+  question: string;
+  status: 'closed' | 'resolved' | 'void';
+  close_time: string;
+  updated_at: string;
+};
+
+type ResolutionRow = {
+  market_id: string;
+  outcome: 'yes' | 'no' | 'void';
+};
+
+type SettlementRow = {
+  market_id: string;
+  outcome: 'yes' | 'no' | 'void';
+};
 
 type StatePayload = {
   lastRunAt?: string;
   lastMode?: MarketCheckMode;
   overnightDayKey?: string;
   checksRun?: number;
+};
+
+type CloseoutAction = {
+  slug: string;
+  actions: string[];
+  outcome?: string;
+  evidenceUrl?: string;
+};
+
+type CloseoutBlocker = {
+  slug: string;
+  stage: 'detect_early' | 'close_overdue' | 'resolve_closed' | 'settle_resolved';
+  detail: string;
 };
 
 const CHECK_STATE_ID = 'ops_market_checks_state';
@@ -36,32 +78,129 @@ function getStateRow<T>(row: unknown) {
   return (row && typeof row === 'object' ? (row as T) : null) as T | null;
 }
 
-function normalizeMarketState(input: OpenMarketRow['market_state']) {
-  if (Array.isArray(input)) return input[0] ?? null;
-  return input ?? null;
+function asErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
 }
 
-function diffMinutes(nowIso: string, pastIso: string | null | undefined) {
-  if (!pastIso) return Number.POSITIVE_INFINITY;
-  const diff = new Date(nowIso).getTime() - new Date(pastIso).getTime();
-  if (!Number.isFinite(diff)) return Number.POSITIVE_INFINITY;
-  return diff / 60_000;
+async function loadActiveMarkets(admin: ReturnType<typeof getSupabaseAdminClient>) {
+  const { data, error } = await admin
+    .from('markets')
+    .select('id,slug,question,status,close_time,updated_at,market_state(last_trade_at,volume_total)')
+    .in('status', ['open', 'paused'])
+    .limit(250);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return ((data ?? []) as ActiveMarketRow[]).map((row) => ({
+    ...row,
+    market_state: normalizeMarketState(row.market_state)
+  }));
 }
 
-function resolveSchedule(hourAthens: number, hasHighRisk: boolean): { mode: MarketCheckMode; intervalMinutes: number } | null {
-  if (hasHighRisk) {
-    return { mode: 'high_risk', intervalMinutes: 35 };
+async function loadTerminalMarkets(admin: ReturnType<typeof getSupabaseAdminClient>) {
+  const { data, error } = await admin
+    .from('markets')
+    .select('id,slug,question,status,close_time,updated_at')
+    .in('status', ['closed', 'resolved', 'void'])
+    .limit(250);
+
+  if (error) {
+    throw new Error(error.message);
   }
 
-  if (hourAthens >= 9 && hourAthens <= 23) {
-    return { mode: 'baseline', intervalMinutes: 120 };
+  return (data ?? []) as TerminalMarketRow[];
+}
+
+async function loadResolutionAndSettlementMaps(
+  admin: ReturnType<typeof getSupabaseAdminClient>,
+  marketIds: string[]
+) {
+  const [{ data: resolutions, error: resolutionsError }, settlementsResult] = await Promise.all([
+    marketIds.length
+      ? admin.from('resolutions').select('market_id,outcome').in('market_id', marketIds).limit(500)
+      : Promise.resolve({ data: [] as ResolutionRow[], error: null as { message: string } | null }),
+    marketIds.length
+      ? admin.from('market_settlements').select('market_id,outcome').in('market_id', marketIds).limit(500)
+      : Promise.resolve({ data: [] as SettlementRow[], error: null as { message: string } | null })
+  ]);
+
+  if (resolutionsError) {
+    throw new Error(resolutionsError.message);
   }
 
-  if (hourAthens >= 2 && hourAthens < 3) {
-    return { mode: 'overnight', intervalMinutes: 24 * 60 };
+  if (settlementsResult.error && !(settlementsResult.error.message ?? '').toLowerCase().includes('does not exist')) {
+    throw new Error(settlementsResult.error.message);
   }
 
-  return null;
+  return {
+    resolutionByMarketId: new Map(((resolutions ?? []) as ResolutionRow[]).map((row) => [row.market_id, row])),
+    settlementByMarketId: new Map(((settlementsResult.data ?? []) as SettlementRow[]).map((row) => [row.market_id, row]))
+  };
+}
+
+async function resolveOperatorUserId(admin: ReturnType<typeof getSupabaseAdminClient>) {
+  const { data, error } = await admin
+    .from('profiles')
+    .select('user_id,role')
+    .in('role', ['admin', 'super_admin'])
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`failed to resolve admin user id: ${error.message}`);
+  }
+
+  const profile = data as { user_id?: string | null } | null;
+
+  if (!profile?.user_id) {
+    throw new Error('no admin or super_admin profile found for market closeout');
+  }
+
+  return profile.user_id;
+}
+
+async function closeMarket(admin: ReturnType<typeof getSupabaseAdminClient>, adminUserId: string, marketId: string) {
+  const { error } = await (admin as any).rpc('admin_transition_market_status', {
+    p_admin_user_id: adminUserId,
+    p_market_id: marketId,
+    p_target_status: 'closed'
+  });
+
+  if (error) {
+    throw new Error(error.message ?? 'admin_transition_market_status failed');
+  }
+}
+
+async function resolveMarket(
+  admin: ReturnType<typeof getSupabaseAdminClient>,
+  adminUserId: string,
+  marketId: string,
+  decision: EarlyResolutionDecision
+) {
+  const { error } = await (admin as any).rpc('admin_record_market_resolution', {
+    p_admin_user_id: adminUserId,
+    p_market_id: marketId,
+    p_outcome: decision.outcome,
+    p_evidence_summary: decision.evidenceSummary,
+    p_evidence_url: decision.evidenceUrl
+  });
+
+  if (error) {
+    throw new Error(error.message ?? 'admin_record_market_resolution failed');
+  }
+}
+
+async function settleMarket(admin: ReturnType<typeof getSupabaseAdminClient>, adminUserId: string, marketId: string) {
+  const { error } = await (admin as any).rpc('admin_settle_market', {
+    p_admin_user_id: adminUserId,
+    p_market_id: marketId
+  });
+
+  if (error) {
+    throw new Error(error.message ?? 'admin_settle_market failed');
+  }
 }
 
 export async function GET(request: Request) {
@@ -79,43 +218,27 @@ export async function GET(request: Request) {
     const nowIso = now.toISOString();
     const athens = getAthensNowParts(now);
 
-    const [{ data: openMarkets, error: openError }, { data: closedMarkets, error: closedError }, { data: stateRow, error: stateError }] =
-      await Promise.all([
-        admin
-          .from('markets')
-          .select('id,slug,close_time,updated_at,market_state(last_trade_at,volume_total)')
-          .eq('status', 'open')
-          .limit(250),
-        admin.from('markets').select('id,slug,close_time,updated_at').eq('status', 'closed').limit(250),
-        admin.from('mission_control_state').select('id,payload').eq('id', CHECK_STATE_ID).limit(1).maybeSingle()
-      ]);
+    const [initialActiveRows, stateResult] = await Promise.all([
+      loadActiveMarkets(admin),
+      admin.from('mission_control_state').select('id,payload').eq('id', CHECK_STATE_ID).limit(1).maybeSingle()
+    ]);
 
-    if (openError) {
-      throw new Error(openError.message);
+    if (stateResult.error) {
+      throw new Error(stateResult.error.message);
     }
 
-    if (closedError) {
-      throw new Error(closedError.message);
-    }
-
-    if (stateError) {
-      throw new Error(stateError.message);
-    }
-
-    const openRows = ((openMarkets ?? []) as OpenMarketRow[]).map((row) => ({
-      ...row,
-      market_state: normalizeMarketState(row.market_state)
-    }));
-
-    const highRiskMarkets = openRows
-      .filter((row) => {
-        const closeMs = new Date(row.close_time).getTime();
-        return Number.isFinite(closeMs) && closeMs - now.getTime() <= 24 * 60 * 60 * 1000;
-      })
+    const highRiskMarkets = initialActiveRows
+      .filter((row) => isHighRiskCloseWindow(row.close_time, now))
       .map((row) => row.slug);
+    const earlyResolutionCandidates = initialActiveRows.filter((row) => hasEarlyResolutionDetector(row.slug)).map((row) => row.slug);
 
-    const schedule = resolveSchedule(athens.hour, highRiskMarkets.length > 0);
-    const currentState = getStateRow<{ payload?: StatePayload }>(stateRow)?.payload ?? {};
+    const schedule = resolveSchedule({
+      hourAthens: athens.hour,
+      hasHighRiskWindow: highRiskMarkets.length > 0,
+      hasEarlyResolutionCandidates: earlyResolutionCandidates.length > 0
+    });
+
+    const currentState = getStateRow<{ payload?: StatePayload }>(stateResult.data)?.payload ?? {};
     const minutesSinceLastRun = diffMinutes(nowIso, currentState.lastRunAt);
 
     let skipReason: string | null = null;
@@ -137,70 +260,174 @@ export async function GET(request: Request) {
           reason: skipReason,
           now: {
             utc: nowIso,
-            athens: athens
+            athens
           },
           authMode: auth.mode,
-          highRiskCount: highRiskMarkets.length
+          highRiskCount: highRiskMarkets.length,
+          earlyResolutionCandidateCount: earlyResolutionCandidates.length
         },
         { status: 200 }
       );
     }
 
-    const closedIds = ((closedMarkets ?? []) as Array<{ id: string; slug: string; close_time: string; updated_at: string }>).map((row) => row.id);
+    const closeoutActions: CloseoutAction[] = [];
+    const closeoutBlockers: CloseoutBlocker[] = [];
+    let adminUserIdPromise: Promise<string> | null = null;
 
-    const [{ data: resolutions, error: resolutionsError }, settlementsResult] = await Promise.all([
-      closedIds.length
-        ? admin.from('resolutions').select('market_id').in('market_id', closedIds).limit(500)
-        : Promise.resolve({ data: [] as Array<{ market_id: string }>, error: null as { message: string } | null }),
-      closedIds.length
-        ? admin.from('market_settlements').select('market_id').in('market_id', closedIds).limit(500)
-        : Promise.resolve({ data: [] as Array<{ market_id: string }>, error: null as { message: string } | null })
-    ]);
+    const getAdminUserId = () => {
+      if (!adminUserIdPromise) {
+        adminUserIdPromise = resolveOperatorUserId(admin);
+      }
 
-    if (resolutionsError) {
-      throw new Error(resolutionsError.message);
+      return adminUserIdPromise;
+    };
+
+    for (const market of initialActiveRows.filter((row) => hasEarlyResolutionDetector(row.slug))) {
+      try {
+        const decision = await detectEarlyResolutionDecision(market);
+
+        if (!decision) {
+          continue;
+        }
+
+        const adminUserId = await getAdminUserId();
+        await closeMarket(admin, adminUserId, market.id);
+        await resolveMarket(admin, adminUserId, market.id, decision);
+        await settleMarket(admin, adminUserId, market.id);
+
+        closeoutActions.push({
+          slug: market.slug,
+          actions: ['closed_early', `resolved_${decision.outcome}`, 'settled'],
+          outcome: decision.outcome,
+          evidenceUrl: decision.evidenceUrl
+        });
+      } catch (error) {
+        closeoutBlockers.push({
+          slug: market.slug,
+          stage: 'detect_early',
+          detail: asErrorMessage(error)
+        });
+      }
     }
 
-    if (settlementsResult.error && !(settlementsResult.error.message ?? '').toLowerCase().includes('does not exist')) {
-      throw new Error(settlementsResult.error.message);
+    let refreshedActiveRows = await loadActiveMarkets(admin);
+
+    for (const market of refreshedActiveRows.filter((row) => isOverdueMarket(row.close_time, now))) {
+      try {
+        const adminUserId = await getAdminUserId();
+        await closeMarket(admin, adminUserId, market.id);
+
+        closeoutActions.push({
+          slug: market.slug,
+          actions: ['closed_on_deadline']
+        });
+      } catch (error) {
+        closeoutBlockers.push({
+          slug: market.slug,
+          stage: 'close_overdue',
+          detail: asErrorMessage(error)
+        });
+      }
     }
 
-    const resolutionSet = new Set(((resolutions ?? []) as Array<{ market_id: string }>).map((row) => row.market_id));
-    const settlementSet = new Set(((settlementsResult.data ?? []) as Array<{ market_id: string }>).map((row) => row.market_id));
-
-    const unresolvedClosed = ((closedMarkets ?? []) as Array<{ id: string; slug: string; close_time: string; updated_at: string }>).filter(
-      (row) => !resolutionSet.has(row.id)
+    refreshedActiveRows = await loadActiveMarkets(admin);
+    const terminalRows = await loadTerminalMarkets(admin);
+    const { resolutionByMarketId, settlementByMarketId } = await loadResolutionAndSettlementMaps(
+      admin,
+      terminalRows.map((row) => row.id)
     );
 
-    const resolvedUnsettled = ((closedMarkets ?? []) as Array<{ id: string; slug: string; close_time: string; updated_at: string }>).filter(
-      (row) => resolutionSet.has(row.id) && !settlementSet.has(row.id)
+    const unresolvedClosed = terminalRows.filter((row) => row.status === 'closed' && !resolutionByMarketId.has(row.id));
+    const resolvedUnsettled = terminalRows.filter(
+      (row) => (row.status === 'resolved' || row.status === 'void') && !settlementByMarketId.has(row.id)
     );
 
-    const staleOpen = openRows
-      .map((row) => {
-        const lastTradeAt = row.market_state && 'last_trade_at' in row.market_state ? row.market_state.last_trade_at : null;
-        return {
-          slug: row.slug,
-          closeTime: row.close_time,
-          lastTradeAt,
-          minutesSinceTrade: diffMinutes(nowIso, lastTradeAt)
-        };
-      })
-      .filter((row) => Number.isFinite(row.minutesSinceTrade) && row.minutesSinceTrade >= 12 * 60)
-      .sort((a, b) => b.minutesSinceTrade - a.minutesSinceTrade)
+    for (const market of unresolvedClosed) {
+      if (!hasEarlyResolutionDetector(market.slug)) {
+        continue;
+      }
+
+      try {
+        const decision = await detectEarlyResolutionDecision(market);
+
+        if (!decision) {
+          continue;
+        }
+
+        const adminUserId = await getAdminUserId();
+        await resolveMarket(admin, adminUserId, market.id, decision);
+        await settleMarket(admin, adminUserId, market.id);
+
+        closeoutActions.push({
+          slug: market.slug,
+          actions: [`resolved_${decision.outcome}`, 'settled'],
+          outcome: decision.outcome,
+          evidenceUrl: decision.evidenceUrl
+        });
+      } catch (error) {
+        closeoutBlockers.push({
+          slug: market.slug,
+          stage: 'resolve_closed',
+          detail: asErrorMessage(error)
+        });
+      }
+    }
+
+    for (const market of resolvedUnsettled) {
+      try {
+        const adminUserId = await getAdminUserId();
+        await settleMarket(admin, adminUserId, market.id);
+
+        closeoutActions.push({
+          slug: market.slug,
+          actions: ['settled']
+        });
+      } catch (error) {
+        closeoutBlockers.push({
+          slug: market.slug,
+          stage: 'settle_resolved',
+          detail: asErrorMessage(error)
+        });
+      }
+    }
+
+    const [finalActiveRows, finalTerminalRows] = await Promise.all([loadActiveMarkets(admin), loadTerminalMarkets(admin)]);
+    const finalMaps = await loadResolutionAndSettlementMaps(
+      admin,
+      finalTerminalRows.map((row) => row.id)
+    );
+
+    const finalUnresolvedClosed = finalTerminalRows.filter(
+      (row) => row.status === 'closed' && !finalMaps.resolutionByMarketId.has(row.id)
+    );
+    const finalResolvedUnsettled = finalTerminalRows.filter(
+      (row) => (row.status === 'resolved' || row.status === 'void') && !finalMaps.settlementByMarketId.has(row.id)
+    );
+
+    const finalHighRiskSlugs = finalActiveRows
+      .filter((row) => isHighRiskCloseWindow(row.close_time, now))
+      .map((row) => row.slug)
+      .slice(0, 8);
+    const finalEarlyResolutionCandidateSlugs = finalActiveRows
+      .filter((row) => hasEarlyResolutionDetector(row.slug))
+      .map((row) => row.slug)
       .slice(0, 8);
 
     const summary = {
       runAt: nowIso,
-      mode: schedule?.mode ?? (highRiskMarkets.length > 0 ? 'high_risk' : 'baseline'),
-      openMarkets: openRows.length,
-      highRiskOpenMarkets: highRiskMarkets.length,
-      highRiskSlugs: highRiskMarkets.slice(0, 8),
-      unresolvedClosedMarkets: unresolvedClosed.length,
-      unresolvedClosedSlugs: unresolvedClosed.map((row) => row.slug).slice(0, 8),
-      resolvedUnsettledMarkets: resolvedUnsettled.length,
-      resolvedUnsettledSlugs: resolvedUnsettled.map((row) => row.slug).slice(0, 8),
-      staleOpenMarketsSample: staleOpen
+      mode: schedule?.mode ?? (highRiskMarkets.length > 0 || earlyResolutionCandidates.length > 0 ? 'high_risk' : 'baseline'),
+      openMarkets: finalActiveRows.length,
+      highRiskOpenMarkets: finalHighRiskSlugs.length,
+      highRiskSlugs: finalHighRiskSlugs,
+      earlyResolutionCandidateMarkets: finalEarlyResolutionCandidateSlugs.length,
+      earlyResolutionCandidateSlugs: finalEarlyResolutionCandidateSlugs,
+      unresolvedClosedMarkets: finalUnresolvedClosed.length,
+      unresolvedClosedSlugs: finalUnresolvedClosed.map((row) => row.slug).slice(0, 8),
+      resolvedUnsettledMarkets: finalResolvedUnsettled.length,
+      resolvedUnsettledSlugs: finalResolvedUnsettled.map((row) => row.slug).slice(0, 8),
+      closeoutActions,
+      closeoutBlockers,
+      staleOpenMarketsSample: summarizeStaleOpenMarkets(finalActiveRows, nowIso)
     };
 
     const nextState: StatePayload = {
