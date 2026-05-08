@@ -68,7 +68,7 @@ function sortMarkets(markets: Awaited<ReturnType<typeof loadMarketsBoard>>['mark
 const FEATURED_PINNED_SLUGS = [
   'gre-politics-cabinet-reshuffle-announced',
   'gre-politics-tsipras-new-party-may15',
-  'crypto-btc-close-above-80k'
+  'gre-economy-cpi-above-5-may2026'
 ] as const;
 
 export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
