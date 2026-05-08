@@ -280,11 +280,6 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
-  'gre-sports-euroleague-final': {
-    question: 'Θα προκριθεί ελληνική ομάδα στον τελικό της EuroLeague;',
-    yesLabel: 'Ναι',
-    noLabel: 'Όχι'
-  },
   'gre-crypto-eurc-volume-up': {
     question: 'Θα αυξηθεί ο μηνιαίος όγκος του EURC σε σχέση με τον προηγούμενο μήνα;',
     yesLabel: 'Ναι',
