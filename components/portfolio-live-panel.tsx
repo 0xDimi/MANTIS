@@ -360,7 +360,7 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
               <span>{tr(lang, 'Shares', 'Μετοχές')}</span>
               <span>Avg</span>
               <span>{tr(lang, 'Fee', 'Χρέωση')}</span>
-              <span>{tr(lang, 'Net', 'Καθαρό')}</span>
+              <span>{tr(lang, 'Amount', 'Ποσό')}</span>
             </div>
             {trades.trades.map((trade) => (
               <div className="portfolioTableRow portfolioLedgerRow" key={trade.id}>
@@ -374,7 +374,7 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
                 <span>{trade.shareDelta.toFixed(3)}</span>
                 <span>{fmtPercent(trade.avgPrice)}</span>
                 <span>{fmtMoney(trade.feeAmount, lang)}</span>
-                <span className={trade.netAmount >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown'}>{fmtSignedMoney(trade.netAmount, lang)}</span>
+                <span>{fmtMoney(trade.grossAmount, lang)}</span>
               </div>
             ))}
           </div>
