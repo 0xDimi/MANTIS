@@ -19,9 +19,9 @@ const categoryCopy: Record<string, { en: string; el: string }> = {
   technology: { en: 'Technology', el: 'Τεχνολογία' },
   sports: { en: 'Sports', el: 'Αθλητισμός' },
   gas: { en: 'Gas Price', el: 'Τιμή Καυσίμων' },
-  social: { en: 'Social', el: 'Social' },
+  social: { en: 'Social', el: 'Κοινωνικά' },
   global: { en: 'Global', el: 'Διεθνή' },
-  crypto: { en: 'Crypto', el: 'Crypto' },
+  crypto: { en: 'Crypto', el: 'Κρύπτο' },
   ops: { en: 'Operations', el: 'Λειτουργία' }
 };
 
@@ -50,6 +50,15 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     sourcePrimary: 'Επίσημη ανακοίνωση από Αλέξη Τσίπρα ή νέο κόμμα',
     sourceFallback: 'Επιβεβαίωση από κορυφαία ελληνικά μέσα με σαφή δημόσια δήλωση',
     voidRule: 'Ακυρώνεται αν δεν υπάρχει σαφής δημόσια ανακοίνωση έως τη λήξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-politics-minister-resignation-before-may15': {
+    question: 'Θα παραιτηθεί Έλληνας υπουργός πριν τις 15 Μαΐου 2026;',
+    description: 'Αγορά πολιτικής επικαιρότητας για πιθανή παραίτηση υπουργού πριν τα μέσα Μαΐου.',
+    sourcePrimary: 'Επίσημη ανακοίνωση της κυβέρνησης ή σχετική δημοσίευση στο ΦΕΚ',
+    sourceFallback: 'Δήλωση του ίδιου του υπουργού ή επιβεβαίωση από κορυφαίο ελληνικό μέσο με σαφή δημόσια τεκμηρίωση',
+    voidRule: 'Ακυρώνεται αν υπάρχει αποχώρηση χωρίς καθαρή επίσημη ή δημόσια επιβεβαίωση παραίτησης έως τη λήξη.',
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
@@ -161,12 +170,39 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'gre-social-adonis-posts-on-20-distinct-days-in-may': {
+    question: 'Θα ποστάρει ο Άδωνις Γεωργιάδης σε 20 διαφορετικές ημέρες μέσα στον Μάιο 2026;',
+    description: 'Αγορά social activity για distinct posting days μόνο από original posts στο X.',
+    sourcePrimary: 'Direct profile timeline του @AdonisGeorgiadi με day-count για 1-31 Μαΐου 2026',
+    sourceFallback: 'X advanced search cross-check για from:AdonisGeorgiadi since:2026-05-01 until:2026-06-01 -is:retweet',
+    voidRule: 'Ακυρώνεται αν το timeline/counting workflow δεν είναι καθαρά auditable ή αν το X λείπει για πάνω από 24 ώρες κοντά στη λήξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-health-hantavirus-case-by-may31': {
+    question: 'Θα αναφέρει ο ΕΟΔΥ επιβεβαιωμένο ανθρώπινο κρούσμα hantavirus στην Ελλάδα έως τις 31 Μαΐου 2026;',
+    description: 'Αγορά υγειονομικής επικαιρότητας με βάση δημόσια αναφορά του ΕΟΔΥ για εργαστηριακά επιβεβαιωμένο ανθρώπινο κρούσμα hantavirus στην Ελλάδα έως το τέλος του μήνα.',
+    sourcePrimary: 'Δημόσιες ανακοινώσεις ή ενημερώσεις νοσημάτων του ΕΟΔΥ που αναφέρουν ρητά επιβεβαιωμένο ανθρώπινο κρούσμα hantavirus στην Ελλάδα',
+    sourceFallback: 'Ανακοίνωση του Υπουργείου Υγείας και στη συνέχεια WHO ή ECDC μόνο αν δηλώνουν ρητά επιβεβαιωμένο ανθρώπινο κρούσμα hantavirus στην Ελλάδα',
+    voidRule: 'Ακυρώνεται αν λείπει επίσημη ελληνική ενημέρωση κοντά στη λήξη και καμία fallback πηγή δεν επιβεβαιώνει ή αποκλείει καθαρά επιβεβαιωμένο ανθρώπινο κρούσμα hantavirus στην Ελλάδα έως την προθεσμία.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'global-us-iran-final-agreement-apr30': {
     question: 'Θα καταλήξουν οι ΗΠΑ και το Ιράν σε τελική συμφωνία έως τις 30 Απριλίου 2026;',
     description: 'Αγορά διεθνούς επικαιρότητας για επίσημη διμερή συμφωνία.',
     sourcePrimary: 'Επίσημες ανακοινώσεις από τις κυβερνήσεις ΗΠΑ και Ιράν',
     sourceFallback: 'Reuters / AP με ρητή αναφορά επιβεβαίωσης και από τις δύο πλευρές',
     voidRule: 'Ακυρώνεται αν δεν υπάρχει δημόσια επιβεβαίωση τελικής συμφωνίας και από τις δύο κυβερνήσεις έως τη λήξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'global-us-iran-new-talks-announced-before-may15': {
+    question: 'Θα ανακοινώσουν οι ΗΠΑ και το Ιράν νέες συνομιλίες πριν τις 15 Μαΐου 2026;',
+    description: 'Αγορά διεθνούς επικαιρότητας για επίσημη ανακοίνωση νέου γύρου συνομιλιών μεταξύ ΗΠΑ και Ιράν.',
+    sourcePrimary: 'Επίσημη ανακοίνωση από τις κυβερνήσεις των ΗΠΑ ή του Ιράν για νέο γύρο συνομιλιών',
+    sourceFallback: 'Reuters ή AP με σαφή αναφορά ότι ανακοινώθηκαν νέες συνομιλίες από επίσημες πλευρές',
+    voidRule: 'Ακυρώνεται αν εμφανιστούν ανεπίσημες διαρροές χωρίς καθαρή δημόσια ανακοίνωση νέων συνομιλιών έως τη λήξη.',
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
@@ -188,12 +224,30 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'gre-sports-euroleague-final': {
+    question: 'Θα φτάσει ελληνική ομάδα στον τελικό της EuroLeague;',
+    description: 'Αγορά αθλητικής επικαιρότητας για συμμετοχή ελληνικής ομάδας στον τελικό της EuroLeague.',
+    sourcePrimary: 'Επίσημο πρόγραμμα, bracket ή αποτελέσματα της EuroLeague',
+    sourceFallback: 'FIBA ή επίσημες ανακοινώσεις των συλλόγων με σαφή πρόκριση στον τελικό',
+    voidRule: 'Ακυρώνεται αν αλλάξει ουσιωδώς η μορφή της διοργάνωσης ή δεν διεξαχθεί επίσημος τελικός.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'crypto-btc-close-above-80k': {
     question: 'Θα κλείσει το BTC πάνω από $80.000 (UTC daily close) πριν το τέλος του μήνα;',
     description: 'Αγορά για επίπεδο τιμής BTC.',
     sourcePrimary: 'Coinbase BTC-USD official daily close (UTC)',
     sourceFallback: 'Binance + Kraken UTC daily close confirmation',
     voidRule: 'Ακυρώνεται αν δεν είναι διαθέσιμο αξιόπιστο UTC daily close από τουλάχιστον μία κύρια πηγή.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'crypto-btc-daily-close-above-82k-before-may15': {
+    question: 'Θα κλείσει το BTC πάνω από $82.000 σε ημερήσιο κλείσιμο UTC πριν τις 15 Μαΐου 2026;',
+    description: 'Αγορά κρύπτο για ημερήσιο κλείσιμο BTC πάνω από το όριο των $82.000 πριν τα μέσα Μαΐου.',
+    sourcePrimary: 'Επίσημο ημερήσιο κλείσιμο BTC-USD της Coinbase σε UTC',
+    sourceFallback: 'Επιβεβαίωση UTC daily close από Binance και Kraken',
+    voidRule: 'Ακυρώνεται αν δεν υπάρχει αξιόπιστο UTC daily close από τουλάχιστον μία κύρια spot πηγή για την κρίσιμη ημέρα.',
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
