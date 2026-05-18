@@ -2221,6 +2221,200 @@ code {
   grid-template-columns: minmax(280px, 1.9fr) minmax(180px, 1.2fr) 100px 100px 120px 130px;
 }
 
+.portfolioHistoryHeadWide,
+.portfolioHistoryRowWide {
+  min-width: 1060px;
+  grid-template-columns: minmax(260px, 1.7fr) minmax(180px, 1.15fr) 92px 100px 100px 120px 130px;
+}
+
+.portfolioMiniStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.portfolioMiniStat {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.018);
+  padding: 12px 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.portfolioMiniStat span {
+  color: var(--text-3);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.portfolioMiniStat strong {
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.portfolioInsightGrid,
+.portfolioActivityGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.portfolioInsightCard {
+  min-height: 140px;
+}
+
+.portfolioInsightCard span {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.portfolioInsightMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.portfolioAttributionList {
+  display: grid;
+  gap: 8px;
+}
+
+.portfolioAttributionRow {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.016);
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.portfolioAttributionRow:hover {
+  background: rgba(124, 92, 255, 0.08);
+}
+
+.portfolioAttributionRank {
+  color: #95a4c1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.portfolioAttributionValues {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+  text-align: right;
+}
+
+.portfolioAttributionValues span {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.portfolioChartCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.018);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.portfolioChartHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.portfolioChartHead h4 {
+  margin: 0;
+}
+
+.portfolioChartDelta {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.portfolioChartStage {
+  position: relative;
+  padding-left: 56px;
+}
+
+.portfolioChartStage svg {
+  display: block;
+  width: 100%;
+  height: 200px;
+}
+
+.portfolioChartAxisY {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.portfolioChartAxisX {
+  margin-left: 56px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.portfolioSplitBar {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.portfolioSplitBar span:first-child {
+  background: linear-gradient(90deg, rgba(82, 198, 255, 0.95), rgba(82, 198, 255, 0.74));
+}
+
+.portfolioSplitBar span:last-child {
+  background: linear-gradient(90deg, rgba(124, 92, 255, 0.92), rgba(88, 67, 200, 0.82));
+}
+
+.portfolioSplitLegend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.portfolioSplitItem {
+  display: grid;
+  gap: 4px;
+}
+
+.portfolioSplitItem span {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.portfolioActivityHead,
+.portfolioActivityRow {
+  min-width: 980px;
+  grid-template-columns: minmax(190px, 1.1fr) minmax(280px, 1.6fr) minmax(110px, 0.8fr) minmax(130px, 0.9fr) minmax(120px, 0.9fr);
+}
+
 @media (max-width: 900px) {
   .heroGrid,
   .routeGrid,
@@ -2231,7 +2425,11 @@ code {
   .ticketQuoteGrid,
   .ticketSummaryPrimary,
   .ticketSummarySecondary,
-  .ticketPreviewMetrics {
+  .ticketPreviewMetrics,
+  .portfolioMiniStats,
+  .portfolioInsightGrid,
+  .portfolioActivityGrid,
+  .portfolioSplitLegend {
     grid-template-columns: 1fr;
   }
 

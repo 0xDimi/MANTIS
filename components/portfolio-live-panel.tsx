@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { PortfolioBalanceChart } from '@/components/portfolio-balance-chart';
 import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel, localizedQuestionFromSlug } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
@@ -95,7 +96,91 @@ type TradeHistoryPayload = {
   error?: string;
 };
 
-type PortfolioTab = 'open' | 'history' | 'executions';
+type PerformancePayload = {
+  summary?: {
+    marketsTraded: number;
+    settledMarkets: number;
+    winCount: number;
+    lossCount: number;
+    voidCount: number;
+    flatCount: number;
+    winRate: number | null;
+    avgSettledReturnPct: number | null;
+  };
+  bestMarket?: {
+    marketId: string;
+    market: {
+      slug: string;
+      question: string;
+      category: string;
+      status: string;
+    };
+    realizedPnl: number;
+    returnPct: number | null;
+    result: 'won' | 'lost' | 'void' | 'flat';
+    settledAt: string;
+  } | null;
+  worstMarket?: {
+    marketId: string;
+    market: {
+      slug: string;
+      question: string;
+      category: string;
+      status: string;
+    };
+    realizedPnl: number;
+    returnPct: number | null;
+    result: 'won' | 'lost' | 'void' | 'flat';
+    settledAt: string;
+  } | null;
+  attribution?: Array<{
+    marketId: string;
+    market: {
+      slug: string;
+      question: string;
+      category: string;
+      status: string;
+    };
+    realizedPnl: number;
+    committedCash: number;
+    returnPct: number | null;
+    settledAt: string;
+    result: 'won' | 'lost' | 'void' | 'flat';
+  }>;
+  accountSplit?: {
+    availableCash: number;
+    openExposure: number;
+    totalAccountValue: number;
+    cashSharePct: number;
+    openExposureSharePct: number;
+  };
+  activity?: {
+    series: Array<{
+      time: string;
+      balanceAfter: number;
+      entryType: string;
+    }>;
+    entries: Array<{
+      id: string;
+      entryType: string;
+      amount: number;
+      balanceAfter: number;
+      createdAt: string;
+      label: string;
+      detail: string | null;
+      detailSecondary: string | null;
+      market: {
+        slug: string;
+        question: string;
+        category: string;
+        status: string;
+      } | null;
+    }>;
+  };
+  error?: string;
+};
+
+type PortfolioTab = 'open' | 'history' | 'executions' | 'activity';
 
 function fmtMoney(value: number, lang: UiLang) {
   return new Intl.NumberFormat(lang === 'el' ? 'el-GR' : 'en-GB', {
@@ -115,6 +200,16 @@ function fmtSignedMoney(value: number, lang: UiLang) {
 function fmtPercent(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) return '—';
   return `${Math.round(value * 100)}%`;
+}
+
+function fmtPercentValue(value: number | null | undefined, digits = 1) {
+  if (value == null || !Number.isFinite(value)) return '—';
+  return `${value.toFixed(digits)}%`;
+}
+
+function fmtSignedPercentValue(value: number | null | undefined, digits = 1) {
+  if (value == null || !Number.isFinite(value)) return '—';
+  return `${value > 0 ? '+' : value < 0 ? '-' : ''}${Math.abs(value).toFixed(digits)}%`;
 }
 
 function fmtTime(value: string, lang: UiLang) {
@@ -185,21 +280,25 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
   const [error, setError] = useState<string | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioPayload | null>(null);
   const [tradeHistory, setTradeHistory] = useState<TradeHistoryPayload | null>(null);
+  const [performance, setPerformance] = useState<PerformancePayload | null>(null);
   const [activeTab, setActiveTab] = useState<PortfolioTab>('open');
 
   async function refresh() {
     try {
-      const [portfolioRes, tradeHistoryRes] = await Promise.all([
+      const [portfolioRes, tradeHistoryRes, performanceRes] = await Promise.all([
         fetch('/api/portfolio/summary', { cache: 'no-store' }),
-        fetch('/api/trades/history?limit=100', { cache: 'no-store' })
+        fetch('/api/trades/history?limit=100', { cache: 'no-store' }),
+        fetch('/api/portfolio/performance', { cache: 'no-store' })
       ]);
 
       const portfolioPayload = (await portfolioRes.json()) as PortfolioPayload;
       const tradeHistoryPayload = (await tradeHistoryRes.json()) as TradeHistoryPayload;
+      const performancePayload = (await performanceRes.json()) as PerformancePayload;
 
       if (!portfolioRes.ok) {
         setPortfolio(null);
         setTradeHistory(null);
+        setPerformance(null);
         setError(portfolioPayload.error ?? `portfolio request failed (${portfolioRes.status})`);
         return;
       }
@@ -207,17 +306,28 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
       if (!tradeHistoryRes.ok) {
         setPortfolio(null);
         setTradeHistory(null);
+        setPerformance(null);
         setError(tradeHistoryPayload.error ?? `trade history request failed (${tradeHistoryRes.status})`);
+        return;
+      }
+
+      if (!performanceRes.ok) {
+        setPortfolio(null);
+        setTradeHistory(null);
+        setPerformance(null);
+        setError(performancePayload.error ?? `performance request failed (${performanceRes.status})`);
         return;
       }
 
       setPortfolio(portfolioPayload);
       setTradeHistory(tradeHistoryPayload);
+      setPerformance(performancePayload);
       setError(null);
     } catch (refreshError) {
       setError(refreshError instanceof Error ? refreshError.message : 'portfolio refresh failed');
       setPortfolio(null);
       setTradeHistory(null);
+      setPerformance(null);
     } finally {
       setLoading(false);
     }
@@ -264,6 +374,9 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
     [tradeHistory?.trades]
   );
 
+  const attributionRows = performance?.attribution ?? [];
+  const activityEntries = performance?.activity?.entries ?? [];
+  const balanceSeries = performance?.activity?.series ?? [];
   const totalProfitLoss = (portfolio?.wallet?.realizedPnl ?? 0) + (portfolio?.totals?.unrealizedPnl ?? 0);
 
   if (loading) {
@@ -310,14 +423,21 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
           <div className="metricValue">{fmtSignedMoney(portfolio?.totals?.unrealizedPnl ?? 0, lang)}</div>
           <p className="subtle">{tr(lang, 'Floating P/L from open positions only.', 'Κυμαινόμενο P/L μόνο από ανοιχτές θέσεις.')}</p>
         </article>
-
       </section>
 
       <section className="card stackSm">
         <div className="statusRow statusRowStart">
           <div>
             <p className="eyebrow">{tr(lang, 'Portfolio view', 'Προβολή χαρτοφυλακίου')}</p>
-            <h3>{activeTab === 'open' ? tr(lang, 'Open exposure', 'Ανοιχτή έκθεση') : activeTab === 'history' ? tr(lang, 'History', 'Ιστορικό') : tr(lang, 'Execution ledger', 'Ledger εκτελέσεων')}</h3>
+            <h3>
+              {activeTab === 'open'
+                ? tr(lang, 'Open exposure', 'Ανοιχτή έκθεση')
+                : activeTab === 'history'
+                  ? tr(lang, 'History', 'Ιστορικό')
+                  : activeTab === 'executions'
+                    ? tr(lang, 'Execution ledger', 'Ledger εκτελέσεων')
+                    : tr(lang, 'Activity', 'Δραστηριότητα')}
+            </h3>
           </div>
           <button className="button buttonGhost" type="button" onClick={refresh}>
             {tr(lang, 'Refresh now', 'Ανανέωση τώρα')}
@@ -350,7 +470,16 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
             className={activeTab === 'executions' ? 'portfolioTab portfolioTabActive' : 'portfolioTab'}
             onClick={() => setActiveTab('executions')}
           >
-            {tr(lang, 'Execution ledger', 'Ledger εκτελέσεων')}
+            {tr(lang, 'Executions', 'Εκτελέσεις')}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'activity'}
+            className={activeTab === 'activity' ? 'portfolioTab portfolioTabActive' : 'portfolioTab'}
+            onClick={() => setActiveTab('activity')}
+          >
+            {tr(lang, 'Activity', 'Δραστηριότητα')}
           </button>
         </div>
 
@@ -456,6 +585,104 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
 
         {activeTab === 'history' ? (
           <div className="stackSm" role="tabpanel">
+            <div className="portfolioMiniStats">
+              <article className="portfolioMiniStat">
+                <span>{tr(lang, 'Markets traded', 'Αγορές που έπαιξες')}</span>
+                <strong>{performance?.summary?.marketsTraded ?? 0}</strong>
+              </article>
+              <article className="portfolioMiniStat">
+                <span>{tr(lang, 'Settled', 'Διακανονισμένες')}</span>
+                <strong>{performance?.summary?.settledMarkets ?? 0}</strong>
+              </article>
+              <article className="portfolioMiniStat">
+                <span>{tr(lang, 'Win rate', 'Ποσοστό νίκης')}</span>
+                <strong>{fmtPercentValue(performance?.summary?.winRate)}</strong>
+              </article>
+              <article className="portfolioMiniStat">
+                <span>{tr(lang, 'Avg return', 'Μέση απόδοση')}</span>
+                <strong>{fmtSignedPercentValue(performance?.summary?.avgSettledReturnPct)}</strong>
+              </article>
+            </div>
+
+            <div className="portfolioInsightGrid">
+              <article className="card stackXs portfolioInsightCard">
+                <p className="eyebrow">{tr(lang, 'Best market', 'Καλύτερη αγορά')}</p>
+                {performance?.bestMarket ? (
+                  <>
+                    <strong>
+                      {localizedQuestionFromSlug(
+                        performance.bestMarket.market.slug,
+                        performance.bestMarket.market.question,
+                        lang
+                      )}
+                    </strong>
+                    <span>{localizedCategory(performance.bestMarket.market.category, lang)}</span>
+                    <div className="portfolioInsightMeta">
+                      <span className="portfolioPnlUp">{fmtSignedMoney(performance.bestMarket.realizedPnl, lang)}</span>
+                      <span>{fmtSignedPercentValue(performance.bestMarket.returnPct)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <p className="subtle">{tr(lang, 'No settled winners yet.', 'Δεν υπάρχουν ακόμη κερδισμένες διακανονισμένες αγορές.')}</p>
+                )}
+              </article>
+
+              <article className="card stackXs portfolioInsightCard">
+                <p className="eyebrow">{tr(lang, 'Worst market', 'Χειρότερη αγορά')}</p>
+                {performance?.worstMarket ? (
+                  <>
+                    <strong>
+                      {localizedQuestionFromSlug(
+                        performance.worstMarket.market.slug,
+                        performance.worstMarket.market.question,
+                        lang
+                      )}
+                    </strong>
+                    <span>{localizedCategory(performance.worstMarket.market.category, lang)}</span>
+                    <div className="portfolioInsightMeta">
+                      <span className={performance.worstMarket.realizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown'}>{fmtSignedMoney(performance.worstMarket.realizedPnl, lang)}</span>
+                      <span>{fmtSignedPercentValue(performance.worstMarket.returnPct)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <p className="subtle">{tr(lang, 'No settled losers yet.', 'Δεν υπάρχουν ακόμη χαμένες διακανονισμένες αγορές.')}</p>
+                )}
+              </article>
+            </div>
+
+            <div className="card stackSm">
+              <div className="statusRow statusRowStart">
+                <div>
+                  <p className="eyebrow">{tr(lang, 'Attribution', 'Συνεισφορά P/L')}</p>
+                  <h4>{tr(lang, 'Top settled outcomes', 'Κορυφαία settled αποτελέσματα')}</h4>
+                </div>
+                <span className="subtle">{tr(lang, 'Ranked by realized P/L', 'Ταξινόμηση με βάση το realized P/L')}</span>
+              </div>
+
+              {attributionRows.length === 0 ? (
+                <p className="subtle">{tr(lang, 'Settled attribution will appear here once markets fully close and settle.', 'Το settled attribution θα εμφανιστεί εδώ μόλις οι αγορές κλείσουν και διακανονιστούν.')}</p>
+              ) : (
+                <div className="portfolioAttributionList">
+                  {attributionRows.slice(0, 6).map((entry, index) => {
+                    const rowHref = marketHref(entry.market.slug, lang);
+                    return (
+                      <button key={`${entry.marketId}-${index}`} type="button" className="portfolioAttributionRow" onClick={() => router.push(rowHref)}>
+                        <div className="portfolioAttributionRank">{index + 1}</div>
+                        <div className="portfolioMarketCol">
+                          <strong>{localizedQuestionFromSlug(entry.market.slug, entry.market.question, lang)}</strong>
+                          <span>{localizedCategory(entry.market.category, lang)} · {historyResultLabel(entry.result, lang)}</span>
+                        </div>
+                        <div className="portfolioAttributionValues">
+                          <strong className={entry.realizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown'}>{fmtSignedMoney(entry.realizedPnl, lang)}</strong>
+                          <span>{fmtSignedPercentValue(entry.returnPct)}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <p className="subtle">
               {tr(lang, 'Settled markets', 'Διακανονισμένες αγορές')}: <strong>{historyRows.length}</strong> · {tr(lang, 'Realized PnL', 'Πραγματοποιημένο PnL')}: <strong className={historyRealizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown'}>{fmtSignedMoney(historyRealizedPnl, lang)}</strong>
             </p>
@@ -469,16 +696,18 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
 
             {historyRows.length > 0 ? (
               <div className="portfolioTableWrap">
-                <div className="portfolioTableHead portfolioHistoryHead">
+                <div className="portfolioTableHead portfolioHistoryHead portfolioHistoryHeadWide">
                   <span>{tr(lang, 'Market', 'Αγορά')}</span>
                   <span>{tr(lang, 'Position', 'Θέση')}</span>
                   <span>{tr(lang, 'Outcome', 'Αποτέλεσμα')}</span>
                   <span>{tr(lang, 'Result', 'Έκβαση')}</span>
+                  <span>{tr(lang, 'Return', 'Απόδοση')}</span>
                   <span>{tr(lang, 'Realized P/L', 'Πραγματοποιημένο P/L')}</span>
                   <span>{tr(lang, 'Settled', 'Διακανονισμός')}</span>
                 </div>
 
                 {historyRows.map((entry) => {
+                  const attribution = attributionRows.find((item) => item.marketId === entry.marketId) ?? null;
                   const rowHref = entry.market.slug ? marketHref(entry.market.slug, lang) : null;
                   const marketQuestion = entry.market.slug
                     ? localizedQuestionFromSlug(entry.market.slug, entry.market.question, lang)
@@ -491,7 +720,7 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
 
                   return (
                     <div
-                      className={`portfolioTableRow portfolioHistoryRow ${rowHref ? 'portfolioTableRowClickable' : ''}`}
+                      className={`portfolioTableRow portfolioHistoryRow portfolioHistoryRowWide ${rowHref ? 'portfolioTableRowClickable' : ''}`}
                       key={entry.marketId}
                       role={rowHref ? 'button' : undefined}
                       tabIndex={rowHref ? 0 : undefined}
@@ -516,6 +745,7 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
                       </div>
                       <span>{resolutionLabel(entry.resolutionOutcome, lang)}</span>
                       <span className={historyResultClass(entry.result)}>{historyResultLabel(entry.result, lang)}</span>
+                      <span>{fmtSignedPercentValue(attribution?.returnPct)}</span>
                       <span className={pnlClass}>{fmtSignedMoney(entry.realizedPnl, lang)}</span>
                       <span>{fmtTime(entry.settledAt, lang)}</span>
                     </div>
@@ -596,6 +826,95 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
                             : localizedMarketStatus(market?.status ?? 'open', lang, 'short')}
                         </span>
                       </div>
+                      <span>{fmtTime(entry.createdAt, lang)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        {activeTab === 'activity' ? (
+          <div className="stackSm" role="tabpanel">
+            <div className="portfolioActivityGrid">
+              <PortfolioBalanceChart points={balanceSeries} lang={lang} />
+
+              <section className="card stackSm">
+                <div>
+                  <p className="eyebrow">{tr(lang, 'Account split', 'Κατανομή λογαριασμού')}</p>
+                  <h4>{fmtMoney(performance?.accountSplit?.totalAccountValue ?? 0, lang)}</h4>
+                </div>
+
+                <div className="portfolioSplitBar" aria-hidden="true">
+                  <span style={{ width: `${performance?.accountSplit?.cashSharePct ?? 0}%` }} />
+                  <span style={{ width: `${performance?.accountSplit?.openExposureSharePct ?? 0}%` }} />
+                </div>
+
+                <div className="portfolioSplitLegend">
+                  <div className="portfolioSplitItem">
+                    <strong>{fmtMoney(performance?.accountSplit?.availableCash ?? 0, lang)}</strong>
+                    <span>{tr(lang, 'Cash', 'Μετρητά')} · {fmtPercentValue(performance?.accountSplit?.cashSharePct)}</span>
+                  </div>
+                  <div className="portfolioSplitItem">
+                    <strong>{fmtMoney(performance?.accountSplit?.openExposure ?? 0, lang)}</strong>
+                    <span>{tr(lang, 'Open exposure', 'Ανοιχτή έκθεση')} · {fmtPercentValue(performance?.accountSplit?.openExposureSharePct)}</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            {activityEntries.length === 0 ? (
+              <div className="panelBlock stackXs">
+                <strong>{tr(lang, 'No account activity yet.', 'Δεν υπάρχει ακόμη δραστηριότητα λογαριασμού.')}</strong>
+                <p className="subtle">{tr(lang, 'Once trades and settlements happen, your cash path and account ledger will appear here.', 'Μόλις γίνουν trades και settlements, εδώ θα εμφανιστούν η πορεία μετρητών και το ledger του λογαριασμού.')}</p>
+              </div>
+            ) : null}
+
+            {activityEntries.length > 0 ? (
+              <div className="portfolioTableWrap">
+                <div className="portfolioTableHead portfolioActivityHead">
+                  <span>{tr(lang, 'Type', 'Τύπος')}</span>
+                  <span>{tr(lang, 'Market', 'Αγορά')}</span>
+                  <span>{tr(lang, 'Amount', 'Ποσό')}</span>
+                  <span>{tr(lang, 'Balance after', 'Υπόλοιπο μετά')}</span>
+                  <span>{tr(lang, 'Time', 'Χρόνος')}</span>
+                </div>
+
+                {activityEntries.map((entry) => {
+                  const rowHref = entry.market?.slug ? marketHref(entry.market.slug, lang) : null;
+                  const amountClass = entry.amount >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown';
+                  const marketQuestion = entry.market?.slug
+                    ? localizedQuestionFromSlug(entry.market.slug, entry.market.question, lang)
+                    : entry.market?.question ?? tr(lang, 'Wallet', 'Πορτοφόλι');
+
+                  return (
+                    <div
+                      key={entry.id}
+                      className={`portfolioTableRow portfolioActivityRow ${rowHref ? 'portfolioTableRowClickable' : ''}`}
+                      role={rowHref ? 'button' : undefined}
+                      tabIndex={rowHref ? 0 : undefined}
+                      onClick={() => {
+                        if (rowHref) router.push(rowHref);
+                      }}
+                      onKeyDown={(event) => {
+                        if (!rowHref) return;
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          router.push(rowHref);
+                        }
+                      }}
+                    >
+                      <div className="portfolioMarketCol">
+                        <strong>{entry.label}</strong>
+                        <span>{entry.detail ?? tr(lang, 'Wallet event', 'Συμβάν πορτοφολιού')}</span>
+                      </div>
+                      <div className="portfolioMarketCol">
+                        <strong>{marketQuestion}</strong>
+                        <span>{entry.market ? localizedCategory(entry.market.category, lang) : entry.detailSecondary ?? '—'}</span>
+                      </div>
+                      <span className={amountClass}>{fmtSignedMoney(entry.amount, lang)}</span>
+                      <span>{fmtMoney(entry.balanceAfter, lang)}</span>
                       <span>{fmtTime(entry.createdAt, lang)}</span>
                     </div>
                   );

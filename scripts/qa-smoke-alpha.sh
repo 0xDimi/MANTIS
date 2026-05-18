@@ -533,6 +533,19 @@ HISTORY_COUNT="$(jq -r '.count' "$RESPONSE_FILE")"
 HISTORY_MATCH_SUMMARY="$(expect_history_trade_consistency "$RESPONSE_FILE" "$MARKET_ID" "$SMOKE_SIDE" "$SMOKE_ACTION" "$QUOTE_SHARE_DELTA" "$QUOTE_AVG_PRICE" "$QUOTE_GROSS_AMOUNT" "$QUOTE_FEE_AMOUNT")"
 pass "/api/trades/history count=${HISTORY_COUNT} ${HISTORY_MATCH_SUMMARY}"
 
+request_json GET "$BASE_URL/api/portfolio/performance" '' "$AUTH_COOKIE"
+expect_status 200 'portfolio performance failed'
+expect_jq --arg marketId "$MARKET_ID" '
+  .summary != null and
+  (.summary.marketsTraded | numbers) >= 1 and
+  .accountSplit != null and
+  (.activity.entries | length) >= 1 and
+  (([.activity.entries[] | select(.market != null and .market.slug != null)] | length) >= 0)
+' 'portfolio performance payload missing required fields'
+PERF_MARKETS_TRADED="$(jq -r '.summary.marketsTraded' "$RESPONSE_FILE")"
+PERF_ACTIVITY_COUNT="$(jq -r '.activity.entries | length' "$RESPONSE_FILE")"
+pass "/api/portfolio/performance markets=${PERF_MARKETS_TRADED} activity=${PERF_ACTIVITY_COUNT}"
+
 if [ "${SMOKE_INCLUDE_ADMIN_PACK}" != "0" ]; then
   node ./scripts/qa-smoke-admin-pack.mjs
 fi
