@@ -2105,6 +2105,31 @@ code {
   background: rgba(255, 255, 255, 0.012);
 }
 
+.portfolioTabs {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.portfolioTab {
+  min-height: 34px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #96a2bb;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.portfolioTabActive {
+  border-color: rgba(124, 92, 255, 0.46);
+  background: rgba(124, 92, 255, 0.14);
+  color: #f1f4fa;
+}
+
 .portfolioTableHead,
 .portfolioTableRow {
   min-width: 860px;
@@ -2190,9 +2215,10 @@ code {
   color: #fcb2b2;
 }
 
-.portfolioLedgerHead,
-.portfolioLedgerRow {
-  grid-template-columns: 130px minmax(280px, 2fr) 90px 90px 90px 90px 90px 110px;
+.portfolioHistoryHead,
+.portfolioHistoryRow {
+  min-width: 900px;
+  grid-template-columns: minmax(280px, 1.9fr) minmax(180px, 1.2fr) 100px 100px 120px 130px;
 }
 
 @media (max-width: 900px) {

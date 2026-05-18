@@ -12,7 +12,7 @@ export default async function PortfolioPage({
   const lang = await resolveServerLang({ searchParam: params.lang });
 
   return (
-    <AlphaShell title={tr(lang, 'Portfolio', 'Χαρτοφυλάκιο')} eyebrow={tr(lang, 'Wallet, positions, and recent trades', 'Πορτοφόλι, θέσεις και πρόσφατες συναλλαγές')} lang={lang}>
+    <AlphaShell title={tr(lang, 'Portfolio', 'Χαρτοφυλάκιο')} eyebrow={tr(lang, 'Wallet, positions, and history', 'Πορτοφόλι, θέσεις και ιστορικό')} lang={lang}>
       <PortfolioLivePanel lang={lang} />
     </AlphaShell>
   );

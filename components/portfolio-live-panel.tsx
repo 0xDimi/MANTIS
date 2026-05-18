@@ -25,6 +25,7 @@ type PortfolioPayload = {
       slug: string;
       question: string;
       status: string;
+      category: string;
     } | null;
     pricing?: {
       yesPrice: number;
@@ -40,16 +41,37 @@ type PortfolioPayload = {
       marketValue: number;
     };
   }>;
-  error?: string;
-};
-
-type TradesPayload = {
-  trades?: Array<{
-    id: string;
+  history?: Array<{
+    marketId: string;
     market: {
       slug: string;
       question: string;
       category: string;
+      status: string;
+    };
+    positionSide: 'yes' | 'no' | 'mixed';
+    resolutionOutcome: 'yes' | 'no' | 'void' | null;
+    result: 'won' | 'lost' | 'void' | 'flat';
+    realizedPnl: number;
+    settledAt: string;
+    yesSharesClosed: number;
+    noSharesClosed: number;
+    payoutAmount: number;
+    refundAmount: number;
+  }>;
+  error?: string;
+};
+
+type TradeHistoryPayload = {
+  count?: number;
+  trades?: Array<{
+    id: string;
+    marketId: string;
+    market: {
+      slug: string;
+      question: string;
+      category: string;
+      status: string;
     } | null;
     side: 'yes' | 'no';
     action: 'buy' | 'sell';
@@ -59,9 +81,21 @@ type TradesPayload = {
     feeAmount: number;
     netAmount: number;
     createdAt: string;
+    resolution?: {
+      outcome: 'yes' | 'no' | 'void';
+      createdAt: string;
+    } | null;
+    settlement?: {
+      createdAt: string;
+      realizedDelta: number;
+      payoutAmount: number;
+      refundAmount: number;
+    } | null;
   }>;
   error?: string;
 };
+
+type PortfolioTab = 'open' | 'history' | 'executions';
 
 function fmtMoney(value: number, lang: UiLang) {
   return new Intl.NumberFormat(lang === 'el' ? 'el-GR' : 'en-GB', {
@@ -103,6 +137,36 @@ function statusClass(status: string | undefined) {
   return 'badgeNo';
 }
 
+function historyResultClass(result: 'won' | 'lost' | 'void' | 'flat') {
+  if (result === 'won') return 'badgeYes';
+  if (result === 'lost') return 'badgeNo';
+  return 'badgeNeutral';
+}
+
+function historyResultLabel(result: 'won' | 'lost' | 'void' | 'flat', lang: UiLang) {
+  if (result === 'won') return tr(lang, 'Won', 'Κέρδισε');
+  if (result === 'lost') return tr(lang, 'Lost', 'Έχασε');
+  if (result === 'void') return tr(lang, 'Void', 'Άκυρο');
+  return tr(lang, 'Flat', 'Ουδέτερο');
+}
+
+function historySideLabel(side: 'yes' | 'no' | 'mixed', lang: UiLang) {
+  if (side === 'yes') return localizedOutcomeLabel('yes', 'yes', lang);
+  if (side === 'no') return localizedOutcomeLabel('no', 'no', lang);
+  return tr(lang, 'Mixed', 'Μικτή');
+}
+
+function resolutionLabel(outcome: 'yes' | 'no' | 'void' | null, lang: UiLang) {
+  if (outcome === 'yes') return localizedOutcomeLabel('yes', 'yes', lang);
+  if (outcome === 'no') return localizedOutcomeLabel('no', 'no', lang);
+  if (outcome === 'void') return tr(lang, 'Void', 'Άκυρο');
+  return '—';
+}
+
+function actionLabel(action: 'buy' | 'sell', lang: UiLang) {
+  return action === 'buy' ? tr(lang, 'Buy', 'Αγορά') : tr(lang, 'Sell', 'Πώληση');
+}
+
 function marketHref(slug: string, lang: UiLang, options?: { action?: 'buy' | 'sell'; side?: 'yes' | 'no'; sellPreset?: '25' | '50' | 'max' }) {
   const params = new URLSearchParams();
 
@@ -120,39 +184,40 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioPayload | null>(null);
-  const [trades, setTrades] = useState<TradesPayload | null>(null);
+  const [tradeHistory, setTradeHistory] = useState<TradeHistoryPayload | null>(null);
+  const [activeTab, setActiveTab] = useState<PortfolioTab>('open');
 
   async function refresh() {
     try {
-      const [portfolioRes, tradesRes] = await Promise.all([
+      const [portfolioRes, tradeHistoryRes] = await Promise.all([
         fetch('/api/portfolio/summary', { cache: 'no-store' }),
-        fetch('/api/trades/history?limit=16', { cache: 'no-store' })
+        fetch('/api/trades/history?limit=100', { cache: 'no-store' })
       ]);
 
       const portfolioPayload = (await portfolioRes.json()) as PortfolioPayload;
-      const tradesPayload = (await tradesRes.json()) as TradesPayload;
+      const tradeHistoryPayload = (await tradeHistoryRes.json()) as TradeHistoryPayload;
 
       if (!portfolioRes.ok) {
         setPortfolio(null);
-        setTrades(null);
+        setTradeHistory(null);
         setError(portfolioPayload.error ?? `portfolio request failed (${portfolioRes.status})`);
         return;
       }
 
-      if (!tradesRes.ok) {
-        setPortfolio(portfolioPayload);
-        setTrades(null);
-        setError(tradesPayload.error ?? `trades request failed (${tradesRes.status})`);
+      if (!tradeHistoryRes.ok) {
+        setPortfolio(null);
+        setTradeHistory(null);
+        setError(tradeHistoryPayload.error ?? `trade history request failed (${tradeHistoryRes.status})`);
         return;
       }
 
       setPortfolio(portfolioPayload);
-      setTrades(tradesPayload);
+      setTradeHistory(tradeHistoryPayload);
       setError(null);
     } catch (refreshError) {
       setError(refreshError instanceof Error ? refreshError.message : 'portfolio refresh failed');
       setPortfolio(null);
-      setTrades(null);
+      setTradeHistory(null);
     } finally {
       setLoading(false);
     }
@@ -184,11 +249,22 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
     [portfolio?.positions]
   );
 
-  const settledPositions = useMemo(
-    () =>
-      (portfolio?.positions ?? []).filter((entry) => ['settled', 'resolved', 'void'].includes(entry.market?.status ?? '')),
-    [portfolio?.positions]
+  const historyRows = useMemo(
+    () => (portfolio?.history ?? []).slice().sort((a, b) => new Date(b.settledAt).getTime() - new Date(a.settledAt).getTime()),
+    [portfolio?.history]
   );
+
+  const historyRealizedPnl = useMemo(
+    () => historyRows.reduce((sum, entry) => sum + entry.realizedPnl, 0),
+    [historyRows]
+  );
+
+  const executionRows = useMemo(
+    () => (tradeHistory?.trades ?? []).slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [tradeHistory?.trades]
+  );
+
+  const totalProfitLoss = (portfolio?.wallet?.realizedPnl ?? 0) + (portfolio?.totals?.unrealizedPnl ?? 0);
 
   if (loading) {
     return <section className="card"><p className="subtle">{tr(lang, 'Loading portfolio...', 'Φόρτωση χαρτοφυλακίου...')}</p></section>;
@@ -218,165 +294,314 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
         </article>
 
         <article className="card stackSm">
-          <p className="eyebrow">{tr(lang, 'Unrealized PnL', 'Μη πραγματοποιημένο PnL')}</p>
-          <div className="metricValue">{fmtSignedMoney(portfolio?.totals?.unrealizedPnl ?? 0, lang)}</div>
-          <p className="subtle">{tr(lang, 'Marked from live market prices.', 'Αποτίμηση με βάση τις ζωντανές τιμές αγοράς.')}</p>
+          <p className="eyebrow">{tr(lang, 'Total Profit/Loss', 'Συνολικό Κέρδος/Ζημία')}</p>
+          <div className="metricValue">{fmtSignedMoney(totalProfitLoss, lang)}</div>
+          <p className="subtle">{tr(lang, 'All-in P/L across realized and open positions.', 'Συνολικό P/L από πραγματοποιημένες και ανοιχτές θέσεις.')}</p>
         </article>
 
         <article className="card stackSm">
-          <p className="eyebrow">{tr(lang, 'Open positions', 'Ανοιχτές θέσεις')}</p>
-          <div className="metricValue">{openPositions.length}</div>
-          <p className="subtle">{tr(lang, 'Auto-refresh every 10s.', 'Αυτόματη ανανέωση κάθε 10δ.')}</p>
+          <p className="eyebrow">{tr(lang, 'Realized PnL', 'Πραγματοποιημένο PnL')}</p>
+          <div className="metricValue">{fmtSignedMoney(portfolio?.wallet?.realizedPnl ?? 0, lang)}</div>
+          <p className="subtle">{tr(lang, 'Historical P/L already locked in from sells and settled markets.', 'Ιστορικό P/L που έχει ήδη κλειδώσει από πωλήσεις και διακανονισμένες αγορές.')}</p>
         </article>
+
+        <article className="card stackSm">
+          <p className="eyebrow">{tr(lang, 'Unrealized PnL', 'Μη πραγματοποιημένο PnL')}</p>
+          <div className="metricValue">{fmtSignedMoney(portfolio?.totals?.unrealizedPnl ?? 0, lang)}</div>
+          <p className="subtle">{tr(lang, 'Floating P/L from open positions only.', 'Κυμαινόμενο P/L μόνο από ανοιχτές θέσεις.')}</p>
+        </article>
+
       </section>
 
       <section className="card stackSm">
         <div className="statusRow statusRowStart">
           <div>
-            <p className="eyebrow">{tr(lang, 'Positions', 'Θέσεις')}</p>
-            <h3>{tr(lang, 'Open exposure', 'Ανοιχτή έκθεση')}</h3>
+            <p className="eyebrow">{tr(lang, 'Portfolio view', 'Προβολή χαρτοφυλακίου')}</p>
+            <h3>{activeTab === 'open' ? tr(lang, 'Open exposure', 'Ανοιχτή έκθεση') : activeTab === 'history' ? tr(lang, 'History', 'Ιστορικό') : tr(lang, 'Execution ledger', 'Ledger εκτελέσεων')}</h3>
           </div>
           <button className="button buttonGhost" type="button" onClick={refresh}>
             {tr(lang, 'Refresh now', 'Ανανέωση τώρα')}
           </button>
         </div>
 
-        {openPositions.length === 0 ? (
-          <div className="panelBlock stackXs">
-            <strong>{tr(lang, 'No open positions yet.', 'Δεν υπάρχουν ανοιχτές θέσεις ακόμη.')}</strong>
-            <p className="subtle">{tr(lang, 'Build exposure from Markets, then this table tracks live chance, mark, size, and P/L.', 'Άνοιξε θέσεις από τις Αγορές και εδώ θα παρακολουθείς πιθανότητα, αποτίμηση, μέγεθος και P/L.')}</p>
-            <Link className="button buttonGhost" href={lang === 'el' ? '/markets?lang=el' : '/markets'}>
-              {tr(lang, 'Open markets', 'Άνοιγμα αγορών')}
-            </Link>
-          </div>
-        ) : null}
+        <div className="portfolioTabs" role="tablist" aria-label={tr(lang, 'Portfolio sections', 'Ενότητες χαρτοφυλακίου')}>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'open'}
+            className={activeTab === 'open' ? 'portfolioTab portfolioTabActive' : 'portfolioTab'}
+            onClick={() => setActiveTab('open')}
+          >
+            {tr(lang, 'Open exposure', 'Ανοιχτή έκθεση')}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'history'}
+            className={activeTab === 'history' ? 'portfolioTab portfolioTabActive' : 'portfolioTab'}
+            onClick={() => setActiveTab('history')}
+          >
+            {tr(lang, 'History', 'Ιστορικό')}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'executions'}
+            className={activeTab === 'executions' ? 'portfolioTab portfolioTabActive' : 'portfolioTab'}
+            onClick={() => setActiveTab('executions')}
+          >
+            {tr(lang, 'Execution ledger', 'Ledger εκτελέσεων')}
+          </button>
+        </div>
 
-        {openPositions.length > 0 ? (
-          <div className="portfolioTableWrap">
-            <div className="portfolioTableHead portfolioPositionsHead">
-              <span>{tr(lang, 'Market', 'Αγορά')}</span>
-              <span>{tr(lang, 'Chance', 'Πιθανότητα')}</span>
-              <span>{tr(lang, 'Avg entry', 'Μέση είσοδος')}</span>
-              <span>{tr(lang, 'Mark', 'Αποτίμηση')}</span>
-              <span>{tr(lang, 'Size', 'Μέγεθος')}</span>
-              <span>P/L</span>
-              <span>{tr(lang, 'State', 'Κατάσταση')}</span>
-              <span>{tr(lang, 'Actions', 'Ενέργειες')}</span>
-            </div>
-
-            {openPositions.map((entry) => {
-              const totalShares = entry.position.yesShares + entry.position.noShares;
-              const costBasis = entry.position.yesCostBasis + entry.position.noCostBasis;
-              const avgEntry = totalShares > 0 ? costBasis / totalShares : null;
-              const mark = totalShares > 0 ? entry.position.marketValue / totalShares : null;
-              const pnlClass = entry.position.unrealizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown';
-              const marketSlug = entry.market?.slug ?? null;
-              const rowHref = marketSlug ? marketHref(marketSlug, lang) : null;
-              const yesLabel = localizedOutcomeLabel('yes', 'yes', lang);
-              const noLabel = localizedOutcomeLabel('no', 'no', lang);
-              const marketQuestion = marketSlug
-                ? localizedQuestionFromSlug(marketSlug, entry.market?.question ?? entry.marketId, lang)
-                : entry.market?.question ?? entry.marketId;
-
-              return (
-                <div
-                  className={`portfolioTableRow portfolioPositionRow ${rowHref ? 'portfolioTableRowClickable' : ''}`}
-                  key={entry.marketId}
-                  role={rowHref ? 'button' : undefined}
-                  tabIndex={rowHref ? 0 : undefined}
-                  onClick={() => {
-                    if (rowHref) router.push(rowHref);
-                  }}
-                  onKeyDown={(event) => {
-                    if (!rowHref) return;
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      router.push(rowHref);
-                    }
-                  }}
-                >
-                  <div className="portfolioMarketCol">
-                    <strong>{marketQuestion}</strong>
-                    <span>{yesLabel} {entry.position.yesShares.toFixed(2)} · {noLabel} {entry.position.noShares.toFixed(2)}</span>
-                  </div>
-                  <span>{fmtPercent(entry.pricing?.yesPrice)}</span>
-                  <span>{fmtPercent(avgEntry)}</span>
-                  <span>{fmtPercent(mark)}</span>
-                  <span>{fmtMoney(entry.position.marketValue, lang)}</span>
-                  <span className={pnlClass}>{fmtSignedMoney(entry.position.unrealizedPnl, lang)}</span>
-                  <span className={statusClass(entry.market?.status)}>{localizedMarketStatus(entry.market?.status ?? 'open', lang, 'short')}</span>
-                  <div className="portfolioRowActions">
-                    {marketSlug && entry.position.yesShares > 0 ? (
-                      <button
-                        type="button"
-                        className="button buttonGhost portfolioRowAction"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          router.push(marketHref(marketSlug, lang, { action: 'sell', side: 'yes', sellPreset: 'max' }));
-                        }}
-                      >
-                        {tr(lang, 'Sell', 'Πώληση')} {yesLabel}
-                      </button>
-                    ) : null}
-                    {marketSlug && entry.position.noShares > 0 ? (
-                      <button
-                        type="button"
-                        className="button buttonGhost portfolioRowAction"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          router.push(marketHref(marketSlug, lang, { action: 'sell', side: 'no', sellPreset: 'max' }));
-                        }}
-                      >
-                        {tr(lang, 'Sell', 'Πώληση')} {noLabel}
-                      </button>
-                    ) : null}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
-
-        {settledPositions.length > 0 ? (
-          <p className="subtle">
-            {tr(lang, 'Settled or resolved positions in history', 'Θέσεις που έχουν διακανονιστεί ή επιλυθεί στο ιστορικό')}: <strong>{settledPositions.length}</strong>
-          </p>
-        ) : null}
-      </section>
-
-      <section className="card stackSm">
-        <p className="eyebrow">{tr(lang, 'Recent trades', 'Πρόσφατες συναλλαγές')}</p>
-        <h3>{tr(lang, 'Execution ledger', 'Ιστορικό εκτέλεσης')}</h3>
-
-        {!(trades?.trades?.length) ? <p className="subtle">{tr(lang, 'No recent trades.', 'Δεν υπάρχουν πρόσφατες συναλλαγές.')}</p> : null}
-
-        {trades?.trades?.length ? (
-          <div className="portfolioTableWrap">
-            <div className="portfolioTableHead portfolioLedgerHead">
-              <span>{tr(lang, 'Time', 'Ώρα')}</span>
-              <span>{tr(lang, 'Market', 'Αγορά')}</span>
-              <span>{tr(lang, 'Side', 'Πλευρά')}</span>
-              <span>{tr(lang, 'Action', 'Ενέργεια')}</span>
-              <span>{tr(lang, 'Shares', 'Μετοχές')}</span>
-              <span>Avg</span>
-              <span>{tr(lang, 'Fee', 'Χρέωση')}</span>
-              <span>{tr(lang, 'Amount', 'Ποσό')}</span>
-            </div>
-            {trades.trades.map((trade) => (
-              <div className="portfolioTableRow portfolioLedgerRow" key={trade.id}>
-                <span>{fmtTime(trade.createdAt, lang)}</span>
-                <div className="portfolioMarketCol">
-                  <strong>{trade.market?.slug ? localizedQuestionFromSlug(trade.market.slug, trade.market.question, lang) : trade.market?.question ?? tr(lang, 'Unknown market', 'Άγνωστη αγορά')}</strong>
-                  <span>{trade.market?.category ? localizedCategory(trade.market.category, lang) : tr(lang, 'n/a', '—')}</span>
-                </div>
-                <span className={trade.side === 'yes' ? 'ticketSurfaceLiveYes' : 'ticketSurfaceLiveNo'}>{localizedOutcomeLabel(trade.side, trade.side, lang)}</span>
-                <span>{trade.action === 'buy' ? tr(lang, 'Buy', 'Αγορά') : tr(lang, 'Sell', 'Πώληση')}</span>
-                <span>{trade.shareDelta.toFixed(3)}</span>
-                <span>{fmtPercent(trade.avgPrice)}</span>
-                <span>{fmtMoney(trade.feeAmount, lang)}</span>
-                <span>{fmtMoney(trade.grossAmount, lang)}</span>
+        {activeTab === 'open' ? (
+          <>
+            {openPositions.length === 0 ? (
+              <div className="panelBlock stackXs">
+                <strong>{tr(lang, 'No open positions yet.', 'Δεν υπάρχουν ανοιχτές θέσεις ακόμη.')}</strong>
+                <p className="subtle">{tr(lang, 'Build exposure from Markets, then this table tracks live chance, mark, size, and P/L.', 'Άνοιξε θέσεις από τις Αγορές και εδώ θα παρακολουθείς πιθανότητα, αποτίμηση, μέγεθος και P/L.')}</p>
+                <Link className="button buttonGhost" href={lang === 'el' ? '/markets?lang=el' : '/markets'}>
+                  {tr(lang, 'Open markets', 'Άνοιγμα αγορών')}
+                </Link>
               </div>
-            ))}
+            ) : null}
+
+            {openPositions.length > 0 ? (
+              <div className="portfolioTableWrap" role="tabpanel">
+                <div className="portfolioTableHead portfolioPositionsHead">
+                  <span>{tr(lang, 'Market', 'Αγορά')}</span>
+                  <span>{tr(lang, 'Chance', 'Πιθανότητα')}</span>
+                  <span>{tr(lang, 'Avg entry', 'Μέση είσοδος')}</span>
+                  <span>{tr(lang, 'Mark', 'Αποτίμηση')}</span>
+                  <span>{tr(lang, 'Size', 'Μέγεθος')}</span>
+                  <span>P/L</span>
+                  <span>{tr(lang, 'State', 'Κατάσταση')}</span>
+                  <span>{tr(lang, 'Actions', 'Ενέργειες')}</span>
+                </div>
+
+                {openPositions.map((entry) => {
+                  const totalShares = entry.position.yesShares + entry.position.noShares;
+                  const costBasis = entry.position.yesCostBasis + entry.position.noCostBasis;
+                  const avgEntry = totalShares > 0 ? costBasis / totalShares : null;
+                  const mark = totalShares > 0 ? entry.position.marketValue / totalShares : null;
+                  const pnlClass = entry.position.unrealizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown';
+                  const marketSlug = entry.market?.slug ?? null;
+                  const rowHref = marketSlug ? marketHref(marketSlug, lang) : null;
+                  const yesLabel = localizedOutcomeLabel('yes', 'yes', lang);
+                  const noLabel = localizedOutcomeLabel('no', 'no', lang);
+                  const marketQuestion = marketSlug
+                    ? localizedQuestionFromSlug(marketSlug, entry.market?.question ?? entry.marketId, lang)
+                    : entry.market?.question ?? entry.marketId;
+
+                  return (
+                    <div
+                      className={`portfolioTableRow portfolioPositionRow ${rowHref ? 'portfolioTableRowClickable' : ''}`}
+                      key={entry.marketId}
+                      role={rowHref ? 'button' : undefined}
+                      tabIndex={rowHref ? 0 : undefined}
+                      onClick={() => {
+                        if (rowHref) router.push(rowHref);
+                      }}
+                      onKeyDown={(event) => {
+                        if (!rowHref) return;
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          router.push(rowHref);
+                        }
+                      }}
+                    >
+                      <div className="portfolioMarketCol">
+                        <strong>{marketQuestion}</strong>
+                        <span>{yesLabel} {entry.position.yesShares.toFixed(2)} · {noLabel} {entry.position.noShares.toFixed(2)}</span>
+                      </div>
+                      <span>{fmtPercent(entry.pricing?.yesPrice)}</span>
+                      <span>{fmtPercent(avgEntry)}</span>
+                      <span>{fmtPercent(mark)}</span>
+                      <span>{fmtMoney(entry.position.marketValue, lang)}</span>
+                      <span className={pnlClass}>{fmtSignedMoney(entry.position.unrealizedPnl, lang)}</span>
+                      <span className={statusClass(entry.market?.status)}>{localizedMarketStatus(entry.market?.status ?? 'open', lang, 'short')}</span>
+                      <div className="portfolioRowActions">
+                        {marketSlug && entry.position.yesShares > 0 ? (
+                          <button
+                            type="button"
+                            className="button buttonGhost portfolioRowAction"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              router.push(marketHref(marketSlug, lang, { action: 'sell', side: 'yes', sellPreset: 'max' }));
+                            }}
+                          >
+                            {tr(lang, 'Sell', 'Πώληση')} {yesLabel}
+                          </button>
+                        ) : null}
+                        {marketSlug && entry.position.noShares > 0 ? (
+                          <button
+                            type="button"
+                            className="button buttonGhost portfolioRowAction"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              router.push(marketHref(marketSlug, lang, { action: 'sell', side: 'no', sellPreset: 'max' }));
+                            }}
+                          >
+                            {tr(lang, 'Sell', 'Πώληση')} {noLabel}
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+          </>
+        ) : null}
+
+        {activeTab === 'history' ? (
+          <div className="stackSm" role="tabpanel">
+            <p className="subtle">
+              {tr(lang, 'Settled markets', 'Διακανονισμένες αγορές')}: <strong>{historyRows.length}</strong> · {tr(lang, 'Realized PnL', 'Πραγματοποιημένο PnL')}: <strong className={historyRealizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown'}>{fmtSignedMoney(historyRealizedPnl, lang)}</strong>
+            </p>
+
+            {historyRows.length === 0 ? (
+              <div className="panelBlock stackXs">
+                <strong>{tr(lang, 'No settled history yet.', 'Δεν υπάρχει ακόμη διακανονισμένο ιστορικό.')}</strong>
+                <p className="subtle">{tr(lang, 'Resolved markets you traded will appear here with win/loss status and realized PnL.', 'Οι επιλυμένες αγορές που έχεις παίξει θα εμφανίζονται εδώ με win/loss status και realized PnL.')}</p>
+              </div>
+            ) : null}
+
+            {historyRows.length > 0 ? (
+              <div className="portfolioTableWrap">
+                <div className="portfolioTableHead portfolioHistoryHead">
+                  <span>{tr(lang, 'Market', 'Αγορά')}</span>
+                  <span>{tr(lang, 'Position', 'Θέση')}</span>
+                  <span>{tr(lang, 'Outcome', 'Αποτέλεσμα')}</span>
+                  <span>{tr(lang, 'Result', 'Έκβαση')}</span>
+                  <span>{tr(lang, 'Realized P/L', 'Πραγματοποιημένο P/L')}</span>
+                  <span>{tr(lang, 'Settled', 'Διακανονισμός')}</span>
+                </div>
+
+                {historyRows.map((entry) => {
+                  const rowHref = entry.market.slug ? marketHref(entry.market.slug, lang) : null;
+                  const marketQuestion = entry.market.slug
+                    ? localizedQuestionFromSlug(entry.market.slug, entry.market.question, lang)
+                    : entry.market.question;
+                  const pnlClass = entry.realizedPnl >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown';
+                  const sideLabel = historySideLabel(entry.positionSide, lang);
+                  const exposureDetail = entry.positionSide === 'mixed'
+                    ? `${localizedOutcomeLabel('yes', 'yes', lang)} ${entry.yesSharesClosed.toFixed(2)} · ${localizedOutcomeLabel('no', 'no', lang)} ${entry.noSharesClosed.toFixed(2)}`
+                    : `${sideLabel} · ${Math.max(entry.yesSharesClosed, entry.noSharesClosed).toFixed(2)} ${tr(lang, 'shares', 'shares')}`;
+
+                  return (
+                    <div
+                      className={`portfolioTableRow portfolioHistoryRow ${rowHref ? 'portfolioTableRowClickable' : ''}`}
+                      key={entry.marketId}
+                      role={rowHref ? 'button' : undefined}
+                      tabIndex={rowHref ? 0 : undefined}
+                      onClick={() => {
+                        if (rowHref) router.push(rowHref);
+                      }}
+                      onKeyDown={(event) => {
+                        if (!rowHref) return;
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          router.push(rowHref);
+                        }
+                      }}
+                    >
+                      <div className="portfolioMarketCol">
+                        <strong>{marketQuestion}</strong>
+                        <span>{localizedCategory(entry.market.category, lang)}</span>
+                      </div>
+                      <div className="portfolioMarketCol">
+                        <strong>{sideLabel}</strong>
+                        <span>{exposureDetail}</span>
+                      </div>
+                      <span>{resolutionLabel(entry.resolutionOutcome, lang)}</span>
+                      <span className={historyResultClass(entry.result)}>{historyResultLabel(entry.result, lang)}</span>
+                      <span className={pnlClass}>{fmtSignedMoney(entry.realizedPnl, lang)}</span>
+                      <span>{fmtTime(entry.settledAt, lang)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        {activeTab === 'executions' ? (
+          <div className="stackSm" role="tabpanel">
+            <p className="subtle">
+              {tr(lang, 'Executions', 'Εκτελέσεις')}: <strong>{executionRows.length}</strong> · {tr(lang, 'Closed-market result now shows in the ledger.', 'Το αποτέλεσμα των κλεισμένων αγορών φαίνεται πλέον στο ledger.')}
+            </p>
+
+            {executionRows.length === 0 ? (
+              <div className="panelBlock stackXs">
+                <strong>{tr(lang, 'No executions yet.', 'Δεν υπάρχουν ακόμη εκτελέσεις.')}</strong>
+                <p className="subtle">{tr(lang, 'Every buy and sell will appear here with price, size, fees, and final market outcome once the market closes.', 'Κάθε αγορά και πώληση θα εμφανίζεται εδώ με τιμή, μέγεθος, χρεώσεις και το τελικό αποτέλεσμα όταν κλείσει η αγορά.')}</p>
+              </div>
+            ) : null}
+
+            {executionRows.length > 0 ? (
+              <div className="portfolioTableWrap">
+                <div className="portfolioTableHead portfolioHistoryHead">
+                  <span>{tr(lang, 'Market', 'Αγορά')}</span>
+                  <span>{tr(lang, 'Execution', 'Εκτέλεση')}</span>
+                  <span>{tr(lang, 'Price', 'Τιμή')}</span>
+                  <span>{tr(lang, 'Cash flow', 'Ταμειακή ροή')}</span>
+                  <span>{tr(lang, 'Closed result', 'Τελικό αποτέλεσμα')}</span>
+                  <span>{tr(lang, 'Time', 'Χρόνος')}</span>
+                </div>
+
+                {executionRows.map((entry) => {
+                  const market = entry.market;
+                  const marketSlug = market?.slug ?? null;
+                  const rowHref = marketSlug ? marketHref(marketSlug, lang) : null;
+                  const marketQuestion = marketSlug
+                    ? localizedQuestionFromSlug(marketSlug, market?.question ?? entry.marketId, lang)
+                    : market?.question ?? entry.marketId;
+                  const cashFlow = entry.action === 'buy' ? -Math.abs(entry.netAmount) : Math.abs(entry.netAmount);
+                  const cashFlowClass = cashFlow >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown';
+                  const settlementDeltaClass = (entry.settlement?.realizedDelta ?? 0) >= 0 ? 'portfolioPnlUp' : 'portfolioPnlDown';
+
+                  return (
+                    <div
+                      className={`portfolioTableRow portfolioHistoryRow ${rowHref ? 'portfolioTableRowClickable' : ''}`}
+                      key={entry.id}
+                      role={rowHref ? 'button' : undefined}
+                      tabIndex={rowHref ? 0 : undefined}
+                      onClick={() => {
+                        if (rowHref) router.push(rowHref);
+                      }}
+                      onKeyDown={(event) => {
+                        if (!rowHref) return;
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          router.push(rowHref);
+                        }
+                      }}
+                    >
+                      <div className="portfolioMarketCol">
+                        <strong>{marketQuestion}</strong>
+                        <span>{market ? localizedCategory(market.category, lang) : '—'}</span>
+                      </div>
+                      <div className="portfolioMarketCol">
+                        <strong>{actionLabel(entry.action, lang)} {historySideLabel(entry.side, lang)}</strong>
+                        <span>{entry.shareDelta.toFixed(4)} {tr(lang, 'shares', 'shares')} · {fmtMoney(entry.feeAmount, lang)} {tr(lang, 'fee', 'χρέωση')}</span>
+                      </div>
+                      <span>{fmtPercent(entry.avgPrice)}</span>
+                      <span className={cashFlowClass}>{fmtSignedMoney(cashFlow, lang)}</span>
+                      <div className="portfolioMarketCol">
+                        <strong>{resolutionLabel(entry.resolution?.outcome ?? null, lang)}</strong>
+                        <span>
+                          {entry.settlement
+                            ? <span className={settlementDeltaClass}>{fmtSignedMoney(entry.settlement.realizedDelta, lang)}</span>
+                            : localizedMarketStatus(market?.status ?? 'open', lang, 'short')}
+                        </span>
+                      </div>
+                      <span>{fmtTime(entry.createdAt, lang)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </section>

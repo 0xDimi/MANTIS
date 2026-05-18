@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
+function round2(value: number) {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
+}
+
 export async function GET(request: Request) {
   try {
     const supabase = await getSupabaseServerClient();
@@ -31,15 +35,37 @@ export async function GET(request: Request) {
     const tradeRows = (trades ?? []) as any[];
     const marketIds = [...new Set(tradeRows.map((t) => t.market_id).filter(Boolean))];
 
-    const marketResult = marketIds.length
-      ? await supabase.from('markets').select('id,slug,question,category').in('id', marketIds)
-      : { data: [] as any[], error: null as any };
+    const [marketResult, resolutionsResult, settlementEntriesResult] = await Promise.all([
+      marketIds.length
+        ? supabase.from('markets').select('id,slug,question,category,status').in('id', marketIds)
+        : Promise.resolve({ data: [] as any[], error: null as any }),
+      marketIds.length
+        ? supabase.from('resolutions').select('market_id,outcome,created_at').in('market_id', marketIds)
+        : Promise.resolve({ data: [] as any[], error: null as any }),
+      marketIds.length
+        ? supabase
+            .from('market_settlement_entries')
+            .select('market_id,created_at,realized_delta,payout_amount,refund_amount')
+            .eq('user_id', user.id)
+            .in('market_id', marketIds)
+        : Promise.resolve({ data: [] as any[], error: null as any })
+    ]);
 
     if (marketResult.error) {
       return NextResponse.json({ error: marketResult.error.message }, { status: 500 });
     }
 
+    if (resolutionsResult.error) {
+      return NextResponse.json({ error: resolutionsResult.error.message }, { status: 500 });
+    }
+
+    if (settlementEntriesResult.error) {
+      return NextResponse.json({ error: settlementEntriesResult.error.message }, { status: 500 });
+    }
+
     const marketMap = new Map((marketResult.data ?? []).map((m: any) => [m.id, m]));
+    const resolutionMap = new Map((resolutionsResult.data ?? []).map((row: any) => [row.market_id, row]));
+    const settlementEntryMap = new Map((settlementEntriesResult.data ?? []).map((row: any) => [row.market_id, row]));
 
     return NextResponse.json(
       {
@@ -47,6 +73,8 @@ export async function GET(request: Request) {
         count: tradeRows.length,
         trades: tradeRows.map((trade) => {
           const market = marketMap.get(trade.market_id) ?? null;
+          const resolution = resolutionMap.get(trade.market_id) ?? null;
+          const settlementEntry = settlementEntryMap.get(trade.market_id) ?? null;
 
           return {
             id: trade.id,
@@ -55,7 +83,8 @@ export async function GET(request: Request) {
               ? {
                   slug: market.slug,
                   question: market.question,
-                  category: market.category
+                  category: market.category,
+                  status: market.status
                 }
               : null,
             side: trade.side,
@@ -65,7 +94,21 @@ export async function GET(request: Request) {
             grossAmount: Number(trade.gross_amount),
             feeAmount: Number(trade.fee_amount),
             netAmount: Number(trade.net_amount),
-            createdAt: trade.created_at
+            createdAt: trade.created_at,
+            resolution: resolution
+              ? {
+                  outcome: resolution.outcome,
+                  createdAt: resolution.created_at
+                }
+              : null,
+            settlement: settlementEntry
+              ? {
+                  createdAt: settlementEntry.created_at,
+                  realizedDelta: round2(Number(settlementEntry.realized_delta ?? 0)),
+                  payoutAmount: round2(Number(settlementEntry.payout_amount ?? 0)),
+                  refundAmount: round2(Number(settlementEntry.refund_amount ?? 0))
+                }
+              : null
           };
         })
       },
