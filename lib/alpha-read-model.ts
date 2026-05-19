@@ -1,6 +1,7 @@
 import { unstable_noStore as noStore } from 'next/cache';
 import { headers } from 'next/headers';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import type { UiLang } from '@/lib/ui-lang';
 
 export type BoardMarket = {
   id: string;
@@ -169,10 +170,12 @@ async function readJson<T>(path: string) {
   return payload as T;
 }
 
-export async function loadMarketsBoard(options?: { scope?: 'open' | 'all' }) {
+export async function loadMarketsBoard(options?: { scope?: 'open' | 'all'; lang?: UiLang }) {
   try {
     const scope = options?.scope === 'all' ? 'all' : 'open';
-    const payload = await readJson<MarketsApiResponse>(`/api/markets?scope=${scope}`);
+    const params = new URLSearchParams({ scope });
+    if (options?.lang === 'el') params.set('lang', 'el');
+    const payload = await readJson<MarketsApiResponse>(`/api/markets?${params.toString()}`);
 
     const markets: BoardMarket[] = (payload.markets ?? []).map((market) => ({
       id: market.id,
@@ -203,9 +206,11 @@ export async function loadMarketsBoard(options?: { scope?: 'open' | 'all' }) {
   }
 }
 
-export async function loadMarketDetail(slug: string) {
+export async function loadMarketDetail(slug: string, options?: { lang?: UiLang }) {
   try {
-    const payload = await readJson<MarketDetailApiResponse>(`/api/markets/${slug}`);
+    const params = new URLSearchParams();
+    if (options?.lang === 'el') params.set('lang', 'el');
+    const payload = await readJson<MarketDetailApiResponse>(`/api/markets/${slug}${params.size ? `?${params.toString()}` : ''}`);
 
     return {
       market: payload.market

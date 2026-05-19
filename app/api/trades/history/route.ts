@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { localizedQuestionFromSlug } from '@/lib/market-copy';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { resolveServerLang } from '@/lib/ui-lang-server';
 
 function round2(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -8,6 +10,8 @@ function round2(value: number) {
 export async function GET(request: Request) {
   try {
     const supabase = await getSupabaseServerClient();
+    const url = new URL(request.url);
+    const lang = await resolveServerLang({ searchParam: url.searchParams.get('lang') });
     const {
       data: { user },
       error: authError
@@ -17,7 +21,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'auth required' }, { status: 401 });
     }
 
-    const url = new URL(request.url);
     const limitParam = Number(url.searchParams.get('limit') ?? '50');
     const limit = Number.isFinite(limitParam) ? Math.min(Math.max(Math.floor(limitParam), 1), 200) : 50;
 
@@ -82,7 +85,7 @@ export async function GET(request: Request) {
             market: market
               ? {
                   slug: market.slug,
-                  question: market.question,
+                  question: localizedQuestionFromSlug(market.slug, market.question, lang),
                   category: market.category,
                   status: market.status
                 }

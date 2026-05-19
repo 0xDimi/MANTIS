@@ -20,8 +20,8 @@ export default async function MarketDetailPage({
   const query = (await searchParams) ?? {};
   const lang = await resolveServerLang({ searchParam: query.lang });
   const [{ market: marketRaw, state, error }, board] = await Promise.all([
-    loadMarketDetail(slug),
-    loadMarketsBoard({ scope: 'all' })
+    loadMarketDetail(slug, { lang }),
+    loadMarketsBoard({ scope: 'all', lang })
   ]);
   const market = marketRaw ? localizeMarketDetailCopy(marketRaw, lang) : null;
   const relatedMarkets = market

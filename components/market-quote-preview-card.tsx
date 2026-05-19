@@ -306,7 +306,8 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
 
   const refreshPortfolioSnapshot = useCallback(async () => {
     try {
-      const portfolioRes = await fetch('/api/portfolio/summary', { cache: 'no-store' });
+      const portfolioUrl = lang === 'el' ? '/api/portfolio/summary?lang=el' : '/api/portfolio/summary';
+      const portfolioRes = await fetch(portfolioUrl, { cache: 'no-store' });
       const portfolio = (await portfolioRes.json()) as PortfolioSummaryPayload;
 
       if (portfolioRes.ok && portfolio.wallet) {

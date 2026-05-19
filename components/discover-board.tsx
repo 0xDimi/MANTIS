@@ -72,7 +72,7 @@ const FEATURED_PINNED_SLUGS = [
 ] as const;
 
 export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
-  const { markets, error } = await loadMarketsBoard({ scope: DISCOVER_BOARD_SCOPE });
+  const { markets, error } = await loadMarketsBoard({ scope: DISCOVER_BOARD_SCOPE, lang });
   const userMarkets = markets
     .filter((market) => !isInternalMarket(market.slug, market.question))
     .map((market) => localizeBoardMarketCopy(market, lang));

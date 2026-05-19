@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
+import { localizedQuestionFromSlug } from '@/lib/market-copy';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { resolveServerLang } from '@/lib/ui-lang-server';
 
 function round2(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -43,9 +45,11 @@ function derivePositionSide(yesSharesClosed: number, noSharesClosed: number) {
   return 'mixed' as const;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const supabase = await getSupabaseServerClient();
+    const url = new URL(request.url);
+    const lang = await resolveServerLang({ searchParam: url.searchParams.get('lang') });
     const {
       data: { user },
       error: authError
@@ -171,7 +175,7 @@ export async function GET() {
           market: market
             ? {
                 slug: market.slug,
-                question: market.question,
+                question: localizedQuestionFromSlug(market.slug, market.question, lang),
                 status: market.status,
                 category: market.category
               }
@@ -214,7 +218,7 @@ export async function GET() {
           marketId: position.market_id,
           market: {
             slug: market.slug,
-            question: market.question,
+            question: localizedQuestionFromSlug(market.slug, market.question, lang),
             category: market.category,
             status: market.status
           },

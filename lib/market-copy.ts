@@ -53,6 +53,15 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'gre-politics-tsipras-new-party-before-jun1': {
+    question: 'Θα ανακοινώσει ο Αλέξης Τσίπρας νέο πολιτικό κόμμα πριν την 1η Ιουνίου 2026;',
+    description: 'Αγορά για πιθανή ανακοίνωση νέου πολιτικού φορέα πριν την 1η Ιουνίου.',
+    sourcePrimary: 'Επίσημη ανακοίνωση από Αλέξη Τσίπρα ή νέο κόμμα',
+    sourceFallback: 'Επιβεβαίωση από κορυφαία ελληνικά μέσα με σαφή δημόσια δήλωση',
+    voidRule: 'Ακυρώνεται αν δεν υπάρχει σαφής δημόσια ανακοίνωση έως τη λήξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'gre-politics-minister-resignation-before-may15': {
     question: 'Θα παραιτηθεί Έλληνας υπουργός πριν τις 15 Μαΐου 2026;',
     description: 'Αγορά πολιτικής επικαιρότητας για πιθανή παραίτηση υπουργού πριν τα μέσα Μαΐου.',
@@ -71,21 +80,21 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
-  'gre-economy-cpi-above-5-may2026': {
-    question: 'Θα δημοσιευτεί ο ετήσιος ΔΤΚ της Ελλάδας πάνω από 5,0% για τον Μάιο 2026 στην ανακοίνωση της ΕΛΣΤΑΤ στις 10 Ιουνίου 2026;',
-    description: 'Αγορά μακροοικονομικής επικαιρότητας για το αν ο ετήσιος πληθωρισμός της Ελλάδας θα παραμείνει πάνω από το όριο του 5,0% στο print Μαΐου 2026.',
-    sourcePrimary: 'Δελτίο ΔΤΚ της ΕΛΣΤΑΤ για τον Μάιο 2026',
-    sourceFallback: 'Eurostat ή TradingEconomics mirror μόνο αν αναπαράγει καθαρά το ίδιο τελικό ετήσιο print της ΕΛΣΤΑΤ για τον Μάιο 2026',
-    voidRule: 'Ακυρώνεται αν η ΕΛΣΤΑΤ δεν δημοσιεύσει συγκρίσιμο τελικό annual CPI print για τον Μάιο 2026 ή αν η προγραμματισμένη ανακοίνωση αναβληθεί χωρίς καθαρό τελικό αποτέλεσμα εντός εύλογου χρόνου για διακανονισμό.',
-    yesLabel: 'Ναι',
-    noLabel: 'Όχι'
-  },
   'gre-economy-unemployment-rate-down': {
     question: 'Θα είναι χαμηλότερο το ποσοστό ανεργίας από τον προηγούμενο μήνα στην επόμενη επίσημη ανακοίνωση;',
     description: 'Αγορά για την κατεύθυνση της ανεργίας.',
     sourcePrimary: 'Ανακοίνωση εργατικού δυναμικού της ΕΛΣΤΑΤ',
     sourceFallback: 'Σχετικό dashboard της Eurostat',
     voidRule: 'Ακυρώνεται αν η ανακοίνωση δεν είναι συγκρίσιμη με τον προηγούμενο μήνα.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-economy-cpi-above-5-may2026': {
+    question: 'Θα δημοσιευτεί ο ετήσιος ΔΤΚ της Ελλάδας πάνω από 5,0% για τον Μάιο 2026 στην ανακοίνωση της ΕΛΣΤΑΤ στις 10 Ιουνίου 2026;',
+    description: 'Μακροοικονομική αγορά για το αν ο ετήσιος ΔΤΚ της Ελλάδας θα μείνει πάνω από το όριο του 5,0% στην ανακοίνωση της ΕΛΣΤΑΤ για τον Μάιο 2026.',
+    sourcePrimary: 'Δελτίο Δείκτη Τιμών Καταναλωτή της ΕΛΣΤΑΤ για τον Μάιο 2026',
+    sourceFallback: 'Eurostat ή TradingEconomics μόνο αν αναπαράγει καθαρά την ίδια τελική ετήσια μέτρηση ΔΤΚ της ΕΛΣΤΑΤ για τον Μάιο 2026',
+    voidRule: 'Ακυρώνεται αν η ΕΛΣΤΑΤ δεν δημοσιεύσει συγκρίσιμη τελική ετήσια μέτρηση ΔΤΚ για τον Μάιο 2026 ή αν η προγραμματισμένη ανακοίνωση καθυστερήσει χωρίς καθαρό τελικό αποτέλεσμα εγκαίρως για διακανονισμό.',
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
@@ -161,6 +170,15 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'gre-culture-greece-top-5-eurovision-final': {
+    question: 'Θα τερματίσει η Ελλάδα στην πρώτη πεντάδα του τελικού της Eurovision 2026;',
+    description: 'Αγορά πολιτιστικής επικαιρότητας για την τελική θέση της Ελλάδας στον μεγάλο τελικό της Eurovision 2026.',
+    sourcePrimary: 'Επίσημος πίνακας τελικής βαθμολογίας της Eurovision',
+    sourceFallback: 'Επίσημη σελίδα αποτελεσμάτων της Eurovision',
+    voidRule: 'Ακυρώνεται αν δεν δημοσιευτεί επίσημος πίνακας αποτελεσμάτων του τελικού ή αν ο τελικός ακυρωθεί ή αλλάξει ουσιωδώς.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'gre-social-streaming-topshow': {
     question: 'Θα μπει ελληνική σειρά σε κορυφαίο περιφερειακό chart streaming μέσα στον μήνα;',
     description: 'Αγορά για τάσεις στη streaming ψυχαγωγία.',
@@ -206,6 +224,24 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'global-us-iran-final-agreement-before-may31': {
+    question: 'Θα καταλήξουν οι ΗΠΑ και το Ιράν σε τελική συμφωνία έως τις 31 Μαΐου 2026;',
+    description: 'Αγορά διεθνούς επικαιρότητας για επίσημη διμερή συμφωνία.',
+    sourcePrimary: 'Επίσημες ανακοινώσεις από τις κυβερνήσεις ΗΠΑ και Ιράν',
+    sourceFallback: 'Reuters / AP με ρητή αναφορά επιβεβαίωσης και από τις δύο πλευρές',
+    voidRule: 'Ακυρώνεται αν δεν υπάρχει δημόσια επιβεβαίωση τελικής συμφωνίας και από τις δύο κυβερνήσεις έως τη λήξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'global-us-invade-iran-by-jun30': {
+    question: 'Θα εισβάλουν οι ΗΠΑ στο Ιράν έως τις 30 Ιουνίου 2026;',
+    description: 'Αγορά διεθνούς επικαιρότητας που λύνει στο YES μόνο αν οι ΗΠΑ ξεκινήσουν σαφή στρατιωτική εισβολή σε ιρανικό έδαφος πριν από τη λήξη.',
+    sourcePrimary: 'Επίσημες ανακοινώσεις από τον Λευκό Οίκο, το Υπουργείο Άμυνας των ΗΠΑ ή την ιρανική κυβέρνηση',
+    sourceFallback: 'Reuters ή AP με σαφή αναφορά ότι αμερικανική εισβολή στο ιρανικό έδαφος βρίσκεται σε εξέλιξη',
+    voidRule: 'Ακυρώνεται αν υπάρξουν μόνο αεροπορικά πλήγματα, πυραυλικές επιθέσεις, ναυτικά επεισόδια, επιχειρήσεις δι’ αντιπροσώπων ή συγκεχυμένες αναφορές χωρίς καθαρή έναρξη αμερικανικής εισβολής σε ιρανικό έδαφος έως τη λήξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'global-us-iran-new-talks-announced-before-may15': {
     question: 'Θα ανακοινώσουν οι ΗΠΑ και το Ιράν νέες συνομιλίες πριν τις 15 Μαΐου 2026;',
     description: 'Αγορά διεθνούς επικαιρότητας για επίσημη ανακοίνωση νέου γύρου συνομιλιών μεταξύ ΗΠΑ και Ιράν.',
@@ -221,6 +257,15 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     sourcePrimary: 'European Commission Weekly Oil Bulletin',
     sourceFallback: 'data.europa.eu mirror του Oil Bulletin',
     voidRule: 'Ακυρώνεται αν δεν δημοσιευτεί το αναμενόμενο εβδομαδιαίο δελτίο πριν το τέλος του μήνα.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-gas-unleaded-above-2-first-may-bulletin': {
+    question: 'Θα παραμείνει η μέση τιμή Euro-super 95 στην Ελλάδα πάνω από €2,00/λίτρο στο πρώτο Weekly Oil Bulletin της ΕΕ για τον Μάιο 2026;',
+    description: 'Βραχυχρόνια αγορά καυσίμων συνδεδεμένη με την πρώτη δημοσίευση του EC Weekly Oil Bulletin για την Ελλάδα μέσα στον Μάιο 2026.',
+    sourcePrimary: 'European Commission Weekly Oil Bulletin (eurosuper 95, Greece)',
+    sourceFallback: 'data.europa.eu mirror του Oil Bulletin dataset',
+    voidRule: 'Ακυρώνεται αν δεν δημοσιευτεί εγκαίρως το πρώτο επιλέξιμο δελτίο του Μαΐου για επαλήθευση.',
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
@@ -286,6 +331,10 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
   },
   'gre-sports-euroleague-final4': {
     question: 'Θα προκριθεί ελληνική ομάδα στο Final Four της EuroLeague;',
+    description: 'Αγορά πρόκρισης για ελληνική ομάδα στην τελική τετράδα της EuroLeague.',
+    sourcePrimary: 'Επίσημη σελίδα αποτελεσμάτων της EuroLeague',
+    sourceFallback: 'Επίσημες ανακοινώσεις συλλόγων μαζί με επιβεβαίωση από το bracket της EuroLeague',
+    voidRule: 'Ακυρώνεται αν αλλάξει ουσιωδώς η μορφή της διοργάνωσης και δεν μπορεί να προσδιοριστεί καθαρά η πρόκριση στο Final Four.',
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },

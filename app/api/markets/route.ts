@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
+import { localizeBoardMarketCopy } from '@/lib/market-copy';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { resolveServerLang } from '@/lib/ui-lang-server';
 
 export async function GET(request: Request) {
   try {
     const supabase = await getSupabaseServerClient();
-    const scope = new URL(request.url).searchParams.get('scope') === 'all' ? 'all' : 'open';
+    const url = new URL(request.url);
+    const scope = url.searchParams.get('scope') === 'all' ? 'all' : 'open';
+    const lang = await resolveServerLang({ searchParam: url.searchParams.get('lang') });
 
     let query = supabase
       .from('markets')
@@ -32,10 +36,25 @@ export async function GET(request: Request) {
     const markets = (data ?? []).map((market: any) => {
       const state = Array.isArray(market.market_state) ? market.market_state[0] : market.market_state;
 
+      const localized = localizeBoardMarketCopy(
+        {
+          id: market.id,
+          slug: market.slug,
+          question: market.question,
+          category: market.category,
+          status: market.status,
+          feeBps: Number(market.fee_bps ?? 0),
+          liquidity: Number(market.b_liquidity ?? 0),
+          closeTime: market.close_time,
+          state: null
+        },
+        lang
+      );
+
       return {
         id: market.id,
         slug: market.slug,
-        question: market.question,
+        question: localized.question,
         category: market.category,
         status: market.status,
         close_time: market.close_time,

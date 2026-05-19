@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
+import { localizedOutcomeLabel, localizedQuestionFromSlug } from '@/lib/market-copy';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { resolveServerLang } from '@/lib/ui-lang-server';
+import { tr, type UiLang } from '@/lib/ui-lang';
 
 type PositionRow = {
   market_id: string;
@@ -102,36 +105,55 @@ function deriveHistoryResult({
   return 'flat' as const;
 }
 
-function buildActivityLabel(row: LedgerRow, trade: TradeRow | null) {
-  if (row.entry_type === 'seed') return 'Starting balance';
-  if (row.entry_type === 'manual_adjustment') return 'Adjustment';
-  if (row.entry_type === 'void_refund') return 'Void refund';
-  if (row.entry_type === 'settlement') return 'Settlement payout';
-  if (row.entry_type === 'trade_buy') return trade ? `Buy ${String(trade.side).toUpperCase()}` : 'Buy';
-  if (row.entry_type === 'trade_sell') return trade ? `Sell ${String(trade.side).toUpperCase()}` : 'Sell';
-  return 'Activity';
+function buildActivityLabel(row: LedgerRow, trade: TradeRow | null, lang: UiLang) {
+  if (row.entry_type === 'seed') return tr(lang, 'Starting balance', 'Αρχικό υπόλοιπο');
+  if (row.entry_type === 'manual_adjustment') return tr(lang, 'Adjustment', 'Προσαρμογή');
+  if (row.entry_type === 'void_refund') return tr(lang, 'Void refund', 'Επιστροφή ακύρωσης');
+  if (row.entry_type === 'settlement') return tr(lang, 'Settlement payout', 'Πληρωμή διακανονισμού');
+  if (row.entry_type === 'trade_buy') {
+    return trade
+      ? `${tr(lang, 'Buy', 'Αγορά')} ${localizedOutcomeLabel(trade.side, trade.side, lang)}`
+      : tr(lang, 'Buy', 'Αγορά');
+  }
+  if (row.entry_type === 'trade_sell') {
+    return trade
+      ? `${tr(lang, 'Sell', 'Πώληση')} ${localizedOutcomeLabel(trade.side, trade.side, lang)}`
+      : tr(lang, 'Sell', 'Πώληση');
+  }
+  return tr(lang, 'Activity', 'Δραστηριότητα');
 }
 
-function buildActivityDetail(row: LedgerRow, trade: TradeRow | null, resolution: ResolutionRow | null) {
+function buildActivityDetail(row: LedgerRow, trade: TradeRow | null, resolution: ResolutionRow | null, lang: UiLang) {
   if (row.entry_type === 'trade_buy' || row.entry_type === 'trade_sell') {
     if (!trade) return null;
     return {
-      primary: trade.action === 'buy' ? 'Cash committed to position' : 'Cash released from position',
-      secondary: `Fee €${round2(toNumber(trade.fee_amount)).toFixed(2)}`
+      primary:
+        trade.action === 'buy'
+          ? tr(lang, 'Cash committed to position', 'Κεφάλαιο που δεσμεύτηκε για τη θέση')
+          : tr(lang, 'Cash released from position', 'Κεφάλαιο που αποδεσμεύτηκε από τη θέση'),
+      secondary: `${tr(lang, 'Fee', 'Χρέωση')} €${round2(toNumber(trade.fee_amount)).toFixed(2)}`
     };
   }
 
   if (row.entry_type === 'settlement' || row.entry_type === 'void_refund') {
-    const outcome = resolution?.outcome ? String(resolution.outcome).toUpperCase() : null;
+    const outcomeLabel = resolution?.outcome
+      ? resolution.outcome === 'void'
+        ? tr(lang, 'Void', 'Άκυρο')
+        : localizedOutcomeLabel(resolution.outcome, resolution.outcome, lang)
+      : null;
     return {
-      primary: outcome ? `Resolved ${outcome}` : row.entry_type === 'void_refund' ? 'Market voided' : 'Market settled',
+      primary: outcomeLabel
+        ? `${tr(lang, 'Resolved', 'Επιλύθηκε')} ${outcomeLabel}`
+        : row.entry_type === 'void_refund'
+          ? tr(lang, 'Market voided', 'Η αγορά ακυρώθηκε')
+          : tr(lang, 'Market settled', 'Η αγορά διακανονίστηκε'),
       secondary: null
     };
   }
 
   if (row.entry_type === 'seed') {
     return {
-      primary: 'Paper wallet initialized',
+      primary: tr(lang, 'Paper wallet initialized', 'Το paper wallet αρχικοποιήθηκε'),
       secondary: null
     };
   }
@@ -139,9 +161,11 @@ function buildActivityDetail(row: LedgerRow, trade: TradeRow | null, resolution:
   return null;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const supabase = await getSupabaseServerClient();
+    const url = new URL(request.url);
+    const lang = await resolveServerLang({ searchParam: url.searchParams.get('lang') });
     const {
       data: { user },
       error: authError
@@ -326,7 +350,7 @@ export async function GET() {
           marketId: position.market_id,
           market: {
             slug: market.slug,
-            question: market.question,
+            question: localizedQuestionFromSlug(market.slug, market.question, lang),
             category: market.category,
             status: market.status
           },
@@ -396,7 +420,7 @@ export async function GET() {
         const market = row.market_id ? marketMap.get(row.market_id) ?? null : null;
         const trade = row.trade_id ? tradeMap.get(row.trade_id) ?? null : null;
         const resolution = row.market_id ? resolutionMap.get(row.market_id) ?? null : null;
-        const detail = buildActivityDetail(row, trade, resolution);
+        const detail = buildActivityDetail(row, trade, resolution, lang);
 
         return {
           id: row.id,
@@ -404,13 +428,13 @@ export async function GET() {
           amount: round2(toNumber(row.amount)),
           balanceAfter: round2(toNumber(row.balance_after)),
           createdAt: row.created_at,
-          label: buildActivityLabel(row, trade),
+          label: buildActivityLabel(row, trade, lang),
           detail: detail?.primary ?? null,
           detailSecondary: detail?.secondary ?? null,
           market: market
             ? {
                 slug: market.slug,
-                question: market.question,
+                question: localizedQuestionFromSlug(market.slug, market.question, lang),
                 category: market.category,
                 status: market.status
               }

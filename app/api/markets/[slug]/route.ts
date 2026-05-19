@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
+import { localizeMarketDetailCopy } from '@/lib/market-copy';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { resolveServerLang } from '@/lib/ui-lang-server';
 
 function isMissingSettlementTableError(message: string) {
   const normalized = message.toLowerCase();
   return normalized.includes('market_settlements') && normalized.includes('does not exist');
 }
 
-export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
+    const url = new URL(request.url);
+    const lang = await resolveServerLang({ searchParam: url.searchParams.get('lang') });
     const supabase = await getSupabaseServerClient();
 
     const { data: market, error: marketError } = await supabase
@@ -78,10 +82,41 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     }
 
     const stateRow = state as any;
+    const localizedMarket = localizeMarketDetailCopy(
+      {
+        id: marketRow.id,
+        slug: marketRow.slug,
+        question: marketRow.question,
+        description: marketRow.description,
+        category: marketRow.category,
+        status: marketRow.status,
+        closeTime: marketRow.close_time,
+        resolutionTime: marketRow.resolution_time,
+        sourcePrimary: marketRow.source_primary,
+        sourceFallback: marketRow.source_fallback,
+        voidRule: marketRow.void_rule,
+        yesLabel: marketRow.yes_label,
+        noLabel: marketRow.no_label,
+        liquidity: Number(marketRow.b_liquidity ?? 0),
+        feeBps: Number(marketRow.fee_bps ?? 0),
+        resolution: null,
+        settlement: null
+      },
+      lang
+    );
 
     return NextResponse.json(
       {
-        market: marketRow,
+        market: {
+          ...marketRow,
+          question: localizedMarket.question,
+          description: localizedMarket.description,
+          source_primary: localizedMarket.sourcePrimary,
+          source_fallback: localizedMarket.sourceFallback,
+          void_rule: localizedMarket.voidRule,
+          yes_label: localizedMarket.yesLabel,
+          no_label: localizedMarket.noLabel
+        },
         state: stateRow
           ? {
               market_id: stateRow.market_id,

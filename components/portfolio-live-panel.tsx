@@ -285,10 +285,14 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
 
   async function refresh() {
     try {
+      const portfolioUrl = lang === 'el' ? '/api/portfolio/summary?lang=el' : '/api/portfolio/summary';
+      const tradeHistoryUrl = lang === 'el' ? '/api/trades/history?limit=100&lang=el' : '/api/trades/history?limit=100';
+      const performanceUrl = lang === 'el' ? '/api/portfolio/performance?lang=el' : '/api/portfolio/performance';
+
       const [portfolioRes, tradeHistoryRes, performanceRes] = await Promise.all([
-        fetch('/api/portfolio/summary', { cache: 'no-store' }),
-        fetch('/api/trades/history?limit=100', { cache: 'no-store' }),
-        fetch('/api/portfolio/performance', { cache: 'no-store' })
+        fetch(portfolioUrl, { cache: 'no-store' }),
+        fetch(tradeHistoryUrl, { cache: 'no-store' }),
+        fetch(performanceUrl, { cache: 'no-store' })
       ]);
 
       const portfolioPayload = (await portfolioRes.json()) as PortfolioPayload;
@@ -349,7 +353,7 @@ export function PortfolioLivePanel({ lang = 'en' }: { lang?: UiLang }) {
       cancelled = true;
       clearInterval(timer);
     };
-  }, []);
+  }, [lang]);
 
   const openPositions = useMemo(
     () =>
