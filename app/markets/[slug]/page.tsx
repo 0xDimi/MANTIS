@@ -100,6 +100,22 @@ export default async function MarketDetailPage({
                   </div>
                 </section>
               ) : null}
+
+              <MarketTrustTabs
+                lang={lang}
+                closeTime={market.closeTime}
+                resolutionTime={market.resolutionTime}
+                sourcePrimary={market.sourcePrimary}
+                sourceFallback={market.sourceFallback}
+                voidRule={market.voidRule}
+                description={market.description}
+                resolution={market.resolution}
+                settlement={market.settlement}
+                status={market.status}
+                updatedAt={market.updatedAt}
+                yesLabel={market.yesLabel}
+                noLabel={market.noLabel}
+              />
             </article>
 
             <aside className="marketTicketCard" id="trade-ticket">
@@ -118,19 +134,6 @@ export default async function MarketDetailPage({
               />
             </aside>
           </section>
-
-          <MarketTrustTabs
-            lang={lang}
-            closeTime={market.closeTime}
-            resolutionTime={market.resolutionTime}
-            sourcePrimary={market.sourcePrimary}
-            sourceFallback={market.sourceFallback}
-            voidRule={market.voidRule}
-            description={market.description}
-            resolution={market.resolution}
-            settlement={market.settlement}
-            status={market.status}
-          />
         </>
       ) : (
         <section className="card stackSm">

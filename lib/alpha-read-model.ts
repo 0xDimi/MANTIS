@@ -37,6 +37,7 @@ export type MarketDetailRead = {
   noLabel: string;
   liquidity: number;
   feeBps: number;
+  updatedAt: string;
   resolution: {
     id: string;
     outcome: 'yes' | 'no' | 'void';
@@ -104,6 +105,7 @@ type MarketDetailApiResponse = {
     no_label: string;
     b_liquidity: number;
     fee_bps: number;
+    updated_at: string;
   } | null;
   state: {
     market_id: string;
@@ -230,6 +232,7 @@ export async function loadMarketDetail(slug: string, options?: { lang?: UiLang }
             noLabel: payload.market.no_label,
             liquidity: Number(payload.market.b_liquidity ?? 0),
             feeBps: Number(payload.market.fee_bps ?? 0),
+            updatedAt: payload.market.updated_at,
             resolution: payload.resolution
               ? {
                   id: payload.resolution.id,

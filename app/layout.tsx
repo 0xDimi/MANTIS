@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { IBM_Plex_Sans } from 'next/font/google';
 import './globals.css';
@@ -15,6 +15,11 @@ const ibmPlex = IBM_Plex_Sans({
 export const metadata: Metadata = {
   title: `${appConfig.codename} | Prediction Markets`,
   description: 'MANTIS prediction markets experience for paper-trading and market resolution testing.'
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

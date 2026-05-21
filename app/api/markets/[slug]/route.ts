@@ -19,7 +19,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     const { data: market, error: marketError } = await supabase
       .from('markets')
       .select(
-        'id,slug,question,description,category,status,close_time,resolution_time,source_primary,source_fallback,void_rule,fee_bps,b_liquidity,yes_label,no_label'
+        'id,slug,question,description,category,status,close_time,resolution_time,source_primary,source_fallback,void_rule,fee_bps,b_liquidity,yes_label,no_label,updated_at'
       )
       .eq('slug', slug)
       .limit(1)
@@ -99,6 +99,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
         noLabel: marketRow.no_label,
         liquidity: Number(marketRow.b_liquidity ?? 0),
         feeBps: Number(marketRow.fee_bps ?? 0),
+        updatedAt: marketRow.updated_at,
         resolution: null,
         settlement: null
       },
