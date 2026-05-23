@@ -12,6 +12,8 @@
 
 ## Proposed Wave 1 markets
 
+Naming rule: user-facing inflation/CPI markets must include "πληθωρισμός" in Greek titles. "ΔΤΚ" can stay for precision, but never as the only user-facing term.
+
 1) **Politics**
 - `gre-politics-cabinet-reshuffle-announced`
   - Q: Will the Greek government announce a cabinet reshuffle before month-end?
@@ -20,11 +22,16 @@
 
 2) **Economy**
 - `gre-economy-inflation-below-2`
-  - Q: Will annual CPI print below 2.0% at the next ELSTAT release?
+  - Q: Will annual CPI inflation print below 2.0% at the next ELSTAT release?
 - `gre-economy-unemployment-rate-down`
   - Q: Will unemployment be lower vs previous month at the next official release?
 - `gre-economy-eu-unemployment-last`
   - Q: Will Greece rank last in the next Eurostat unemployment table (EU-27)?
+- `gre-markets-athex-general-index-2300-may29-2026`
+  - Q: Will the Athens Stock Exchange General Index close above 2,300 points by Friday, May 29, 2026?
+  - Primary source: ATHEXGroup / Athens Exchange official end-of-day closing prices for indices, General Index.
+  - Fallback: ATHEXGroup official daily market bulletin, or a reputable financial news mirror reproducing the same official ATHEX closing value only if the official closing-prices page is unavailable.
+  - Resolution: YES if the official ATHEX General Index closing value is strictly above 2,300.00 points on any trading day through the May 29, 2026 session; NO otherwise.
 
 3) **Gas price**
 - `gre-gas-unleaded-above-2-monthend`
@@ -42,6 +49,11 @@
 5) **Weather**
 - `gre-weather-athens-30c-before-may15`
   - Q: Will Athens hit 30°C before May 15, 2026?
+- `gre-weather-athens-33c-by-jun15-2026`
+  - Q: Will the maximum air temperature in Athens exceed 33°C through June 15, 2026?
+  - Primary source: National Observatory of Athens / meteo.gr station ATHENS - CENTER daily maximum air temperature.
+  - Fallback: HNMS/EMY official Athens station daily maximum temperature only if the meteo.gr station data for the critical window is unavailable.
+  - Resolution: YES if the defined Athens station records a daily maximum air temperature strictly above 33.0°C by 2026-06-15 23:59 Europe/Athens; NO otherwise; VOID only if comparable official data is unavailable from both defined sources.
 
 6) **Social**
 - `gre-social-adonis-posts-over-300-monthend`

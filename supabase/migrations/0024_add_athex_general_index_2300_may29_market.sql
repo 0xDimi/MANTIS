@@ -15,16 +15,16 @@ insert into markets (
   no_label
 )
 values (
-  'gre-economy-cpi-above-5-may2026',
-  'Will Greece annual CPI inflation print above 5.0% for May 2026 at the June 10, 2026 ELSTAT release?',
-  'Macro market on whether Greece annual CPI inflation stays above the 5.0% threshold in the May 2026 ELSTAT print.',
+  'gre-markets-athex-general-index-2300-may29-2026',
+  'Will the Athens Stock Exchange General Index close above 2,300 points by Friday, May 29, 2026?',
+  'Market on whether the Athens Stock Exchange General Index records an official closing value strictly above 2,300.00 points on any trading day through the Friday, May 29, 2026 session.',
   'economy',
   'open',
-  '2026-06-10T08:55:00+00:00'::timestamptz,
-  '2026-06-10T10:30:00+00:00'::timestamptz,
-  'ELSTAT Consumer Price Index bulletin for May 2026',
-  'Eurostat or TradingEconomics mirror only if it clearly reproduces the same final ELSTAT annual CPI print for May 2026',
-  'Void if ELSTAT does not publish a comparable final annual CPI print for May 2026, or if the scheduled release is delayed without a clear final result in time for settlement.',
+  '2026-05-29T14:20:00+00:00'::timestamptz,
+  '2026-05-29T18:00:00+00:00'::timestamptz,
+  'ATHEXGroup / Athens Exchange official end-of-day closing prices for indices, General Index',
+  'ATHEXGroup official daily market bulletin, or a reputable financial news mirror reproducing the same official ATHEX closing value only if the official closing-prices page is unavailable',
+  'YES if the official ATHEX General Index closing value is strictly above 2,300.00 points on any trading day through the May 29, 2026 session. NO if no such official close occurs. Void only if ATHEX does not publish a comparable official General Index close for the critical window.',
   120,
   50,
   'YES',
@@ -67,7 +67,7 @@ select
   0,
   0
 from markets
-where slug = 'gre-economy-cpi-above-5-may2026'
+where slug = 'gre-markets-athex-general-index-2300-may29-2026'
   and not exists (
     select 1
     from market_state

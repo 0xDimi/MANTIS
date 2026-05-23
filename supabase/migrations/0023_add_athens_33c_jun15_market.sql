@@ -15,17 +15,17 @@ insert into markets (
   no_label
 )
 values (
-  'gre-economy-cpi-above-5-may2026',
-  'Will Greece annual CPI inflation print above 5.0% for May 2026 at the June 10, 2026 ELSTAT release?',
-  'Macro market on whether Greece annual CPI inflation stays above the 5.0% threshold in the May 2026 ELSTAT print.',
-  'economy',
+  'gre-weather-athens-33c-by-jun15-2026',
+  'Will the maximum air temperature in Athens exceed 33°C through June 15, 2026?',
+  'Weather market on whether the official daily maximum air temperature in Athens exceeds 33.0°C at any point through the end of June 15, 2026.',
+  'weather',
   'open',
-  '2026-06-10T08:55:00+00:00'::timestamptz,
-  '2026-06-10T10:30:00+00:00'::timestamptz,
-  'ELSTAT Consumer Price Index bulletin for May 2026',
-  'Eurostat or TradingEconomics mirror only if it clearly reproduces the same final ELSTAT annual CPI print for May 2026',
-  'Void if ELSTAT does not publish a comparable final annual CPI print for May 2026, or if the scheduled release is delayed without a clear final result in time for settlement.',
-  120,
+  '2026-06-15T20:59:00+00:00'::timestamptz,
+  '2026-06-16T09:00:00+00:00'::timestamptz,
+  'National Observatory of Athens / meteo.gr station ATHENS - CENTER daily maximum air temperature',
+  'HNMS/EMY official Athens station daily maximum temperature only if the meteo.gr station data for the critical window is unavailable',
+  'YES if the official daily maximum air temperature at the defined Athens station is strictly above 33.0°C at any time through 2026-06-15 23:59 Europe/Athens. NO if it never exceeds 33.0°C. Void if comparable official maximum-temperature data for Athens is unavailable from both defined sources for the critical window.',
+  100,
   50,
   'YES',
   'NO'
@@ -67,7 +67,7 @@ select
   0,
   0
 from markets
-where slug = 'gre-economy-cpi-above-5-may2026'
+where slug = 'gre-weather-athens-33c-by-jun15-2026'
   and not exists (
     select 1
     from market_state
