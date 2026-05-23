@@ -3,12 +3,6 @@ import { headers } from 'next/headers';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import type { UiLang } from '@/lib/ui-lang';
 
-export type FeaturedMarketNews = {
-  headline: string;
-  summary: string;
-  publishedAt: string;
-};
-
 export type BoardMarket = {
   id: string;
   slug: string;
@@ -25,7 +19,6 @@ export type BoardMarket = {
     participantsCount: number;
     lastTradeAt: string | null;
   } | null;
-  featuredNews?: FeaturedMarketNews | null;
 };
 
 export type MarketDetailRead = {

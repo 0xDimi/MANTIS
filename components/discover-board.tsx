@@ -5,7 +5,6 @@ import { tr, type UiLang } from '@/lib/ui-lang';
 import { MarketCard } from '@/components/market-card';
 import { FeaturedMarketsCarousel } from '@/components/featured-markets-carousel';
 import { DISCOVER_BOARD_SCOPE, isInternalMarket } from '@/lib/discover-board-config';
-import { withFeaturedMarketNews } from '@/lib/featured-market-news';
 
 type DiscoverView = 'trending' | 'new' | 'liquid' | 'ending';
 
@@ -95,7 +94,7 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
     .filter((market): market is (typeof featuredPool)[number] => Boolean(market));
   const pinnedSlugs = new Set(pinnedFeatured.map((market) => market.slug));
   const fallbackFeatured = featuredPool.filter((market) => !pinnedSlugs.has(market.slug));
-  const featured = [...pinnedFeatured, ...fallbackFeatured].slice(0, 3).map((market) => withFeaturedMarketNews(market, lang));
+  const featured = [...pinnedFeatured, ...fallbackFeatured].slice(0, 3);
   const featuredIds = new Set(featured.map((market) => market.id));
   const gridMarkets = filtered.filter((market) => !featuredIds.has(market.id));
   const featuredWithinFilterCount = filtered.filter((market) => featuredIds.has(market.id)).length;

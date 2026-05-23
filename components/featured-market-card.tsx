@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
 import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
@@ -48,7 +47,6 @@ function marketHref(slug: string, lang: UiLang, side?: 'yes' | 'no') {
 }
 
 export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarketCardProps) {
-  const [newsOpen, setNewsOpen] = useState(false);
   const yesProb = market.state?.yesPrice ?? 0.5;
   const noProb = market.state?.noPrice ?? 1 - yesProb;
   const yesCents = Math.round(yesProb * 100);
@@ -61,18 +59,6 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
     en: 'Watch for new verified updates, this market can reprice quickly close to deadline.',
     el: 'Παρακολούθησε τις νέες επιβεβαιωμένες ενημερώσεις, αυτή η αγορά μπορεί να ανατιμολογηθεί γρήγορα κοντά στη λήξη.'
   };
-  const featuredNews = market.featuredNews ?? null;
-
-  useEffect(() => {
-    if (!newsOpen) return;
-
-    function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') setNewsOpen(false);
-    }
-
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [newsOpen]);
 
   return (
     <article className={`card featuredDistinctCard${lead ? ' featuredDistinctLead' : ' featuredDistinctFollow'}`}>
@@ -117,46 +103,9 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
             <strong>{noCents}¢</strong>
           </Link>
         </div>
-
-        {featuredNews ? (
-          <div className="featuredDistinctFooter">
-            <button
-              className="featuredNewsRow"
-              type="button"
-              onClick={() => setNewsOpen(true)}
-              aria-haspopup="dialog"
-              aria-label={`${tr(lang, 'Open news context', 'Άνοιγμα επικαιρότητας')}: ${featuredNews.headline}`}
-            >
-              <span className="featuredNewsLabel">{tr(lang, 'News', 'Νέα')}</span>
-              <span className="featuredNewsHeadline">{featuredNews.headline}</span>
-              <span className="featuredNewsTime">{formatRelativeTime(featuredNews.publishedAt, lang)}</span>
-            </button>
-          </div>
-        ) : null}
       </div>
 
       <span className="featuredMantisMark" aria-hidden="true">MANTIS · CURATED</span>
-
-      {featuredNews && newsOpen ? (
-        <div className="alphaModalOverlay featuredNewsOverlay" role="dialog" aria-modal="true" aria-labelledby={`featured-news-${market.id}`} onClick={() => setNewsOpen(false)}>
-          <div className="card alphaModalCard featuredNewsModal" onClick={(event) => event.stopPropagation()}>
-            <div className="featuredNewsModalTop">
-              <span className="featuredNewsModalEyebrow">{tr(lang, 'Market context', 'Πλαίσιο αγοράς')}</span>
-              <button
-                className="featuredNewsClose"
-                type="button"
-                onClick={() => setNewsOpen(false)}
-                aria-label={tr(lang, 'Close news context', 'Κλείσιμο επικαιρότητας')}
-              >
-                ×
-              </button>
-            </div>
-            <h2 id={`featured-news-${market.id}`}>{featuredNews.headline}</h2>
-            <p>{featuredNews.summary}</p>
-            <span className="featuredNewsModalTime">{formatRelativeTime(featuredNews.publishedAt, lang)}</span>
-          </div>
-        </div>
-      ) : null}
     </article>
   );
 }

@@ -994,61 +994,6 @@ code {
   align-items: center;
 }
 
-.featuredDistinctFooter {
-  display: flex;
-  justify-content: flex-start;
-  min-width: 0;
-}
-
-.featuredNewsRow {
-  position: relative;
-  z-index: 4;
-  width: min(68%, 390px);
-  min-height: 34px;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  padding: 0 11px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.045);
-  color: #d7def1;
-  text-align: left;
-  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
-}
-
-.featuredNewsRow:hover,
-.featuredNewsRow:focus-visible {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.075);
-  color: #ffffff;
-  outline: none;
-}
-
-.featuredNewsLabel {
-  color: #f3c96a;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.featuredNewsHeadline {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-  font-weight: 650;
-}
-
-.featuredNewsTime {
-  color: var(--text-3);
-  font-size: 11px;
-  white-space: nowrap;
-}
-
 .featuredDistinctActions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1078,70 +1023,6 @@ code {
   color: rgba(255, 255, 255, 0.24);
   pointer-events: none;
   z-index: 2;
-}
-
-.featuredNewsOverlay {
-  z-index: 160;
-}
-
-.featuredNewsModal {
-  width: min(520px, 100%);
-  display: grid;
-  gap: 12px;
-}
-
-.featuredNewsModalTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.featuredNewsModalEyebrow {
-  color: #f3c96a;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.featuredNewsClose {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.055);
-  color: #eef3ff;
-  font-size: 20px;
-  line-height: 1;
-}
-
-.featuredNewsClose:hover,
-.featuredNewsClose:focus-visible {
-  background: rgba(255, 255, 255, 0.1);
-  outline: none;
-}
-
-.featuredNewsModal h2 {
-  margin: 0;
-  color: #eef3ff;
-  font-size: clamp(22px, 3.6vw, 30px);
-  line-height: 1.14;
-  letter-spacing: 0;
-}
-
-.featuredNewsModal p {
-  margin: 0;
-  color: #d9e3fb;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.featuredNewsModalTime {
-  color: var(--text-3);
-  font-size: 12px;
 }
 
 .marketMiniMeta {
@@ -2916,10 +2797,6 @@ code {
 }
 
 @media (max-width: 640px) {
-  .featuredNewsRow {
-    width: 100%;
-  }
-
   .marketHeroMain,
   .marketChartSurface,
   .marketTrendPanel,
