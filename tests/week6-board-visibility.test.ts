@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { DISCOVER_BOARD_SCOPE, isInternalMarket } from '../lib/discover-board-config.ts';
+import { getFeaturedMarketNews } from '../lib/featured-market-news.ts';
 
 test('discover board is locked to open-market scope', () => {
   assert.equal(DISCOVER_BOARD_SCOPE, 'open');
@@ -24,4 +25,17 @@ test('ops substring inside normal words does not hide real markets', () => {
     false
   );
   assert.equal(isInternalMarket('ops-health-check', 'Internal ops smoke check'), true);
+});
+
+test('featured market news is curated context without outbound source fields', () => {
+  const news = getFeaturedMarketNews('gre-politics-tsipras-new-party-before-jun1', 'en');
+
+  assert.ok(news);
+  assert.match(news.headline, /Tsipras/);
+  assert.equal('sourceUrl' in news, false);
+  assert.equal('sourceName' in news, false);
+});
+
+test('markets without curated news stay quiet', () => {
+  assert.equal(getFeaturedMarketNews('gre-politics-cabinet-reshuffle-announced', 'en'), null);
 });
