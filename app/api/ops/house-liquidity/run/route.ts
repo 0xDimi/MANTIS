@@ -2,7 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
 import { buildAmmV0Quote } from '@/lib/amm-v0';
-import { getAthensDayStartIso, getAthensNowParts, isOpsAuthorized, parseBoolean } from '@/lib/ops-automation';
+import {
+  getAthensDayStartIso,
+  getAthensNowParts,
+  getAthensOffsetMs,
+  isOpsAuthorized,
+  parseBoolean
+} from '@/lib/ops-automation';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 
 type MarketRow = {
@@ -38,6 +44,16 @@ type TradeRow = {
   created_at: string;
 };
 
+type TradeReportRow = TradeRow & {
+  id: string;
+  side: 'yes' | 'no';
+  action: 'buy' | 'sell';
+  share_delta: number;
+  avg_price: number;
+  fee_amount: number;
+  net_amount: number;
+};
+
 type OrderExecutionResult = {
   marketId: string;
   marketSlug: string;
@@ -66,6 +82,190 @@ function diffMinutes(now: Date, atIso: string | null | undefined) {
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function round2(value: number) {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
+}
+
+function getAthensWeekStartIso(now = new Date()) {
+  const offsetMs = getAthensOffsetMs(now);
+  const athensNowMs = now.getTime() + offsetMs;
+  const dayStartMsAthensClock = Math.floor(athensNowMs / 86_400_000) * 86_400_000;
+  const dayOfWeek = new Date(athensNowMs).getUTCDay() || 7;
+  const weekStartMsAthensClock = dayStartMsAthensClock - (dayOfWeek - 1) * 86_400_000;
+
+  return new Date(weekStartMsAthensClock - offsetMs).toISOString();
+}
+
+function getAthensDateTimeLabel(iso: string) {
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Athens',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  })
+    .format(new Date(iso))
+    .replace(',', '');
+}
+
+async function buildHouseLiquidityReport(input: { houseUserId: string; now: Date }) {
+  const admin = getSupabaseAdminClient();
+  const startIso = getAthensWeekStartIso(input.now);
+  const endIso = input.now.toISOString();
+
+  const { data: trades, error: tradesError } = await admin
+    .from('trades')
+    .select('id,market_id,side,action,share_delta,avg_price,gross_amount,fee_amount,net_amount,created_at')
+    .eq('user_id', input.houseUserId)
+    .gte('created_at', startIso)
+    .lte('created_at', endIso)
+    .order('created_at', { ascending: true });
+
+  if (tradesError) {
+    throw new Error(tradesError.message);
+  }
+
+  const tradeRows = (trades ?? []) as TradeReportRow[];
+  const marketIds = [...new Set(tradeRows.map((trade) => trade.market_id).filter(Boolean))];
+
+  const { data: markets, error: marketsError } = marketIds.length
+    ? await admin.from('markets').select('id,slug,question,category,status').in('id', marketIds)
+    : { data: [] as any[], error: null };
+
+  if (marketsError) {
+    throw new Error(marketsError.message);
+  }
+
+  const marketMap = new Map((markets ?? []).map((market: any) => [market.id, market]));
+  const byDay = new Map<string, { tradeCount: number; grossVolume: number; fees: number; netAmount: number }>();
+  const byMarket = new Map<
+    string,
+    {
+      slug: string;
+      question: string;
+      tradeCount: number;
+      grossVolume: number;
+      fees: number;
+      netAmount: number;
+      yesBuys: number;
+      noBuys: number;
+      yesSells: number;
+      noSells: number;
+      firstAt: string;
+      lastAt: string;
+    }
+  >();
+
+  let grossVolume = 0;
+  let fees = 0;
+  let netAmount = 0;
+
+  for (const trade of tradeRows) {
+    const gross = Number(trade.gross_amount ?? 0);
+    const fee = Number(trade.fee_amount ?? 0);
+    const net = Number(trade.net_amount ?? 0);
+
+    grossVolume += gross;
+    fees += fee;
+    netAmount += net;
+
+    const dayKey = getAthensDateTimeLabel(trade.created_at).slice(0, 10).split('/').reverse().join('-');
+    const dayRow = byDay.get(dayKey) ?? { tradeCount: 0, grossVolume: 0, fees: 0, netAmount: 0 };
+    dayRow.tradeCount += 1;
+    dayRow.grossVolume += gross;
+    dayRow.fees += fee;
+    dayRow.netAmount += net;
+    byDay.set(dayKey, dayRow);
+
+    const market = marketMap.get(trade.market_id) ?? null;
+    const marketRow = byMarket.get(trade.market_id) ?? {
+      slug: market?.slug ?? trade.market_id,
+      question: market?.question ?? '',
+      tradeCount: 0,
+      grossVolume: 0,
+      fees: 0,
+      netAmount: 0,
+      yesBuys: 0,
+      noBuys: 0,
+      yesSells: 0,
+      noSells: 0,
+      firstAt: trade.created_at,
+      lastAt: trade.created_at
+    };
+
+    marketRow.tradeCount += 1;
+    marketRow.grossVolume += gross;
+    marketRow.fees += fee;
+    marketRow.netAmount += net;
+
+    if (trade.side === 'yes' && trade.action === 'buy') marketRow.yesBuys += 1;
+    if (trade.side === 'no' && trade.action === 'buy') marketRow.noBuys += 1;
+    if (trade.side === 'yes' && trade.action === 'sell') marketRow.yesSells += 1;
+    if (trade.side === 'no' && trade.action === 'sell') marketRow.noSells += 1;
+
+    if (new Date(trade.created_at).getTime() < new Date(marketRow.firstAt).getTime()) {
+      marketRow.firstAt = trade.created_at;
+    }
+
+    if (new Date(trade.created_at).getTime() > new Date(marketRow.lastAt).getTime()) {
+      marketRow.lastAt = trade.created_at;
+    }
+
+    byMarket.set(trade.market_id, marketRow);
+  }
+
+  return {
+    generatedAt: endIso,
+    window: {
+      startAthens: getAthensDateTimeLabel(startIso),
+      endAthens: getAthensDateTimeLabel(endIso),
+      startIso,
+      endIso
+    },
+    totals: {
+      tradeCount: tradeRows.length,
+      grossVolume: round2(grossVolume),
+      fees: round2(fees),
+      netAmount: round2(netAmount)
+    },
+    byDay: [...byDay.entries()].map(([day, row]) => ({
+      day,
+      tradeCount: row.tradeCount,
+      grossVolume: round2(row.grossVolume),
+      fees: round2(row.fees),
+      netAmount: round2(row.netAmount)
+    })),
+    byMarket: [...byMarket.values()]
+      .sort((a, b) => b.grossVolume - a.grossVolume)
+      .map((row) => ({
+        ...row,
+        grossVolume: round2(row.grossVolume),
+        fees: round2(row.fees),
+        netAmount: round2(row.netAmount),
+        firstAthens: getAthensDateTimeLabel(row.firstAt),
+        lastAthens: getAthensDateTimeLabel(row.lastAt)
+      })),
+    trades: tradeRows.map((trade) => {
+      const market = marketMap.get(trade.market_id) ?? null;
+
+      return {
+        id: trade.id,
+        athensTime: getAthensDateTimeLabel(trade.created_at),
+        marketSlug: market?.slug ?? trade.market_id,
+        side: trade.side,
+        action: trade.action,
+        shareDelta: Number(Number(trade.share_delta ?? 0).toFixed(4)),
+        avgPrice: Number(Number(trade.avg_price ?? 0).toFixed(4)),
+        grossAmount: round2(Number(trade.gross_amount ?? 0)),
+        feeAmount: round2(Number(trade.fee_amount ?? 0)),
+        netAmount: round2(Number(trade.net_amount ?? 0))
+      };
+    })
+  };
 }
 
 async function ensureHouseWallet(userId: string) {
@@ -209,6 +409,20 @@ export async function GET(request: Request) {
 
     const enabled = parseBoolean(process.env.HOUSE_LIQUIDITY_BOT_ENABLED, true);
     const houseUserId = process.env.HOUSE_LIQUIDITY_USER_ID?.trim() || '11111111-2222-4333-8444-555555555555';
+    const now = new Date();
+
+    if (url.searchParams.get('report') === 'week') {
+      const report = await buildHouseLiquidityReport({ houseUserId, now });
+
+      return NextResponse.json(
+        {
+          status: 'ok',
+          authMode: auth.mode,
+          report
+        },
+        { status: 200 }
+      );
+    }
 
     if (!enabled && !dryRun) {
       return NextResponse.json(
@@ -221,7 +435,6 @@ export async function GET(request: Request) {
       );
     }
 
-    const now = new Date();
     const nowIso = now.toISOString();
     const dayStartIso = getAthensDayStartIso(now);
     const athens = getAthensNowParts(now);
