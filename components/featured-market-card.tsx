@@ -107,20 +107,6 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
           {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt, lang)}</span> : null}
         </div>
 
-        {featuredNews ? (
-          <button
-            className="featuredNewsRow"
-            type="button"
-            onClick={() => setNewsOpen(true)}
-            aria-haspopup="dialog"
-            aria-label={`${tr(lang, 'Open news context', 'Άνοιγμα επικαιρότητας')}: ${featuredNews.headline}`}
-          >
-            <span className="featuredNewsLabel">{tr(lang, 'News', 'Νέα')}</span>
-            <span className="featuredNewsHeadline">{featuredNews.headline}</span>
-            <span className="featuredNewsTime">{formatRelativeTime(featuredNews.publishedAt, lang)}</span>
-          </button>
-        ) : null}
-
         <div className="featuredDistinctActions">
           <Link className="button buttonYes featuredActionBtn" href={marketHref(market.slug, lang, 'yes')}>
             <span>{yesLabel}</span>
@@ -131,6 +117,22 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
             <strong>{noCents}¢</strong>
           </Link>
         </div>
+
+        {featuredNews ? (
+          <div className="featuredDistinctFooter">
+            <button
+              className="featuredNewsRow"
+              type="button"
+              onClick={() => setNewsOpen(true)}
+              aria-haspopup="dialog"
+              aria-label={`${tr(lang, 'Open news context', 'Άνοιγμα επικαιρότητας')}: ${featuredNews.headline}`}
+            >
+              <span className="featuredNewsLabel">{tr(lang, 'News', 'Νέα')}</span>
+              <span className="featuredNewsHeadline">{featuredNews.headline}</span>
+              <span className="featuredNewsTime">{formatRelativeTime(featuredNews.publishedAt, lang)}</span>
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <span className="featuredMantisMark" aria-hidden="true">MANTIS · CURATED</span>

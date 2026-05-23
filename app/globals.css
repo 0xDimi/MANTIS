@@ -901,11 +901,11 @@ code {
 .featuredDistinctShell {
   position: relative;
   z-index: 2;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 13px;
   height: 100%;
-  align-content: start;
-  padding-bottom: 34px;
+  padding-bottom: 42px;
 }
 
 .featuredDistinctTop {
@@ -994,11 +994,17 @@ code {
   align-items: center;
 }
 
+.featuredDistinctFooter {
+  display: flex;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
 .featuredNewsRow {
   position: relative;
   z-index: 4;
-  width: 100%;
-  min-height: 36px;
+  width: min(68%, 390px);
+  min-height: 34px;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
@@ -2910,6 +2916,10 @@ code {
 }
 
 @media (max-width: 640px) {
+  .featuredNewsRow {
+    width: 100%;
+  }
+
   .marketHeroMain,
   .marketChartSurface,
   .marketTrendPanel,
