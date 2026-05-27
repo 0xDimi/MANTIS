@@ -305,6 +305,15 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'gre-sports-zambidis-mayweather-win-jun27-2026': {
+    question: 'Θα ανακηρυχθεί επίσημα νικητής ο Μιχάλης Ζαμπίδης απέναντι στον Floyd Mayweather στις 27 Ιουνίου 2026;',
+    description: 'Αγορά αθλητικής επικαιρότητας για το αν ο Μιχάλης Ζαμπίδης θα ανακηρυχθεί επίσημα νικητής στον προγραμματισμένο αγώνα επίδειξης μποξ με τον Floyd Mayweather στην Αθήνα.',
+    sourcePrimary: 'Επίσημη ανακοίνωση αποτελέσματος από τη διοργάνωση, τον promoter, τη μετάδοση ή αρμόδιο φορέα για τον αγώνα Floyd Mayweather vs. Mike Zambidis στις 27 Ιουνίου 2026',
+    sourceFallback: 'Tapology, BoxRec αν καταχωριστεί, Associated Press/AFP/Reuters, ESPN, BBC Sport, Sporting News ή άλλο αξιόπιστο μέσο μαχητικών αθλημάτων που αναφέρει καθαρά το επίσημο αποτέλεσμα',
+    voidRule: 'YES μόνο αν ο Μιχάλης Ζαμπίδης ανακηρυχθεί επίσημα νικητής με απόφαση, KO/TKO, DQ, εγκατάλειψη ή άλλη επίσημη μέθοδο νίκης. NO αν νικητής ανακηρυχθεί ο Floyd Mayweather, αν ο αγώνας λήξει ισόπαλος/no contest ή αν δεν ανακοινωθεί επίσημος νικητής. Ακυρώνεται αν ο αγώνας ακυρωθεί, δεν διεξαχθεί έως τις 31 Ιουλίου 2026, αλλάξει ο αντίπαλος ή αλλάξουν ουσιωδώς οι κανόνες πριν την έναρξη.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'crypto-btc-close-above-80k': {
     question: 'Θα κλείσει το BTC πάνω από $80.000 (UTC daily close) πριν το τέλος του μήνα;',
     description: 'Αγορά για επίπεδο τιμής BTC.',
