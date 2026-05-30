@@ -18,7 +18,23 @@ Operational playbook for xyz Labs alpha (`https://xyz-labs-demo.vercel.app`) whi
 - Branch is `alpha` and synced with `origin/alpha`
 - Markets slate unchanged unless explicit launch-slate window is opened
 - Supabase migrations applied on runtime before deploy if schema changed
+- New markets have matching Greek copy in `lib/market-copy.ts`
 - No open red blockers in `docs/ALPHA_LIVE_STATUS.md`
+
+## New-market localization gate
+Any new market is incomplete until it passes both language readbacks:
+
+```bash
+curl -sS 'https://xyz-labs-demo.vercel.app/api/markets?scope=all&lang=en'
+curl -sS 'https://xyz-labs-demo.vercel.app/api/markets?scope=all&lang=el'
+```
+
+Expected outcome:
+- the new slug appears in both responses
+- English copy appears under `lang=en`
+- Greek copy appears under `lang=el`
+
+If a market was inserted directly into live Supabase, deploy the app code containing the new `lib/market-copy.ts` slug entries before calling the market live.
 
 ## Deploy procedure (production)
 ```bash
