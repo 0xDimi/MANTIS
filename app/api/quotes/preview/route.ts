@@ -165,6 +165,86 @@ export async function POST(request: Request) {
       userEventExposureAfter: number | null;
       maxUserEventExposure: number | null;
     } | null = null;
+    let eventMetadata: {
+      eventId: string;
+      eventSlug: string;
+      eventTitle: string;
+      outcomeKey: string;
+      outcomeLabel: string;
+      maxUserEventExposure: number | null;
+    } | null = null;
+    let eventChildMarketIds: string[] = [];
+
+    if (marketRow.is_event_child && marketRow.event_id) {
+      const [
+        { data: eventRow, error: eventError },
+        { data: outcomeRow, error: outcomeError },
+        { data: childRows, error: childRowsError }
+      ] = await Promise.all([
+        supabase
+          .from('market_events')
+          .select('id,slug,title,max_user_event_exposure')
+          .eq('id', marketRow.event_id)
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from('market_event_outcomes')
+          .select('outcome_key,outcome_label')
+          .eq('event_id', marketRow.event_id)
+          .eq('child_market_id', marketRow.id)
+          .limit(1)
+          .maybeSingle(),
+        supabase.from('markets').select('id').eq('event_id', marketRow.event_id).eq('is_event_child', true)
+      ]);
+
+      if (eventError) {
+        Sentry.captureException(new Error(eventError.message), {
+          tags: { route: 'api/quotes/preview' }
+        });
+        return NextResponse.json({ error: eventError.message }, { status: 500 });
+      }
+
+      if (outcomeError) {
+        Sentry.captureException(new Error(outcomeError.message), {
+          tags: { route: 'api/quotes/preview' }
+        });
+        return NextResponse.json({ error: outcomeError.message }, { status: 500 });
+      }
+
+      if (childRowsError) {
+        Sentry.captureException(new Error(childRowsError.message), {
+          tags: { route: 'api/quotes/preview' }
+        });
+        return NextResponse.json({ error: childRowsError.message }, { status: 500 });
+      }
+
+      const eventRowData = eventRow as any;
+      const outcomeRowData = outcomeRow as any;
+      eventChildMarketIds = ((childRows as any[]) ?? []).map((child) => child.id);
+
+      if (eventRowData && outcomeRowData) {
+        eventMetadata = {
+          eventId: marketRow.event_id,
+          eventSlug: eventRowData.slug,
+          eventTitle: eventRowData.title,
+          outcomeKey: outcomeRowData.outcome_key,
+          outcomeLabel: outcomeRowData.outcome_label,
+          maxUserEventExposure: Number(eventRowData.max_user_event_exposure ?? 0) || null
+        };
+
+        eventContext = {
+          eventId: eventMetadata.eventId,
+          eventSlug: eventMetadata.eventSlug,
+          eventTitle: eventMetadata.eventTitle,
+          outcomeKey: eventMetadata.outcomeKey,
+          outcomeLabel: eventMetadata.outcomeLabel,
+          outcomeStructure: 'independent_cluster',
+          currentUserEventExposure: 0,
+          userEventExposureAfter: null,
+          maxUserEventExposure: eventMetadata.maxUserEventExposure
+        };
+      }
+    }
 
     if (user) {
       const { data: position, error: positionError } = await supabase
@@ -199,50 +279,7 @@ export async function POST(request: Request) {
         availableShares: userLimitState.availableShares
       };
 
-      if (marketRow.is_event_child && marketRow.event_id) {
-        const [
-          { data: eventRow, error: eventError },
-          { data: outcomeRow, error: outcomeError },
-          { data: childRows, error: childRowsError }
-        ] = await Promise.all([
-          supabase
-            .from('market_events')
-            .select('id,slug,title,max_user_event_exposure')
-            .eq('id', marketRow.event_id)
-            .limit(1)
-            .maybeSingle(),
-          supabase
-            .from('market_event_outcomes')
-            .select('outcome_key,outcome_label')
-            .eq('event_id', marketRow.event_id)
-            .eq('child_market_id', marketRow.id)
-            .limit(1)
-            .maybeSingle(),
-          supabase.from('markets').select('id').eq('event_id', marketRow.event_id).eq('is_event_child', true)
-        ]);
-
-        if (eventError) {
-          Sentry.captureException(new Error(eventError.message), {
-            tags: { route: 'api/quotes/preview' }
-          });
-          return NextResponse.json({ error: eventError.message }, { status: 500 });
-        }
-
-        if (outcomeError) {
-          Sentry.captureException(new Error(outcomeError.message), {
-            tags: { route: 'api/quotes/preview' }
-          });
-          return NextResponse.json({ error: outcomeError.message }, { status: 500 });
-        }
-
-        if (childRowsError) {
-          Sentry.captureException(new Error(childRowsError.message), {
-            tags: { route: 'api/quotes/preview' }
-          });
-          return NextResponse.json({ error: childRowsError.message }, { status: 500 });
-        }
-
-        const eventChildMarketIds = ((childRows as any[]) ?? []).map((child) => child.id);
+      if (eventMetadata && eventChildMarketIds.length) {
         const { data: eventPositions, error: eventPositionsError } = eventChildMarketIds.length
           ? await supabase
               .from('positions')
@@ -266,31 +303,26 @@ export async function POST(request: Request) {
           action,
           totalAmountEur: quote.totalAmountEur,
           currentEventExposureEur,
-          maxUserEventExposureEur: Number((eventRow as any)?.max_user_event_exposure ?? 0) || null
+          maxUserEventExposureEur: eventMetadata.maxUserEventExposure
         });
 
-        const eventRowData = eventRow as any;
-        const outcomeRowData = outcomeRow as any;
-
         eventLimits = {
-          eventId: marketRow.event_id,
+          eventId: eventMetadata.eventId,
           openEventExposureEur: eventLimitState.openEventExposureEur,
           eventExposureAfterEur: eventLimitState.eventExposureAfterEur,
           maxUserEventExposureEur: eventLimitState.maxUserEventExposureEur
         };
-        eventContext = eventRowData && outcomeRowData
-          ? {
-              eventId: marketRow.event_id,
-              eventSlug: eventRowData.slug,
-              eventTitle: eventRowData.title,
-              outcomeKey: outcomeRowData.outcome_key,
-              outcomeLabel: outcomeRowData.outcome_label,
-              outcomeStructure: 'independent_cluster',
-              currentUserEventExposure: eventLimitState.openEventExposureEur,
-              userEventExposureAfter: eventLimitState.eventExposureAfterEur,
-              maxUserEventExposure: eventLimitState.maxUserEventExposureEur
-            }
-          : null;
+        eventContext = {
+          eventId: eventMetadata.eventId,
+          eventSlug: eventMetadata.eventSlug,
+          eventTitle: eventMetadata.eventTitle,
+          outcomeKey: eventMetadata.outcomeKey,
+          outcomeLabel: eventMetadata.outcomeLabel,
+          outcomeStructure: 'independent_cluster',
+          currentUserEventExposure: eventLimitState.openEventExposureEur,
+          userEventExposureAfter: eventLimitState.eventExposureAfterEur,
+          maxUserEventExposure: eventLimitState.maxUserEventExposureEur
+        };
       }
     }
 
