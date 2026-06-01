@@ -4,6 +4,7 @@ import { buildAmmV0Quote } from '../lib/amm-v0.ts';
 import {
   TradeRequestError,
   assertMarketOpenForTrading,
+  evaluateUserEventTradeLimits,
   evaluateUserTradeLimits,
   parseTradeAction,
   parseTradeSide,
@@ -89,6 +90,54 @@ test('buy quotes fail fast on exposure overflow before SQL execution', () => {
       assert.equal(error.statusCode, 400);
       assert.match(error.message, /max user exposure per market/);
       return true;
+    }
+  );
+});
+
+test('event child buys fail fast on event exposure overflow before SQL execution', () => {
+  assert.throws(
+    () =>
+      evaluateUserEventTradeLimits({
+        action: 'buy',
+        totalAmountEur: 30,
+        currentEventExposureEur: 230,
+        maxUserEventExposureEur: 250
+      }),
+    (error: unknown) => {
+      assert.ok(error instanceof TradeRequestError);
+      assert.equal(error.statusCode, 400);
+      assert.match(error.message, /max user exposure for this event/);
+      return true;
+    }
+  );
+});
+
+test('event exposure guard ignores sells and missing event caps', () => {
+  assert.deepEqual(
+    evaluateUserEventTradeLimits({
+      action: 'sell',
+      totalAmountEur: 30,
+      currentEventExposureEur: 260,
+      maxUserEventExposureEur: 250
+    }),
+    {
+      openEventExposureEur: 260,
+      eventExposureAfterEur: null,
+      maxUserEventExposureEur: 250
+    }
+  );
+
+  assert.deepEqual(
+    evaluateUserEventTradeLimits({
+      action: 'buy',
+      totalAmountEur: 30,
+      currentEventExposureEur: 260,
+      maxUserEventExposureEur: null
+    }),
+    {
+      openEventExposureEur: 260,
+      eventExposureAfterEur: 290,
+      maxUserEventExposureEur: null
     }
   );
 });

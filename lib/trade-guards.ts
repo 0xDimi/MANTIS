@@ -116,3 +116,30 @@ export function evaluateUserTradeLimits(input: {
     availableShares
   };
 }
+
+export function evaluateUserEventTradeLimits(input: {
+  action: TradeAction;
+  totalAmountEur: number;
+  currentEventExposureEur?: number;
+  maxUserEventExposureEur?: number | null;
+}) {
+  const openEventExposureEur = Number(input.currentEventExposureEur ?? 0);
+  const maxUserEventExposureEur = input.maxUserEventExposureEur == null ? null : Number(input.maxUserEventExposureEur);
+  const eventExposureAfterEur = input.action === 'buy' ? openEventExposureEur + input.totalAmountEur : null;
+
+  if (
+    input.action === 'buy' &&
+    maxUserEventExposureEur !== null &&
+    Number.isFinite(maxUserEventExposureEur) &&
+    eventExposureAfterEur !== null &&
+    eventExposureAfterEur > maxUserEventExposureEur
+  ) {
+    throw new TradeRequestError(`trade exceeds max user exposure for this event (${maxUserEventExposureEur})`, 400);
+  }
+
+  return {
+    openEventExposureEur,
+    eventExposureAfterEur,
+    maxUserEventExposureEur
+  };
+}

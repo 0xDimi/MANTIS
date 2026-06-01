@@ -6,6 +6,7 @@ import { buildQuoteHash } from '@/lib/quote-hash';
 import {
   TradeRequestError,
   assertMarketOpenForTrading,
+  evaluateUserEventTradeLimits,
   evaluateUserTradeLimits,
   parseTradeAction,
   parseTradeSide,
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
 
     let marketQuery = supabase
       .from('markets')
-      .select('id,slug,question,status,b_liquidity,fee_bps,close_time')
+      .select('id,slug,question,status,b_liquidity,fee_bps,close_time,event_id,is_event_child')
       .limit(1);
 
     marketQuery = body.marketId ? marketQuery.eq('id', body.marketId) : marketQuery.eq('slug', body.marketSlug!);
@@ -147,6 +148,23 @@ export async function POST(request: Request) {
       exposureAfterEur: number | null;
       availableShares: number | null;
     } | null = null;
+    let eventLimits: {
+      eventId: string;
+      openEventExposureEur: number;
+      eventExposureAfterEur: number | null;
+      maxUserEventExposureEur: number | null;
+    } | null = null;
+    let eventContext: {
+      eventId: string;
+      eventSlug: string;
+      eventTitle: string;
+      outcomeKey: string;
+      outcomeLabel: string;
+      outcomeStructure: 'independent_cluster';
+      currentUserEventExposure: number;
+      userEventExposureAfter: number | null;
+      maxUserEventExposure: number | null;
+    } | null = null;
 
     if (user) {
       const { data: position, error: positionError } = await supabase
@@ -180,6 +198,100 @@ export async function POST(request: Request) {
         exposureAfterEur: userLimitState.exposureAfterEur,
         availableShares: userLimitState.availableShares
       };
+
+      if (marketRow.is_event_child && marketRow.event_id) {
+        const [
+          { data: eventRow, error: eventError },
+          { data: outcomeRow, error: outcomeError },
+          { data: childRows, error: childRowsError }
+        ] = await Promise.all([
+          supabase
+            .from('market_events')
+            .select('id,slug,title,max_user_event_exposure')
+            .eq('id', marketRow.event_id)
+            .limit(1)
+            .maybeSingle(),
+          supabase
+            .from('market_event_outcomes')
+            .select('outcome_key,outcome_label')
+            .eq('event_id', marketRow.event_id)
+            .eq('child_market_id', marketRow.id)
+            .limit(1)
+            .maybeSingle(),
+          supabase.from('markets').select('id').eq('event_id', marketRow.event_id).eq('is_event_child', true)
+        ]);
+
+        if (eventError) {
+          Sentry.captureException(new Error(eventError.message), {
+            tags: { route: 'api/quotes/preview' }
+          });
+          return NextResponse.json({ error: eventError.message }, { status: 500 });
+        }
+
+        if (outcomeError) {
+          Sentry.captureException(new Error(outcomeError.message), {
+            tags: { route: 'api/quotes/preview' }
+          });
+          return NextResponse.json({ error: outcomeError.message }, { status: 500 });
+        }
+
+        if (childRowsError) {
+          Sentry.captureException(new Error(childRowsError.message), {
+            tags: { route: 'api/quotes/preview' }
+          });
+          return NextResponse.json({ error: childRowsError.message }, { status: 500 });
+        }
+
+        const eventChildMarketIds = ((childRows as any[]) ?? []).map((child) => child.id);
+        const { data: eventPositions, error: eventPositionsError } = eventChildMarketIds.length
+          ? await supabase
+              .from('positions')
+              .select('yes_cost_basis,no_cost_basis')
+              .eq('user_id', user.id)
+              .in('market_id', eventChildMarketIds)
+          : { data: [], error: null };
+
+        if (eventPositionsError) {
+          Sentry.captureException(new Error(eventPositionsError.message), {
+            tags: { route: 'api/quotes/preview' }
+          });
+          return NextResponse.json({ error: eventPositionsError.message }, { status: 500 });
+        }
+
+        const currentEventExposureEur = ((eventPositions as any[]) ?? []).reduce(
+          (sum, item) => sum + Number(item.yes_cost_basis ?? 0) + Number(item.no_cost_basis ?? 0),
+          0
+        );
+        const eventLimitState = evaluateUserEventTradeLimits({
+          action,
+          totalAmountEur: quote.totalAmountEur,
+          currentEventExposureEur,
+          maxUserEventExposureEur: Number((eventRow as any)?.max_user_event_exposure ?? 0) || null
+        });
+
+        const eventRowData = eventRow as any;
+        const outcomeRowData = outcomeRow as any;
+
+        eventLimits = {
+          eventId: marketRow.event_id,
+          openEventExposureEur: eventLimitState.openEventExposureEur,
+          eventExposureAfterEur: eventLimitState.eventExposureAfterEur,
+          maxUserEventExposureEur: eventLimitState.maxUserEventExposureEur
+        };
+        eventContext = eventRowData && outcomeRowData
+          ? {
+              eventId: marketRow.event_id,
+              eventSlug: eventRowData.slug,
+              eventTitle: eventRowData.title,
+              outcomeKey: outcomeRowData.outcome_key,
+              outcomeLabel: outcomeRowData.outcome_label,
+              outcomeStructure: 'independent_cluster',
+              currentUserEventExposure: eventLimitState.openEventExposureEur,
+              userEventExposureAfter: eventLimitState.eventExposureAfterEur,
+              maxUserEventExposure: eventLimitState.maxUserEventExposureEur
+            }
+          : null;
+      }
     }
 
     const issuedAt = new Date();
@@ -231,6 +343,8 @@ export async function POST(request: Request) {
         },
         guardrails: alphaGuardrails,
         userLimits,
+        eventLimits,
+        eventContext,
         quoteHash,
         issuedAt: issuedAt.toISOString(),
         expiresAt: expiresAt.toISOString()

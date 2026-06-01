@@ -1,5 +1,6 @@
 import { unstable_noStore as noStore } from 'next/cache';
 import { headers } from 'next/headers';
+import type { EventCardRead, EventDetailRead } from '@/lib/event-read-model';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import type { UiLang } from '@/lib/ui-lang';
 
@@ -136,6 +137,12 @@ type MarketDetailApiResponse = {
   } | null;
 };
 
+type EventsApiResponse = {
+  events: EventCardRead[];
+  nextCursor: string | null;
+  educationCopy?: string;
+};
+
 async function getRequestBaseUrl() {
   const headerStore = await headers();
   const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host');
@@ -203,6 +210,48 @@ export async function loadMarketsBoard(options?: { scope?: 'open' | 'all'; lang?
   } catch (error) {
     return {
       markets: [] as BoardMarket[],
+      error: error instanceof Error ? error.message : 'unknown error'
+    };
+  }
+}
+
+export async function loadEventsBoard(options?: { lang?: UiLang; status?: string; category?: string | null; search?: string | null }) {
+  try {
+    const params = new URLSearchParams();
+    if (options?.lang === 'el') params.set('lang', 'el');
+    if (options?.status) params.set('status', options.status);
+    if (options?.category) params.set('category', options.category);
+    if (options?.search) params.set('search', options.search);
+
+    const payload = await readJson<EventsApiResponse>(`/api/events${params.size ? `?${params.toString()}` : ''}`);
+
+    return {
+      events: payload.events ?? [],
+      educationCopy: payload.educationCopy ?? null,
+      error: null
+    };
+  } catch (error) {
+    return {
+      events: [] as EventCardRead[],
+      educationCopy: null,
+      error: error instanceof Error ? error.message : 'unknown error'
+    };
+  }
+}
+
+export async function loadEventDetail(slug: string, options?: { lang?: UiLang }) {
+  try {
+    const params = new URLSearchParams();
+    if (options?.lang === 'el') params.set('lang', 'el');
+    const payload = await readJson<EventDetailRead>(`/api/events/${slug}${params.size ? `?${params.toString()}` : ''}`);
+
+    return {
+      eventDetail: payload,
+      error: null
+    };
+  } catch (error) {
+    return {
+      eventDetail: null as EventDetailRead | null,
       error: error instanceof Error ? error.message : 'unknown error'
     };
   }

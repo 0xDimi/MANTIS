@@ -11,6 +11,7 @@
     "test:week3": "node --experimental-strip-types --loader ./tests/alias-loader.mjs --test tests/week3-quote-guards.test.ts",
     "test:week5": "node --experimental-strip-types --loader ./tests/alias-loader.mjs --test tests/week5-admin-resolution.test.ts tests/week5-settlement.test.ts",
     "test:week6": "node --experimental-strip-types --loader ./tests/alias-loader.mjs --test tests/week6-board-visibility.test.ts tests/week6-market-checks.test.ts",
+    "test:week7": "node --experimental-strip-types --loader ./tests/alias-loader.mjs --test tests/week7-gbe-read-model.test.ts",
     "qa:board": "node scripts/qa-check-live-board.mjs",
     "qa:fresh": "node scripts/qa-fresh-user-checklist.mjs"
   },

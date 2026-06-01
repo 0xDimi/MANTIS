@@ -1120,6 +1120,175 @@ code {
   gap: 9px;
 }
 
+.eventShelf {
+  display: grid;
+  gap: 12px;
+  margin: 6px 0 18px;
+}
+
+.sectionHeaderInline {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sectionHeaderInline h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.18;
+}
+
+.eventCardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.eventCard {
+  min-height: 228px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border-color: rgba(124, 92, 255, 0.18);
+  background: linear-gradient(180deg, rgba(124, 92, 255, 0.08), rgba(255, 255, 255, 0.018));
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.eventCard:hover,
+.eventCard:focus-within {
+  transform: translateY(-2px);
+  border-color: rgba(158, 139, 255, 0.34);
+  box-shadow: 0 14px 34px rgba(4, 8, 20, 0.34);
+}
+
+.eventCardSubtitle {
+  margin: -2px 0 0;
+  line-height: 1.42;
+}
+
+.eventOutcomePreview {
+  display: grid;
+  gap: 6px;
+}
+
+.eventOutcomePreviewRow {
+  min-height: 30px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 12px;
+}
+
+.eventOutcomePreviewRow span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eventOutcomePreviewRow strong {
+  font-size: 12px;
+}
+
+.eventOutcomePreviewMore {
+  grid-template-columns: 1fr;
+  color: var(--text-3);
+}
+
+.eventDetailGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.8fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.eventDetailMain {
+  min-width: 0;
+}
+
+.eventEducationNotice {
+  line-height: 1.48;
+}
+
+.eventOutcomeTable {
+  display: grid;
+  gap: 8px;
+}
+
+.eventOutcomeRow {
+  min-height: 86px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(106px, 0.34fr) minmax(118px, 0.32fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.026);
+  text-decoration: none;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+
+.eventOutcomeRow:hover,
+.eventOutcomeRow:focus-visible,
+.eventOutcomeRowSelected {
+  border-color: rgba(124, 92, 255, 0.42);
+  background: rgba(124, 92, 255, 0.08);
+}
+
+.eventOutcomeCopy,
+.eventOutcomeStats,
+.eventOutcomeMeta {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.eventOutcomeCopy strong,
+.eventSelectedChild strong {
+  line-height: 1.25;
+}
+
+.eventOutcomeCopy span,
+.eventOutcomeMeta,
+.eventSelectedChild p,
+.eventSelectedChild span {
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1.42;
+}
+
+.eventOutcomeStats {
+  justify-items: end;
+  text-align: right;
+}
+
+.eventOutcomeStats strong {
+  color: #a8f3c8;
+}
+
+.eventRulesPanel {
+  display: grid;
+  gap: 12px;
+}
+
+.eventRulesPanel h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.eventSelectedChild {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
 .marketTitleLink {
   position: relative;
   z-index: 3;
@@ -2683,6 +2852,26 @@ code {
     grid-template-columns: 1fr;
   }
 
+  .sectionHeaderInline {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .eventCardGrid,
+  .eventDetailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .eventOutcomeRow {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .eventOutcomeStats {
+    justify-items: start;
+    text-align: left;
+  }
+
   .marketListCard .marketQuestion {
     font-size: 24px;
   }
@@ -2736,7 +2925,8 @@ code {
   .marketChartSurface,
   .marketTrendPanel,
   .marketTicketCard,
-  .marketTrustLayer {
+  .marketTrustLayer,
+  .eventDetailMain {
     width: 100%;
     min-width: 0;
     max-width: calc(100vw - 24px);
@@ -2801,7 +2991,8 @@ code {
   .marketChartSurface,
   .marketTrendPanel,
   .marketTicketCard,
-  .marketTrustLayer {
+  .marketTrustLayer,
+  .eventDetailMain {
     max-width: 360px;
   }
 

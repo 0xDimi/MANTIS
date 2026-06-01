@@ -6,6 +6,7 @@ import { buildQuoteHash } from '@/lib/quote-hash';
 import {
   TradeRequestError,
   assertMarketOpenForTrading,
+  evaluateUserEventTradeLimits,
   evaluateUserTradeLimits,
   parseTradeAction,
   parseTradeSide,
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
 
     const { data: market, error: marketError } = await supabase
       .from('markets')
-      .select('id,status,b_liquidity,fee_bps,close_time')
+      .select('id,status,b_liquidity,fee_bps,close_time,event_id,is_event_child')
       .eq('id', body.marketId)
       .limit(1)
       .maybeSingle();
@@ -213,9 +214,67 @@ export async function POST(request: Request) {
       maxUserExposureEur: alphaGuardrails.maxUserExposurePerMarketEur
     });
 
-    const admin = getSupabaseAdminClient();
+    let maxUserEventExposureEur: number | null = null;
 
-    const { data: executionData, error: executionError } = await (admin as any).rpc('execute_alpha_trade', {
+    if (marketRow.is_event_child && marketRow.event_id) {
+      const [{ data: eventRow, error: eventError }, { data: childRows, error: childRowsError }] = await Promise.all([
+        supabase
+          .from('market_events')
+          .select('id,max_user_event_exposure')
+          .eq('id', marketRow.event_id)
+          .limit(1)
+          .maybeSingle(),
+        supabase.from('markets').select('id').eq('event_id', marketRow.event_id).eq('is_event_child', true)
+      ]);
+
+      if (eventError) {
+        Sentry.captureException(new Error(eventError.message), {
+          tags: { route: 'api/trades/execute' }
+        });
+        return NextResponse.json({ error: eventError.message }, { status: 500 });
+      }
+
+      if (childRowsError) {
+        Sentry.captureException(new Error(childRowsError.message), {
+          tags: { route: 'api/trades/execute' }
+        });
+        return NextResponse.json({ error: childRowsError.message }, { status: 500 });
+      }
+
+      maxUserEventExposureEur = Number((eventRow as any)?.max_user_event_exposure ?? 0) || null;
+
+      const eventChildMarketIds = ((childRows as any[]) ?? []).map((child) => child.id);
+      const { data: eventPositions, error: eventPositionsError } = eventChildMarketIds.length
+        ? await supabase
+            .from('positions')
+            .select('yes_cost_basis,no_cost_basis')
+            .eq('user_id', user.id)
+            .in('market_id', eventChildMarketIds)
+        : { data: [], error: null };
+
+      if (eventPositionsError) {
+        Sentry.captureException(new Error(eventPositionsError.message), {
+          tags: { route: 'api/trades/execute' }
+        });
+        return NextResponse.json({ error: eventPositionsError.message }, { status: 500 });
+      }
+
+      const currentEventExposureEur = ((eventPositions as any[]) ?? []).reduce(
+        (sum, item) => sum + Number(item.yes_cost_basis ?? 0) + Number(item.no_cost_basis ?? 0),
+        0
+      );
+
+      evaluateUserEventTradeLimits({
+        action,
+        totalAmountEur: quote.totalAmountEur,
+        currentEventExposureEur,
+        maxUserEventExposureEur
+      });
+    }
+
+    const admin = getSupabaseAdminClient();
+    const executionRpcName = marketRow.is_event_child ? 'execute_alpha_trade_with_event_guard' : 'execute_alpha_trade';
+    const executionRpcParams: Record<string, unknown> = {
       p_user_id: user.id,
       p_market_id: marketRow.id,
       p_side: side,
@@ -233,7 +292,13 @@ export async function POST(request: Request) {
       p_expected_q_yes: Number(stateRow.q_yes),
       p_expected_q_no: Number(stateRow.q_no),
       p_max_user_exposure: alphaGuardrails.maxUserExposurePerMarketEur
-    });
+    };
+
+    if (marketRow.is_event_child) {
+      executionRpcParams.p_max_user_event_exposure = maxUserEventExposureEur;
+    }
+
+    const { data: executionData, error: executionError } = await (admin as any).rpc(executionRpcName, executionRpcParams);
 
     if (executionError) {
       const detail = executionError.message ?? 'unknown';
