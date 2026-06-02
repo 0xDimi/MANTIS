@@ -1856,6 +1856,7 @@ code {
 }
 
 .bottomDock {
+  display: none;
   position: fixed;
   left: 0;
   right: 0;
@@ -2762,6 +2763,10 @@ code {
 }
 
 @media (max-width: 900px) {
+  .bottomDock {
+    display: block;
+  }
+
   .heroGrid,
   .routeGrid,
   .stageGrid,
