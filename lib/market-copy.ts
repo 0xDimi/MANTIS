@@ -350,6 +350,42 @@ const greekMarketCopyBySlug: Record<string, GreekMarketCopy> = {
     yesLabel: 'Ναι',
     noLabel: 'Όχι'
   },
+  'gre-sports-olympiacos-uefa-league-phase-2026-27': {
+    question: 'Θα μπει ο Ολυμπιακός σε league phase διοργάνωσης UEFA το 2026/27;',
+    description: 'Ποδοσφαιρική αγορά για το αν ο Ολυμπιακός θα εμφανιστεί σε league phase του Champions League, Europa League ή Conference League τη σεζόν 2026/27.',
+    sourcePrimary: 'Επίσημες κληρώσεις, αποτελέσματα και τελικές λίστες league phase της UEFA για Champions League, Europa League και Conference League 2026/27',
+    sourceFallback: 'Επίσημες ανακοινώσεις του Ολυμπιακού μόνο αν επιβεβαιώνουν καθαρά συμμετοχή σε league phase και συμφωνούν με τις λίστες της UEFA',
+    voidRule: 'ΝΑΙ αν ο Ολυμπιακός εμφανίζεται επίσημα από την UEFA σε league phase του Champions League, Europa League ή Conference League 2026/27. ΟΧΙ διαφορετικά. Ακυρώνεται μόνο αν η UEFA αλλάξει ουσιωδώς τη μορφή των διοργανώσεων ώστε να μην μπορεί να προσδιοριστεί καθαρά η συμμετοχή σε league phase.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-sports-panathinaikos-uefa-league-phase-2026-27': {
+    question: 'Θα μπει ο Παναθηναϊκός σε league phase διοργάνωσης UEFA το 2026/27;',
+    description: 'Ποδοσφαιρική αγορά για το αν ο Παναθηναϊκός θα εμφανιστεί σε league phase του Champions League, Europa League ή Conference League τη σεζόν 2026/27.',
+    sourcePrimary: 'Επίσημες κληρώσεις, αποτελέσματα και τελικές λίστες league phase της UEFA για Champions League, Europa League και Conference League 2026/27',
+    sourceFallback: 'Επίσημες ανακοινώσεις του Παναθηναϊκού μόνο αν επιβεβαιώνουν καθαρά συμμετοχή σε league phase και συμφωνούν με τις λίστες της UEFA',
+    voidRule: 'ΝΑΙ αν ο Παναθηναϊκός εμφανίζεται επίσημα από την UEFA σε league phase του Champions League, Europa League ή Conference League 2026/27. ΟΧΙ διαφορετικά. Ακυρώνεται μόνο αν η UEFA αλλάξει ουσιωδώς τη μορφή των διοργανώσεων ώστε να μην μπορεί να προσδιοριστεί καθαρά η συμμετοχή σε league phase.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-sports-paok-uefa-league-phase-2026-27': {
+    question: 'Θα μπει ο ΠΑΟΚ σε league phase διοργάνωσης UEFA το 2026/27;',
+    description: 'Ποδοσφαιρική αγορά για το αν ο ΠΑΟΚ θα εμφανιστεί σε league phase του Champions League, Europa League ή Conference League τη σεζόν 2026/27.',
+    sourcePrimary: 'Επίσημες κληρώσεις, αποτελέσματα και τελικές λίστες league phase της UEFA για Champions League, Europa League και Conference League 2026/27',
+    sourceFallback: 'Επίσημες ανακοινώσεις του ΠΑΟΚ μόνο αν επιβεβαιώνουν καθαρά συμμετοχή σε league phase και συμφωνούν με τις λίστες της UEFA',
+    voidRule: 'ΝΑΙ αν ο ΠΑΟΚ εμφανίζεται επίσημα από την UEFA σε league phase του Champions League, Europa League ή Conference League 2026/27. ΟΧΙ διαφορετικά. Ακυρώνεται μόνο αν η UEFA αλλάξει ουσιωδώς τη μορφή των διοργανώσεων ώστε να μην μπορεί να προσδιοριστεί καθαρά η συμμετοχή σε league phase.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
+  'gre-sports-aek-uefa-league-phase-2026-27': {
+    question: 'Θα μπει η ΑΕΚ σε league phase διοργάνωσης UEFA το 2026/27;',
+    description: 'Ποδοσφαιρική αγορά για το αν η ΑΕΚ θα εμφανιστεί σε league phase του Champions League, Europa League ή Conference League τη σεζόν 2026/27.',
+    sourcePrimary: 'Επίσημες κληρώσεις, αποτελέσματα και τελικές λίστες league phase της UEFA για Champions League, Europa League και Conference League 2026/27',
+    sourceFallback: 'Επίσημες ανακοινώσεις της ΑΕΚ μόνο αν επιβεβαιώνουν καθαρά συμμετοχή σε league phase και συμφωνούν με τις λίστες της UEFA',
+    voidRule: 'ΝΑΙ αν η ΑΕΚ εμφανίζεται επίσημα από την UEFA σε league phase του Champions League, Europa League ή Conference League 2026/27. ΟΧΙ διαφορετικά. Ακυρώνεται μόνο αν η UEFA αλλάξει ουσιωδώς τη μορφή των διοργανώσεων ώστε να μην μπορεί να προσδιοριστεί καθαρά η συμμετοχή σε league phase.',
+    yesLabel: 'Ναι',
+    noLabel: 'Όχι'
+  },
   'gre-sports-zambidis-mayweather-win-jun27-2026': {
     question: 'Θα ανακηρυχθεί επίσημα νικητής ο Μιχάλης Ζαμπίδης απέναντι στον Floyd Mayweather στις 27 Ιουνίου 2026;',
     description: 'Αγορά αθλητικής επικαιρότητας για το αν ο Μιχάλης Ζαμπίδης θα ανακηρυχθεί επίσημα νικητής στον προγραμματισμένο αγώνα επίδειξης μποξ με τον Floyd Mayweather στην Αθήνα.',
