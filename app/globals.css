@@ -1120,12 +1120,6 @@ code {
   gap: 9px;
 }
 
-.eventShelf {
-  display: grid;
-  gap: 12px;
-  margin: 6px 0 18px;
-}
-
 .sectionHeaderInline {
   display: flex;
   align-items: flex-end;
@@ -1139,66 +1133,67 @@ code {
   line-height: 1.18;
 }
 
-.eventCardGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.eventCard {
-  min-height: 228px;
+.eventMarketCard {
+  min-height: 198px;
   position: relative;
-  overflow: hidden;
-  border-radius: 16px;
-  border-color: rgba(124, 92, 255, 0.18);
-  background: linear-gradient(180deg, rgba(124, 92, 255, 0.08), rgba(255, 255, 255, 0.018));
-  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
-.eventCard:hover,
-.eventCard:focus-within {
-  transform: translateY(-2px);
-  border-color: rgba(158, 139, 255, 0.34);
-  box-shadow: 0 14px 34px rgba(4, 8, 20, 0.34);
+.eventMarketCard .marketCardContent {
+  min-height: 100%;
+  grid-template-rows: auto auto 1fr auto;
 }
 
-.eventCardSubtitle {
-  margin: -2px 0 0;
-  line-height: 1.42;
-}
-
-.eventOutcomePreview {
+.eventMarketRows {
   display: grid;
-  gap: 6px;
+  gap: 8px;
+  align-self: end;
 }
 
-.eventOutcomePreviewRow {
-  min-height: 30px;
+.eventMarketRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
-  padding: 7px 9px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.025);
-  font-size: 12px;
+  min-height: 44px;
 }
 
-.eventOutcomePreviewRow span {
+.eventMarketLabel {
   min-width: 0;
+  color: var(--text-1);
+  font-size: 14px;
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  position: relative;
+  z-index: 3;
 }
 
-.eventOutcomePreviewRow strong {
+.eventMarketLabel:hover {
+  color: #ffffff;
+}
+
+.eventMarketActions {
+  gap: 7px;
+  position: relative;
+  z-index: 3;
+  flex-wrap: nowrap;
+}
+
+.eventMarketButton {
+  min-width: 64px;
+  min-height: 36px;
+  padding: 0 9px;
   font-size: 12px;
+  font-weight: 700;
+  gap: 5px;
+  justify-content: space-between;
 }
 
-.eventOutcomePreviewMore {
-  grid-template-columns: 1fr;
-  color: var(--text-3);
+.eventMarketButton span,
+.eventMarketButton strong {
+  font-size: 11px;
+  line-height: 1;
 }
 
 .eventDetailGrid {
@@ -2857,7 +2852,6 @@ code {
     flex-direction: column;
   }
 
-  .eventCardGrid,
   .eventDetailGrid {
     grid-template-columns: 1fr;
   }

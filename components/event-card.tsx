@@ -13,47 +13,61 @@ function eventHref(slug: string, lang: UiLang) {
   return `/events/${slug}${lang === 'el' ? '?lang=el' : ''}`;
 }
 
-function priceCents(value: number) {
-  return `${Math.round(value * 100)}¢`;
+function eventChildHref(eventSlug: string, childMarketId: string, lang: UiLang, side?: 'yes' | 'no') {
+  const params = new URLSearchParams();
+  params.set('child', childMarketId);
+  if (lang === 'el') params.set('lang', 'el');
+  if (side) params.set('side', side);
+
+  const query = params.toString();
+  return `/events/${eventSlug}?${query}`;
 }
 
 export function EventCard({ event, lang }: EventCardProps) {
   const href = eventHref(event.slug, lang);
+  const visibleChildren = event.topChildren.slice(0, 2);
 
   return (
-    <article className="card marketListCard eventCard">
+    <article className="card marketListCard marketCardPoly eventMarketCard">
       <Link className="marketCardHitArea" href={href} aria-label={event.title} />
 
       <div className="marketCardContent">
         <div className="marketMetaRow marketMetaRowTight">
           <span className="marketCategory">{localizedCategory(event.category, lang)}</span>
-          <span className="badgeNeutral">{tr(lang, 'Grouped YES/NO', 'Ομαδοποιημένο ΝΑΙ/ΟΧΙ')}</span>
           <span className={event.status === 'open' ? 'badgeYes' : 'badgeNo'}>{localizedMarketStatus(event.status, lang)}</span>
+          <span className="badgeNeutral">{tr(lang, 'Grouped', 'Ομαδοποιημένη')}</span>
         </div>
 
         <h3 className="marketQuestion">
           <Link className="marketTitleLink" href={href}>{event.title}</Link>
         </h3>
 
-        {event.subtitle ? <p className="subtle eventCardSubtitle">{event.subtitle}</p> : null}
-
-        <div className="eventOutcomePreview">
-          {event.topChildren.slice(0, 4).map((child) => (
-            <div className="eventOutcomePreviewRow" key={child.marketId}>
-              <span>{child.label}</span>
-              <strong>{priceCents(child.yesPrice)} {tr(lang, 'YES', 'ΝΑΙ')}</strong>
+        <div className="eventMarketRows">
+          {visibleChildren.map((child) => (
+            <div className="eventMarketRow" key={child.marketId}>
+              <Link className="eventMarketLabel" href={eventChildHref(event.slug, child.marketId, lang)}>
+                {child.label}
+              </Link>
+              <div className="buttonRow eventMarketActions">
+                <Link className="button buttonYes eventMarketButton" href={eventChildHref(event.slug, child.marketId, lang, 'yes')}>
+                  <span>{tr(lang, 'Yes', 'Ναι')}</span>
+                  <strong>{Math.round(child.yesPrice * 100)}¢</strong>
+                </Link>
+                <Link className="button buttonNo eventMarketButton" href={eventChildHref(event.slug, child.marketId, lang, 'no')}>
+                  <span>{tr(lang, 'No', 'Όχι')}</span>
+                  <strong>{Math.round(child.noPrice * 100)}¢</strong>
+                </Link>
+              </div>
             </div>
           ))}
-          {event.childCount > event.topChildren.length ? (
-            <div className="eventOutcomePreviewRow eventOutcomePreviewMore">
-              <span>{tr(lang, `+${event.childCount - event.topChildren.length} more`, `+${event.childCount - event.topChildren.length} ακόμα`)}</span>
-            </div>
-          ) : null}
         </div>
 
         <div className="marketMiniMeta">
-          <span>{tr(lang, 'Multiple can resolve YES', 'Πολλά μπορούν να κλείσουν ΝΑΙ')}</span>
-          <span>{event.childCount} {tr(lang, 'markets', 'αγορές')}</span>
+          {event.childCount > visibleChildren.length ? (
+            <span className="marketMiniMetaStrong">
+              {tr(lang, `+${event.childCount - visibleChildren.length} more outcomes`, `+${event.childCount - visibleChildren.length} ακόμα εκβάσεις`)}
+            </span>
+          ) : null}
           {event.volumeTotal > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(event.volumeTotal, lang)}</span> : null}
           <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(event.closeTime, { lang })}</span>
         </div>

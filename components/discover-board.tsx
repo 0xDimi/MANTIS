@@ -129,23 +129,6 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
 
       {featured.length > 0 ? <FeaturedMarketsCarousel markets={featured} lang={lang} /> : null}
 
-      {eventBoard.events.length > 0 ? (
-        <section className="eventShelf" aria-label={tr(lang, 'Grouped events', 'Ομαδοποιημένα γεγονότα')}>
-          <div className="sectionHeaderInline">
-            <div>
-              <p className="eyebrow">{tr(lang, 'Grouped Binary Events', 'Ομαδοποιημένα δυαδικά γεγονότα')}</p>
-              <h2>{tr(lang, 'Related YES/NO markets', 'Σχετικές αγορές ΝΑΙ/ΟΧΙ')}</h2>
-            </div>
-            <span className="badgeNeutral">{tr(lang, 'Multiple can resolve YES', 'Πολλά μπορούν να κλείσουν ΝΑΙ')}</span>
-          </div>
-          <div className="eventCardGrid">
-            {eventBoard.events.slice(0, 3).map((event) => (
-              <EventCard key={event.id} event={event} lang={lang} />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
       <section className="categoryStrip" aria-label={tr(lang, 'Categories', 'Κατηγορίες')}>
         <Link className={!category ? 'categoryPill categoryPillActive' : 'categoryPill'} href={hrefWith(lang, view, null, normalizedQuery)}>
           {tr(lang, 'All', 'Όλες')}
@@ -171,18 +154,22 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
         <p className="subtle searchResultHint">
           {tr(
             lang,
-            `Showing ${filtered.length} markets. ${featuredWithinFilterCount} featured above, ${gridMarkets.length} in the list below.`,
-            `Εμφανίζονται ${filtered.length} αγορές. ${featuredWithinFilterCount} προτεινόμενες πιο πάνω, ${gridMarkets.length} στη λίστα πιο κάτω.`
+            `Showing ${filtered.length} single markets and ${eventBoard.events.length} grouped markets. ${featuredWithinFilterCount} featured above, ${gridMarkets.length + eventBoard.events.length} in the list below.`,
+            `Εμφανίζονται ${filtered.length} απλές αγορές και ${eventBoard.events.length} ομαδοποιημένες. ${featuredWithinFilterCount} προτεινόμενες πιο πάνω, ${gridMarkets.length + eventBoard.events.length} στη λίστα πιο κάτω.`
           )}
         </p>
       ) : null}
 
       <section className="marketList" aria-label={tr(lang, 'Market list', 'Λίστα αγορών')}>
+        {eventBoard.events.map((event) => (
+          <EventCard key={event.id} event={event} lang={lang} />
+        ))}
+
         {gridMarkets.map((market) => (
           <MarketCard key={market.id} market={market} lang={lang} />
         ))}
 
-        {gridMarkets.length === 0 ? (
+        {gridMarkets.length === 0 && eventBoard.events.length === 0 ? (
           <div className="card stackSm">
             <p className="subtle">{tr(lang, 'No markets matched your current filters.', 'Δεν βρέθηκαν αγορές με τα τρέχοντα φίλτρα.')}</p>
           </div>

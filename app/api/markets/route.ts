@@ -14,8 +14,9 @@ export async function GET(request: Request) {
     let query = supabase
       .from('markets')
       .select(
-        'id,slug,question,category,status,close_time,fee_bps,b_liquidity,updated_at,market_state(yes_price,no_price,volume_total,participants_count,last_trade_at)'
+        'id,slug,question,category,status,close_time,fee_bps,b_liquidity,updated_at,is_event_child,market_state(yes_price,no_price,volume_total,participants_count,last_trade_at)'
       )
+      .eq('is_event_child', false)
       .limit(40);
 
     if (scope === 'open') {
