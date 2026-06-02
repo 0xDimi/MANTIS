@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { AlphaShell } from '@/components/alpha-shell';
+import { EventTrustPanel } from '@/components/event-trust-panel';
 import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { loadEventDetail } from '@/lib/alpha-read-model';
 import { formatCompact, formatDateTime, formatPercent, formatRelativeClose } from '@/lib/format';
@@ -101,25 +102,20 @@ export default async function EventDetailPage({
               })}
             </section>
 
-            <section className="card eventRulesPanel">
-              <p className="eyebrow">{tr(lang, 'Rules', 'Κανόνες')}</p>
-              <h2>{tr(lang, 'How this grouped event resolves', 'Πώς επιλύεται αυτό το γεγονός')}</h2>
-              {eventDetail.event.description ? <p>{eventDetail.event.description}</p> : null}
-              <div className="marketMetaStrip">
-                <div className="marketMetaItem">
-                  <span>{tr(lang, 'Primary source', 'Κύρια πηγή')}</span>
-                  <strong>{eventDetail.event.sourcePrimary}</strong>
-                </div>
-                <div className="marketMetaItem">
-                  <span>{tr(lang, 'Resolution rule', 'Κανόνας επίλυσης')}</span>
-                  <strong>{eventDetail.event.resolutionRule}</strong>
-                </div>
-                <div className="marketMetaItem">
-                  <span>{tr(lang, 'Void rule', 'Κανόνας ακύρωσης')}</span>
-                  <strong>{eventDetail.event.voidRule}</strong>
-                </div>
-              </div>
-            </section>
+            <EventTrustPanel
+              lang={lang}
+              closeTime={eventDetail.event.closeTime}
+              determinationTime={eventDetail.event.determinationTime}
+              sourcePrimary={eventDetail.event.sourcePrimary}
+              sourceFallback={eventDetail.event.sourceFallback}
+              resolutionRule={eventDetail.event.resolutionRule}
+              voidRule={eventDetail.event.voidRule}
+              description={eventDetail.event.description}
+              educationCopy={eventDetail.event.educationCopy}
+              status={eventDetail.event.status}
+              childCount={eventDetail.aggregate.childCount}
+              updatedAt={eventDetail.serverTime}
+            />
           </article>
 
           <aside className="marketTicketCard eventTicketCard" id="trade-ticket">
