@@ -65,8 +65,6 @@ export function ProbabilityChart({
     point: { time: 'fallback', yesPrice: clampProbability(currentProbability) }
   };
   const latestProbability = clampProbability(currentPoint.point.yesPrice, currentProbability);
-  const lineGradientId = `${chartId}-line`;
-  const softGlowId = `${chartId}-soft-glow`;
   const ariaLabel =
     lang === 'el'
       ? `Γράφημα πιθανότητας ΝΑΙ, τρέχουσα τιμή ${Math.round(latestProbability * 100)} τοις εκατό.`
@@ -81,26 +79,6 @@ export function ProbabilityChart({
           viewBox="0 0 1000 260"
           preserveAspectRatio="none"
         >
-          <defs>
-            <linearGradient id={lineGradientId} x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stopColor="var(--mantis-chart-line-muted)" />
-              <stop offset="72%" stopColor="var(--mantis-chart-line)" />
-              <stop offset="100%" stopColor="var(--mantis-chart-line-strong)" />
-            </linearGradient>
-            <filter id={softGlowId} x="-10%" y="-80%" width="120%" height="260%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feColorMatrix
-                in="blur"
-                type="matrix"
-                values="0 0 0 0 0.25  0 0 0 0 0.60  0 0 0 0 1.00  0 0 0 0.24 0"
-              />
-              <feMerge>
-                <feMergeNode />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
           {axisValues.map((value) => {
             const ratio = value / 100;
             const y = chartBounds.yTop + (1 - ratio) * (chartBounds.yBottom - chartBounds.yTop);
@@ -119,6 +97,16 @@ export function ProbabilityChart({
 
           <path
             d={linePath}
+            className="probabilityChartLineGlow"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            shapeRendering="geometricPrecision"
+            vectorEffect="non-scaling-stroke"
+          />
+
+          <path
+            d={linePath}
             pathLength={100}
             className="probabilityChartLine"
             fill="none"
@@ -126,8 +114,6 @@ export function ProbabilityChart({
             strokeLinejoin="round"
             shapeRendering="geometricPrecision"
             vectorEffect="non-scaling-stroke"
-            stroke={`url(#${lineGradientId})`}
-            filter={`url(#${softGlowId})`}
           />
 
           <g className="probabilityChartMarkerGroup">

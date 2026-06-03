@@ -1680,10 +1680,23 @@ code {
 }
 
 .probabilityChartLine {
-  stroke-width: 3;
+  stroke: var(--mantis-chart-line-strong);
+  stroke-width: 2.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
   stroke-dasharray: 100;
   stroke-dashoffset: 0;
   animation: probabilityChartLineDraw 460ms var(--ease-standard);
+}
+
+.probabilityChartLineGlow {
+  stroke: color-mix(in srgb, var(--mantis-chart-line) 78%, white 22%);
+  stroke-width: 7;
+  opacity: 0.16;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .probabilityChartMarkerGroup {
