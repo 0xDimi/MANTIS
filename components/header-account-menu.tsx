@@ -87,10 +87,7 @@ export function HeaderAccountMenu({
         onClick={() => setOpen((value) => !value)}
       >
         <span className="profileAvatarCircle" aria-hidden="true">
-          <svg className="profileAvatarIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="8" r="3.75" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M5 19.5C6.7 16.4 9.15 14.9 12 14.9C14.85 14.9 17.3 16.4 19 19.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
+          {initials}
         </span>
         <span className="profileButtonCaret" aria-hidden="true">⌄</span>
       </button>

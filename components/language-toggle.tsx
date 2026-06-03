@@ -53,6 +53,7 @@ export function LanguageToggle() {
         type="button"
         onClick={() => void switchLanguage('en')}
         disabled={isPending}
+        aria-pressed={current === 'en'}
       >
         EN
       </button>
@@ -61,6 +62,7 @@ export function LanguageToggle() {
         type="button"
         onClick={() => void switchLanguage('el')}
         disabled={isPending}
+        aria-pressed={current === 'el'}
       >
         ΕΛ
       </button>
