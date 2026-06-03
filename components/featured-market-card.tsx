@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ProbabilityRail } from '@/components/probability-rail';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
 import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
@@ -82,9 +83,15 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
             <span className="featuredDistinctForecastLabel">{tr(lang, 'Forecast', 'Πρόβλεψη')}</span>
             <strong className="featuredDistinctForecastValue">{formatPercent(yesProb)}</strong>
           </div>
-          <div className="featuredDistinctTrack" aria-hidden="true">
-            <span style={{ width: `${Math.round(yesProb * 100)}%` }} />
-          </div>
+          <ProbabilityRail
+            yesProbability={yesProb}
+            volume={volume}
+            status={market.status}
+            showTicks
+            size="lg"
+            locale={lang}
+            className="featuredDistinctRail"
+          />
         </div>
 
         <div className="featuredDistinctMeta">

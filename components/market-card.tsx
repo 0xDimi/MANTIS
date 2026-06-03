@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ProbabilityRail } from '@/components/probability-rail';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
 import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
@@ -62,6 +63,16 @@ export function MarketCard({ market, lang }: MarketCardProps) {
             </Link>
           </div>
         </div>
+
+        <ProbabilityRail
+          yesProbability={yesProb}
+          volume={volume}
+          status={market.status}
+          showTicks
+          size="sm"
+          locale={lang}
+          className="marketCardRail"
+        />
 
         <div className="marketMiniMeta">
           {volume > 0 ? <span className="marketMiniMetaStrong">{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume, lang)}</span> : null}

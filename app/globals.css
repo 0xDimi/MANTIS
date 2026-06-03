@@ -805,6 +805,104 @@ code {
   font-size: 12px;
 }
 
+.probabilityRail {
+  display: block;
+  width: 100%;
+}
+
+.probabilityRailTrack {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.probabilityRailTrack::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(69, 212, 131, 0.72), rgba(82, 183, 255, 0.68) 50%, rgba(255, 107, 114, 0.72));
+  box-shadow: inset 0 0 0 1px rgba(190, 204, 230, 0.06);
+}
+
+.probabilityRailSM .probabilityRailTrack::before {
+  height: 2px;
+}
+
+.probabilityRailMD .probabilityRailTrack::before {
+  height: 3px;
+}
+
+.probabilityRailLG .probabilityRailTrack::before {
+  height: 3px;
+}
+
+.probabilityRailTick {
+  position: absolute;
+  top: 50%;
+  width: 1px;
+  height: 10px;
+  background: rgba(220, 230, 255, 0.18);
+  transform: translate(-50%, -50%);
+}
+
+.probabilityRailPrevious {
+  position: absolute;
+  top: 50%;
+  width: 1px;
+  height: 16px;
+  background: rgba(214, 168, 90, 0.8);
+  transform: translate(-50%, -50%);
+}
+
+.probabilityRailMarker {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  transition:
+    left var(--duration-med) var(--ease-standard),
+    transform var(--duration-med) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard);
+}
+
+.probabilityRailMarkerCore {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  border: 1px solid rgba(5, 8, 20, 0.88);
+  background: var(--mantis-signal-strong);
+  box-shadow:
+    0 0 0 1px rgba(130, 216, 255, 0.18),
+    0 0 18px rgba(82, 183, 255, 0.2);
+}
+
+.probabilityRailQuiet .probabilityRailTrack::before {
+  opacity: 0.72;
+}
+
+.probabilityRailQuiet .probabilityRailMarkerCore {
+  background: rgba(214, 224, 241, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(214, 224, 241, 0.12),
+    0 0 14px rgba(214, 224, 241, 0.1);
+}
+
+.probabilityRailResolved,
+.probabilityRailInactive {
+  opacity: 0.72;
+}
+
+.marketCardRail {
+  margin-top: -2px;
+}
+
 .notifButton {
   position: relative;
   width: 40px;
@@ -1105,18 +1203,8 @@ code {
   letter-spacing: -0.03em;
 }
 
-.featuredDistinctTrack {
-  height: 7px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--mantis-stroke-soft);
-  background: rgba(255, 255, 255, 0.04);
-  overflow: hidden;
-}
-
-.featuredDistinctTrack span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, rgba(82, 183, 255, 0.92), rgba(130, 216, 255, 0.82));
+.featuredDistinctRail {
+  margin-top: 4px;
 }
 
 .featuredDistinctMeta {
@@ -1507,7 +1595,7 @@ code {
 
 .marketTrendPanel {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
 }
 
@@ -1516,6 +1604,11 @@ code {
   justify-content: space-between;
   gap: 10px;
   align-items: flex-start;
+}
+
+.marketTrendSignal {
+  display: grid;
+  gap: 6px;
 }
 
 .marketTrendHeadRight {
@@ -1558,21 +1651,71 @@ code {
   color: #ffd0d3;
 }
 
-.marketTrendLine {
-  height: 224px;
+.probabilityChart {
+  display: grid;
+  gap: 10px;
+}
+
+.probabilityChartStage {
+  height: 236px;
   position: relative;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background: transparent;
+  border: 1px solid var(--mantis-stroke-soft);
+  background:
+    linear-gradient(180deg, rgba(82, 183, 255, 0.05), rgba(82, 183, 255, 0.015) 38%, rgba(5, 8, 20, 0) 100%);
   overflow: hidden;
 }
 
-.marketTrendLine svg {
+.probabilityChartStage svg {
   width: 100%;
   height: 100%;
 }
 
-.marketTrendAxisY {
+.probabilityChartGridline {
+  stroke: rgba(199, 214, 241, 0.14);
+  stroke-dasharray: 1 5;
+}
+
+.probabilityChartVolumeBar {
+  fill: rgba(214, 168, 90, 0.22);
+}
+
+.probabilityChartArea {
+  opacity: 0.88;
+}
+
+.probabilityChartLine {
+  stroke: var(--mantis-signal);
+  stroke-width: 1.7;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+  animation: probabilityChartLineDraw 460ms var(--ease-standard);
+}
+
+.probabilityChartEventMarker {
+  fill: var(--mantis-source);
+}
+
+.probabilityChartMarkerGroup {
+  transform-origin: center;
+  animation: probabilityChartMarkerSettle 300ms var(--ease-standard);
+}
+
+.probabilityChartMarkerHalo {
+  fill: rgba(82, 183, 255, 0.12);
+}
+
+.probabilityChartMarkerRing {
+  fill: rgba(5, 8, 20, 0.92);
+  stroke: rgba(130, 216, 255, 0.78);
+  stroke-width: 0.9;
+}
+
+.probabilityChartMarkerCore {
+  fill: var(--mantis-signal-strong);
+}
+
+.probabilityChartAxisY {
   position: absolute;
   right: 8px;
   top: 10px;
@@ -1584,7 +1727,7 @@ code {
   font-size: 11px;
 }
 
-.marketTrendAxisX {
+.probabilityChartAxisX {
   position: absolute;
   left: 8px;
   right: 8px;
@@ -1593,6 +1736,90 @@ code {
   justify-content: space-between;
   color: rgba(206, 216, 237, 0.64);
   font-size: 11px;
+}
+
+.probabilityChartMarkerLabel {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: rgba(10, 16, 32, 0.68);
+  padding: 5px 10px;
+  color: var(--mantis-text-soft);
+  font-size: 11px;
+  backdrop-filter: blur(12px);
+}
+
+.probabilityChartMarkerLabel strong {
+  color: var(--mantis-text-main);
+  font-size: 12px;
+}
+
+.probabilityChartMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--mantis-text-dim);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.probabilityChartQuiet .probabilityChartStage {
+  border-color: rgba(214, 168, 90, 0.26);
+  background:
+    linear-gradient(180deg, rgba(214, 168, 90, 0.075), rgba(82, 183, 255, 0.02) 36%, rgba(5, 8, 20, 0) 100%);
+}
+
+.probabilityChartQuiet .probabilityChartMarkerRing {
+  stroke: rgba(214, 168, 90, 0.75);
+}
+
+.probabilityChartQuiet .probabilityChartMarkerCore {
+  fill: rgba(214, 168, 90, 0.95);
+}
+
+.lowActivityState {
+  display: grid;
+  gap: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(214, 168, 90, 0.26);
+  background:
+    linear-gradient(180deg, rgba(214, 168, 90, 0.08), rgba(17, 24, 39, 0.78)),
+    var(--mantis-panel-0);
+  padding: 12px 14px;
+}
+
+.lowActivityStateIntro {
+  display: grid;
+  gap: 6px;
+}
+
+.lowActivityStateEyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mantis-source);
+}
+
+.lowActivityStateText {
+  margin: 0;
+  color: var(--mantis-text-soft);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.lowActivityStateMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  color: var(--mantis-text-dim);
+  font-size: 12px;
 }
 
 .marketTrendRangeTabs {
@@ -1634,6 +1861,28 @@ code {
   gap: 10px;
   color: #a4b0c8;
   font-size: 12px;
+}
+
+@keyframes probabilityChartLineDraw {
+  from {
+    stroke-dashoffset: 100;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes probabilityChartMarkerSettle {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .marketTicketJumpButton {
@@ -3087,8 +3336,12 @@ code {
     overflow-wrap: break-word;
   }
 
-  .marketTrendLine {
+.marketTrendLine {
     height: 150px;
+  }
+
+  .probabilityChartStage {
+    height: 154px;
   }
 
   .marketHeroMain,
@@ -3186,6 +3439,12 @@ code {
     justify-items: start;
   }
 
+  .probabilityChartMarkerLabel {
+    left: 10px;
+    top: auto;
+    bottom: 26px;
+  }
+
   .relatedMarketPill {
     min-width: 100%;
   }
@@ -3265,6 +3524,10 @@ code {
     height: 244px;
   }
 
+  .probabilityChartStage {
+    height: 252px;
+  }
+
   .marketTicketCard {
     max-width: 390px;
     width: 100%;
@@ -3278,5 +3541,16 @@ code {
   .marketTrustLayer {
     margin-top: 12px;
     gap: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .probabilityRailMarker {
+    transition: none;
+  }
+
+  .probabilityChartLine,
+  .probabilityChartMarkerGroup {
+    animation: none;
   }
 }

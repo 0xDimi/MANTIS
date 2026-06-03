@@ -7,6 +7,7 @@ type RangeKey = '24h' | '7d' | 'all';
 type TrendPoint = {
   ts: number;
   yesPrice: number;
+  tradeCount?: number;
 };
 
 function parseRange(input: string | null): RangeKey {
@@ -139,7 +140,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
 
     for (const point of rawPoints) {
       const bucketKey = Math.floor(point.ts / bucketMs) * bucketMs;
-      bucketMap.set(bucketKey, { ts: bucketKey, yesPrice: point.yesPrice });
+      const existing = bucketMap.get(bucketKey);
+
+      bucketMap.set(bucketKey, {
+        ts: bucketKey,
+        yesPrice: point.yesPrice,
+        tradeCount: (existing?.tradeCount ?? 0) + 1
+      });
     }
 
     let points = Array.from(bucketMap.values()).sort((a, b) => a.ts - b.ts);
@@ -170,11 +177,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
         range,
         points: points.map((point) => ({
           time: new Date(point.ts).toISOString(),
-          yesPrice: point.yesPrice
+          yesPrice: point.yesPrice,
+          tradeCount: point.tradeCount ?? 0
         })),
         meta: {
           source: rawPoints.length ? 'trades' : 'state',
-          tradeCount: rawPoints.length
+          tradeCount: rawPoints.length,
+          lastTradeTime: rawPoints.length ? new Date(rawPoints[rawPoints.length - 1].ts).toISOString() : null
         }
       },
       { status: 200 }
