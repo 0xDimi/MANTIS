@@ -120,7 +120,7 @@ code {
     linear-gradient(180deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.012)),
     var(--mantis-panel-inset);
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
   padding: 0 10px 0 12px;
@@ -139,16 +139,11 @@ code {
   box-shadow: var(--shadow-signal);
 }
 
-.headerSearchPrompt,
 .headerSearchHint {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mantis-text-faint);
-}
-
-.headerSearchPrompt {
-  padding-right: 2px;
 }
 
 .headerSearchHint {
@@ -268,30 +263,6 @@ code {
   font-size: 13px;
   color: var(--mantis-text-main);
   font-family: var(--font-mono);
-}
-
-.paperModeBadge {
-  min-height: 38px;
-  padding: 0 12px;
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(214, 168, 90, 0.28);
-  background: var(--mantis-source-bg);
-  color: #f4d19a;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.paperModeBadgeDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--mantis-source);
-  box-shadow: 0 0 0 4px rgba(214, 168, 90, 0.13);
 }
 
 .profileButton {
@@ -2983,10 +2954,6 @@ code {
 
   .headerSearch {
     width: 100%;
-  }
-
-  .headerSearchPrompt {
-    display: none;
   }
 
   .headerSearchHint {

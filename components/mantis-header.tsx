@@ -58,9 +58,6 @@ export function MantisHeader({
         <form className="headerSearch" action="/markets" method="get">
           {lang === 'el' ? <input type="hidden" name="lang" value="el" /> : null}
           <label className="headerSearchShell">
-            <span className="headerSearchPrompt" aria-hidden="true">
-              {tr(lang, 'Market command', 'Εντολή αγοράς')}
-            </span>
             <input
               className="headerSearchInput"
               type="search"
@@ -90,13 +87,6 @@ export function MantisHeader({
             <span className="terminalStatLabel">{tr(lang, 'Cash', 'Μετρητά')}</span>
             <strong className="terminalStatValue mantis-number">{formatMoney(summary.cash, lang)}</strong>
           </Link>
-
-          <span className="paperModeBadge">
-            <span className="paperModeBadgeDot" aria-hidden="true" />
-            <span aria-label={tr(lang, 'Paper trading mode', 'Λειτουργία paper trading')} title={appConfig.alphaScope.mode}>
-              PAPER
-            </span>
-          </span>
         </div>
 
         <div className="headerControlCluster">
