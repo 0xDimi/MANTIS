@@ -767,7 +767,6 @@ export function MarketQuotePreviewCard({ lang = 'en', ...props }: MarketQuotePre
           <div className="ticketPreviewHead">
             <div>
               <div className="splitSectionLabel">{tr(lang, 'Order summary', 'Σύνοψη εντολής')}</div>
-              <p className="subtle">{tr(lang, 'Using latest server quote', 'Χρήση του πιο πρόσφατου quote του server')}</p>
             </div>
             <span className={quoteStatusTone}>
               <span />
