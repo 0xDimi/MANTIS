@@ -1652,48 +1652,32 @@ code {
 }
 
 .probabilityChart {
-  display: grid;
-  gap: 10px;
+  margin: 0;
+  width: 100%;
 }
 
 .probabilityChartStage {
-  height: 236px;
+  min-height: 236px;
   position: relative;
   border-radius: var(--radius-sm);
   border: 1px solid var(--mantis-stroke-soft);
   background:
-    linear-gradient(180deg, rgba(82, 183, 255, 0.05), rgba(82, 183, 255, 0.015) 38%, rgba(5, 8, 20, 0) 100%);
+    radial-gradient(circle at 88% 50%, rgba(78, 178, 255, 0.055), transparent 22%),
+    linear-gradient(180deg, rgba(15, 20, 33, 0.76), rgba(7, 10, 19, 0.76));
   overflow: hidden;
 }
 
 .probabilityChartStage svg {
+  display: block;
   width: 100%;
-  height: 100%;
-}
-
-.probabilityChartGridline {
-  stroke: rgba(199, 214, 241, 0.14);
-  stroke-dasharray: 1 5;
-}
-
-.probabilityChartVolumeBar {
-  fill: rgba(214, 168, 90, 0.22);
-}
-
-.probabilityChartArea {
-  opacity: 0.88;
+  height: 260px;
 }
 
 .probabilityChartLine {
-  stroke: var(--mantis-signal);
-  stroke-width: 1.7;
+  stroke-width: 3;
   stroke-dasharray: 100;
   stroke-dashoffset: 0;
   animation: probabilityChartLineDraw 460ms var(--ease-standard);
-}
-
-.probabilityChartEventMarker {
-  fill: var(--mantis-source);
 }
 
 .probabilityChartMarkerGroup {
@@ -1702,85 +1686,38 @@ code {
 }
 
 .probabilityChartMarkerHalo {
-  fill: rgba(82, 183, 255, 0.12);
-}
-
-.probabilityChartMarkerRing {
-  fill: rgba(5, 8, 20, 0.92);
-  stroke: rgba(130, 216, 255, 0.78);
-  stroke-width: 0.9;
+  fill: rgba(126, 215, 255, 0.25);
 }
 
 .probabilityChartMarkerCore {
-  fill: var(--mantis-signal-strong);
+  fill: #9de4ff;
 }
 
-.probabilityChartAxisY {
+.probabilityChartValue {
   position: absolute;
-  right: 8px;
-  top: 10px;
-  bottom: 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: rgba(214, 224, 241, 0.74);
-  font-size: 11px;
-}
-
-.probabilityChartAxisX {
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 4px;
-  display: flex;
-  justify-content: space-between;
-  color: rgba(206, 216, 237, 0.64);
-  font-size: 11px;
-}
-
-.probabilityChartMarkerLabel {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--mantis-stroke-soft);
-  background: rgba(10, 16, 32, 0.68);
-  padding: 5px 10px;
-  color: var(--mantis-text-soft);
-  font-size: 11px;
-  backdrop-filter: blur(12px);
-}
-
-.probabilityChartMarkerLabel strong {
-  color: var(--mantis-text-main);
+  right: 14px;
+  transform: translateY(-50%);
+  padding: 3px 7px;
+  border: 1px solid rgba(157, 228, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(8, 12, 22, 0.74);
+  color: #c3ccdc;
   font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
 }
 
-.probabilityChartMeta {
+.probabilityChartAxis {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
   gap: 10px;
-  color: var(--mantis-text-dim);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.probabilityChartQuiet .probabilityChartStage {
-  border-color: rgba(214, 168, 90, 0.26);
-  background:
-    linear-gradient(180deg, rgba(214, 168, 90, 0.075), rgba(82, 183, 255, 0.02) 36%, rgba(5, 8, 20, 0) 100%);
-}
-
-.probabilityChartQuiet .probabilityChartMarkerRing {
-  stroke: rgba(214, 168, 90, 0.75);
-}
-
-.probabilityChartQuiet .probabilityChartMarkerCore {
-  fill: rgba(214, 168, 90, 0.95);
+  padding: 8px 2px 0;
+  color: rgba(206, 216, 237, 0.64);
+  font-size: 12px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 
 .marketTrendRangeTabs {
@@ -3398,12 +3335,6 @@ code {
 
   .marketTrendHeadRight {
     justify-items: start;
-  }
-
-  .probabilityChartMarkerLabel {
-    left: 10px;
-    top: auto;
-    bottom: 26px;
   }
 
   .relatedMarketPill {

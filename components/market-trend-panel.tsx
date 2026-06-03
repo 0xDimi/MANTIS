@@ -132,7 +132,7 @@ export function MarketTrendPanel({
   const changePp = getProbabilityChangePp(series);
   const isFlat = Math.abs(changePp) < 0.05;
   const changeLabel = isFlat
-    ? tr(lang, 'Held', 'Σταθερό')
+    ? tr(lang, 'Stable', 'Σταθερό')
     : `${changePp >= 0 ? '+' : ''}${changePp.toFixed(1)}pp`;
 
   const ranges: Array<{ key: RangeKey; label: string }> = [
@@ -174,12 +174,11 @@ export function MarketTrendPanel({
       <ProbabilityChart
         chartId={`mantis-probability-chart-${slug}-${range}`}
         points={series}
+        currentProbability={series[series.length - 1]?.yesPrice ?? yesPrice}
         lang={lang}
         startLabel={rangeStartLabel(range, lang)}
         endLabel={tr(lang, 'Now', 'Τώρα')}
         loading={loadingRange === range}
-        lowActivity={lowActivity}
-        lastTradeTime={rangeMeta?.lastTradeTime ?? null}
       />
 
       <div className="marketTrendMeta">

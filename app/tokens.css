@@ -26,6 +26,9 @@
   --mantis-signal: #52b7ff;
   --mantis-signal-strong: #82d8ff;
   --mantis-signal-bg: rgba(82, 183, 255, 0.13);
+  --mantis-chart-line-muted: #3677b7;
+  --mantis-chart-line: #4eb2ff;
+  --mantis-chart-line-strong: #7fd7ff;
 
   --mantis-yes: #45d483;
   --mantis-yes-bg: rgba(69, 212, 131, 0.14);

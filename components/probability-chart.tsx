@@ -1,103 +1,102 @@
 import { formatPercent } from '@/lib/format';
-import {
-  clampProbability,
-  getProbabilityPercent,
-  toProbabilityChartCoords,
-  toSvgAreaPath,
-  toSvgLinePath,
-  type ProbabilityTrendPoint
-} from '@/lib/probability-visuals';
+import { buildFlatProbabilitySeries, clampProbability, toProbabilityChartCoords, toSvgLinePath, type ProbabilityTrendPoint } from '@/lib/probability-visuals';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type ProbabilityChartProps = {
   chartId: string;
   points: ProbabilityTrendPoint[];
+  currentProbability: number;
   lang: UiLang;
   startLabel: string;
   endLabel: string;
   loading?: boolean;
-  showVolumeBars?: boolean;
-  lowActivity?: boolean;
-  lastTradeTime?: string | null;
 };
 
-const axisValues = [100, 75, 50, 25, 0];
+function normalizeChartPoints(points: ProbabilityTrendPoint[], currentProbability: number) {
+  const fallback = clampProbability(currentProbability);
+  const safePoints = points
+    .filter((point) => Number.isFinite(point.yesPrice))
+    .map((point) => ({
+      ...point,
+      yesPrice: clampProbability(point.yesPrice, fallback)
+    }));
 
-function markerLabel(lastTradeTime: string | null | undefined, lang: UiLang) {
-  return lastTradeTime ? tr(lang, 'Last print', 'Τελευταία εκτύπωση') : tr(lang, 'Current level', 'Τρέχον επίπεδο');
+  if (safePoints.length === 0) {
+    return buildFlatProbabilitySeries(fallback, 2);
+  }
+
+  if (safePoints.length === 1) {
+    return [
+      safePoints[0],
+      {
+        ...safePoints[0],
+        time: `${safePoints[0].time}-hold`
+      }
+    ];
+  }
+
+  return safePoints;
 }
 
 export function ProbabilityChart({
   chartId,
   points,
+  currentProbability,
   lang,
   startLabel,
   endLabel,
-  loading = false,
-  showVolumeBars = true,
-  lowActivity = false,
-  lastTradeTime
+  loading = false
 }: ProbabilityChartProps) {
-  const coords = toProbabilityChartCoords(points);
+  const chartPoints = normalizeChartPoints(points, currentProbability);
+  const coords = toProbabilityChartCoords(chartPoints, {
+    xStart: 34,
+    xEnd: 966,
+    yTop: 28,
+    yBottom: 226
+  });
   const linePath = toSvgLinePath(coords);
-  const areaPath = toSvgAreaPath(coords);
   const currentPoint = coords[coords.length - 1] ?? {
-    x: 88,
-    y: 49,
-    point: { time: 'fallback', yesPrice: 0.5 }
+    x: 966,
+    y: 127,
+    point: { time: 'fallback', yesPrice: clampProbability(currentProbability) }
   };
-  const hasVolumeBars = showVolumeBars && points.some((point) => Number(point.tradeCount ?? point.volume ?? 0) > 0);
-  const maxBarValue = hasVolumeBars
-    ? Math.max(...points.map((point) => Number(point.tradeCount ?? point.volume ?? 0)), 1)
-    : 1;
+  const latestProbability = clampProbability(currentPoint.point.yesPrice, currentProbability);
+  const lineGradientId = `${chartId}-line`;
+  const softGlowId = `${chartId}-soft-glow`;
+  const ariaLabel =
+    lang === 'el'
+      ? `Γράφημα πιθανότητας ΝΑΙ, τρέχουσα τιμή ${Math.round(latestProbability * 100)} τοις εκατό.`
+      : `YES probability chart, current value ${Math.round(latestProbability * 100)} percent.`;
 
   return (
-    <div className={lowActivity ? 'probabilityChart probabilityChartQuiet' : 'probabilityChart'}>
-      <div className="probabilityChartStage" aria-hidden="true">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+    <figure className="probabilityChart">
+      <div className="probabilityChartStage">
+        <svg
+          role="img"
+          aria-label={ariaLabel}
+          viewBox="0 0 1000 260"
+          preserveAspectRatio="none"
+        >
           <defs>
-            <linearGradient id={`${chartId}-area`} x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="var(--mantis-signal-bg)" />
-              <stop offset="100%" stopColor="rgba(82, 183, 255, 0)" />
+            <linearGradient id={lineGradientId} x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="var(--mantis-chart-line-muted)" />
+              <stop offset="72%" stopColor="var(--mantis-chart-line)" />
+              <stop offset="100%" stopColor="var(--mantis-chart-line-strong)" />
             </linearGradient>
+            <filter id={softGlowId} x="-10%" y="-80%" width="120%" height="260%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feColorMatrix
+                in="blur"
+                type="matrix"
+                values="0 0 0 0 0.25  0 0 0 0 0.60  0 0 0 0 1.00  0 0 0 0.24 0"
+              />
+              <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
 
-          {axisValues.map((axis) => {
-            const y = 10 + (1 - axis / 100) * 78;
-
-            return (
-              <line
-                key={axis}
-                x1="8"
-                x2="88"
-                y1={y.toFixed(2)}
-                y2={y.toFixed(2)}
-                className="probabilityChartGridline"
-              />
-            );
-          })}
-
-          {hasVolumeBars
-            ? coords.map((coord, index) => {
-                const rawValue = Number(coord.point.tradeCount ?? coord.point.volume ?? 0);
-                const height = rawValue > 0 ? 4 + (rawValue / maxBarValue) * 12 : 0;
-                const y = 88 - height;
-
-                return (
-                  <rect
-                    key={`${coord.point.time}-${index}`}
-                    className="probabilityChartVolumeBar"
-                    x={(coord.x - 0.5).toFixed(2)}
-                    y={y.toFixed(2)}
-                    width="1"
-                    height={height.toFixed(2)}
-                    rx="0.5"
-                  />
-                );
-              })
-            : null}
-
-          <path d={areaPath} fill={`url(#${chartId}-area)`} className="probabilityChartArea" />
           <path
             d={linePath}
             pathLength={100}
@@ -106,55 +105,32 @@ export function ProbabilityChart({
             strokeLinecap="round"
             strokeLinejoin="round"
             shapeRendering="geometricPrecision"
+            vectorEffect="non-scaling-stroke"
+            stroke={`url(#${lineGradientId})`}
+            filter={`url(#${softGlowId})`}
           />
 
-          {coords
-            .filter((coord) => coord.point.eventLabel || coord.point.sourceLabel)
-            .map((coord, index) => (
-              <circle
-                key={`${coord.point.time}-marker-${index}`}
-                className="probabilityChartEventMarker"
-                cx={coord.x.toFixed(2)}
-                cy={coord.y.toFixed(2)}
-                r="1.4"
-              />
-            ))}
-
           <g className="probabilityChartMarkerGroup">
-            <circle className="probabilityChartMarkerHalo" cx={currentPoint.x.toFixed(2)} cy={currentPoint.y.toFixed(2)} r="4.1" />
-            <circle className="probabilityChartMarkerRing" cx={currentPoint.x.toFixed(2)} cy={currentPoint.y.toFixed(2)} r="2.55" />
-            <rect
-              className="probabilityChartMarkerCore"
-              x={(currentPoint.x - 0.95).toFixed(2)}
-              y={(currentPoint.y - 0.95).toFixed(2)}
-              width="1.9"
-              height="1.9"
-              rx="0.35"
-            />
+            <circle className="probabilityChartMarkerHalo" cx={currentPoint.x.toFixed(2)} cy={currentPoint.y.toFixed(2)} r="7" />
+            <circle className="probabilityChartMarkerCore" cx={currentPoint.x.toFixed(2)} cy={currentPoint.y.toFixed(2)} r="4" />
           </g>
         </svg>
 
-        <div className="probabilityChartAxisY">
-          {axisValues.map((value) => (
-            <span key={value}>{value}%</span>
-          ))}
-        </div>
-
-        <div className="probabilityChartAxisX">
-          <span>{startLabel}</span>
-          <span>{loading ? tr(lang, 'Updating…', 'Ενημέρωση…') : endLabel}</span>
-        </div>
-
-        <div className="probabilityChartMarkerLabel">
-          <span>{markerLabel(lastTradeTime, lang)}</span>
-          <strong>{formatPercent(clampProbability(currentPoint.point.yesPrice))}</strong>
+        <div
+          className="probabilityChartValue"
+          aria-hidden="true"
+          style={{
+            top: `${(currentPoint.y / 260) * 100}%`
+          }}
+        >
+          {formatPercent(latestProbability)}
         </div>
       </div>
 
-      <div className="probabilityChartMeta">
-        <span>{tr(lang, 'Current', 'Τρέχον')} {getProbabilityPercent(currentPoint.point.yesPrice)}%</span>
-        <span>{markerLabel(lastTradeTime, lang)}</span>
-      </div>
-    </div>
+      <figcaption className="probabilityChartAxis" aria-hidden="true">
+        <span>{startLabel}</span>
+        <span>{loading ? tr(lang, 'Updating…', 'Ενημέρωση…') : endLabel}</span>
+      </figcaption>
+    </figure>
   );
 }
