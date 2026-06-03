@@ -12,6 +12,15 @@ type ProbabilityChartProps = {
   loading?: boolean;
 };
 
+const axisValues = [100, 75, 50, 25, 0] as const;
+const chartBounds = {
+  xStart: 34,
+  xEnd: 920,
+  yTop: 28,
+  yBottom: 226,
+  height: 260
+} as const;
+
 function normalizeChartPoints(points: ProbabilityTrendPoint[], currentProbability: number) {
   const fallback = clampProbability(currentProbability);
   const safePoints = points
@@ -48,15 +57,10 @@ export function ProbabilityChart({
   loading = false
 }: ProbabilityChartProps) {
   const chartPoints = normalizeChartPoints(points, currentProbability);
-  const coords = toProbabilityChartCoords(chartPoints, {
-    xStart: 34,
-    xEnd: 966,
-    yTop: 28,
-    yBottom: 226
-  });
+  const coords = toProbabilityChartCoords(chartPoints, chartBounds);
   const linePath = toSvgLinePath(coords);
   const currentPoint = coords[coords.length - 1] ?? {
-    x: 966,
+    x: chartBounds.xEnd,
     y: 127,
     point: { time: 'fallback', yesPrice: clampProbability(currentProbability) }
   };
@@ -97,6 +101,22 @@ export function ProbabilityChart({
             </filter>
           </defs>
 
+          {axisValues.map((value) => {
+            const ratio = value / 100;
+            const y = chartBounds.yTop + (1 - ratio) * (chartBounds.yBottom - chartBounds.yTop);
+
+            return (
+              <line
+                key={value}
+                className="probabilityChartGridline"
+                x1={chartBounds.xStart.toFixed(2)}
+                x2={chartBounds.xEnd.toFixed(2)}
+                y1={y.toFixed(2)}
+                y2={y.toFixed(2)}
+              />
+            );
+          })}
+
           <path
             d={linePath}
             pathLength={100}
@@ -120,10 +140,16 @@ export function ProbabilityChart({
           className="probabilityChartValue"
           aria-hidden="true"
           style={{
-            top: `${(currentPoint.y / 260) * 100}%`
+            top: `${(currentPoint.y / chartBounds.height) * 100}%`
           }}
         >
           {formatPercent(latestProbability)}
+        </div>
+
+        <div className="probabilityChartAxisY" aria-hidden="true">
+          {axisValues.map((value) => (
+            <span key={value}>{value}%</span>
+          ))}
         </div>
       </div>
 
