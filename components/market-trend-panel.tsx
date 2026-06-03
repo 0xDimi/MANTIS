@@ -9,7 +9,6 @@ import {
   type ProbabilityTrendPoint
 } from '@/lib/probability-visuals';
 import { tr, type UiLang } from '@/lib/ui-lang';
-import { LowActivityMarketState } from '@/components/low-activity-market-state';
 import { ProbabilityChart } from '@/components/probability-chart';
 
 type MarketTrendPanelProps = {
@@ -182,8 +181,6 @@ export function MarketTrendPanel({
         lowActivity={lowActivity}
         lastTradeTime={rangeMeta?.lastTradeTime ?? null}
       />
-
-      {lowActivity ? <LowActivityMarketState lang={lang} tradeCount={tradeCount} lastTradeAt={rangeMeta?.lastTradeTime ?? null} /> : null}
 
       <div className="marketTrendMeta">
         <span>{tr(lang, 'Volume', 'Όγκος')} €{formatCompact(volumeTotal, lang)}</span>
