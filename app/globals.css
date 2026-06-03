@@ -1026,7 +1026,7 @@ code {
 .shelfTabs,
 .categoryStrip {
   display: flex;
-  gap: 6px;
+  gap: 7px;
   overflow-x: auto;
   padding: 1px 0;
   margin: 0 0 11px;
@@ -1049,41 +1049,24 @@ code {
 
 .shelfTab,
 .categoryPill {
-  border-radius: 999px;
-  border: 1px solid var(--mantis-stroke-soft);
-  color: var(--mantis-text-soft);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  color: var(--text-3);
   white-space: nowrap;
-  min-height: 28px;
-  padding: 0 10px;
+  min-height: 32px;
+  padding: 0 11px;
   display: inline-flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.016);
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.012);
+  font-size: 12px;
+  letter-spacing: 0.01em;
 }
 
 .shelfTabActive,
 .categoryPillActive {
-  border-color: rgba(82, 183, 255, 0.36);
-  background: rgba(82, 183, 255, 0.1);
-  color: var(--mantis-text-main);
-}
-
-.discoverHeroGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.82fr);
-  gap: 14px;
-  align-items: start;
-  margin: 2px 0 16px;
-}
-
-.discoverHeroMain {
-  min-width: 0;
-}
-
-.discoverSection {
-  margin-top: 14px;
+  border-color: rgba(82, 183, 255, 0.3);
+  background: rgba(82, 183, 255, 0.12);
+  color: var(--text-1);
 }
 
 .featuredSwipe {
@@ -1187,13 +1170,12 @@ code {
   max-width: 92%;
 }
 
-.featuredDistinctContextRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.featuredDistinctContext {
+  margin: 0;
   color: var(--mantis-text-soft);
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 13px;
+  line-height: 1.38;
+  max-width: 93%;
 }
 
 .featuredDistinctSignal {
@@ -1225,10 +1207,6 @@ code {
   margin-top: 4px;
 }
 
-.featuredDistinctPricePair {
-  margin-top: 6px;
-}
-
 .featuredDistinctMeta {
   margin: 0;
   color: var(--text-2);
@@ -1244,20 +1222,24 @@ code {
   align-items: center;
 }
 
-.featuredDistinctFoot {
+.featuredDistinctActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
   margin-top: auto;
 }
 
-.featuredOpenLink {
+.featuredActionBtn {
+  min-height: 40px;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 0 12px;
   position: relative;
   z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  color: var(--mantis-text-main);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+}
+
+.featuredActionBtn strong {
+  font-size: 13px;
 }
 
 .featuredMantisMark {
@@ -1281,46 +1263,6 @@ code {
 
 .marketMiniMetaStrong {
   color: var(--mantis-text-main);
-}
-
-.marketPricePair {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.marketPriceChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 28px;
-  padding: 0 9px;
-  border-radius: 999px;
-  border: 1px solid var(--mantis-stroke-soft);
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.marketPriceChip em {
-  font-style: normal;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--mantis-text-dim);
-}
-
-.marketPriceChip strong {
-  font-size: 12px;
-  color: var(--mantis-text-main);
-}
-
-.marketPriceChipYes {
-  border-color: var(--mantis-yes-stroke);
-  background: var(--mantis-yes-bg);
-}
-
-.marketPriceChipNo {
-  border-color: var(--mantis-no-stroke);
-  background: var(--mantis-no-bg);
 }
 
 .marketList {
@@ -1362,48 +1304,6 @@ code {
 
 .marketCardMuted {
   opacity: 0.84;
-}
-
-.standardMarketCard {
-  min-height: 214px;
-}
-
-.standardMarketQuestion {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.marketTitleGreek {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.standardMarketSignal {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 12px;
-}
-
-.standardMarketState {
-  margin-left: auto;
-  color: var(--mantis-text-dim);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.standardMarketMeta {
-  min-height: 28px;
-}
-
-.standardMarketFoot {
-  color: var(--mantis-text-main);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .marketBottomRowTight {
@@ -1466,45 +1366,9 @@ code {
   position: relative;
 }
 
-.groupedEventCard {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.012)),
-    linear-gradient(180deg, rgba(214, 168, 90, 0.035), transparent 42%),
-    var(--mantis-panel-0);
-}
-
 .eventMarketCard .marketCardContent {
   min-height: 100%;
   grid-template-rows: auto auto 1fr auto;
-}
-
-.groupedEventBadge {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 0 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(214, 168, 90, 0.24);
-  background: rgba(214, 168, 90, 0.08);
-  color: #f0d7a2;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.groupedEventTitle {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.groupedEventHint {
-  margin: -1px 0 2px;
-  color: var(--mantis-text-soft);
-  font-size: 12px;
-  line-height: 1.42;
 }
 
 .eventMarketRows {
@@ -1518,48 +1382,46 @@ code {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
-  min-height: 54px;
-  padding: 10px 11px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--mantis-stroke-soft);
-  background: rgba(255, 255, 255, 0.016);
-}
-
-.eventMarketRowCopy {
-  min-width: 0;
-  display: grid;
-  gap: 4px;
+  min-height: 44px;
 }
 
 .eventMarketLabel {
   min-width: 0;
   color: var(--text-1);
-  font-size: 13px;
-  font-weight: 650;
+  font-size: 14px;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   position: relative;
   z-index: 3;
 }
 
-.eventMarketRowMeta {
-  color: var(--mantis-text-dim);
+.eventMarketLabel:hover {
+  color: #ffffff;
+}
+
+.eventMarketActions {
+  gap: 7px;
+  position: relative;
+  z-index: 3;
+  flex-wrap: nowrap;
+}
+
+.eventMarketButton {
+  min-width: 64px;
+  min-height: 36px;
+  padding: 0 9px;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 5px;
+  justify-content: space-between;
+}
+
+.eventMarketButton span,
+.eventMarketButton strong {
   font-size: 11px;
-  line-height: 1.25;
-}
-
-.eventMarketPricePair {
-  justify-content: flex-end;
-}
-
-.groupedEventMeta {
-  align-items: center;
-}
-
-.groupedEventFoot {
-  color: var(--mantis-text-main);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  line-height: 1;
 }
 
 .eventDetailGrid {
@@ -1567,193 +1429,6 @@ code {
   grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.8fr);
   gap: 18px;
   align-items: start;
-}
-
-.compactMarketList {
-  display: grid;
-  gap: 10px;
-}
-
-.compactMarketRow {
-  position: relative;
-  min-height: 122px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(180px, 0.8fr) auto;
-  gap: 14px;
-  align-items: center;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--mantis-stroke-soft);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)), var(--mantis-panel-0);
-  overflow: hidden;
-}
-
-.compactMarketPrimary,
-.compactMarketSignal,
-.compactMarketPricing {
-  position: relative;
-  z-index: 2;
-}
-
-.compactMarketPrimary {
-  display: grid;
-  gap: 8px;
-  min-width: 0;
-}
-
-.compactMarketMetaRow {
-  flex-wrap: wrap;
-}
-
-.compactMarketState {
-  margin-left: auto;
-  color: var(--mantis-text-dim);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.compactMarketQuestion {
-  font-size: clamp(18px, 1.4vw, 22px);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.compactMarketMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  color: var(--mantis-text-dim);
-  font-size: 11px;
-}
-
-.compactMarketSignal {
-  display: grid;
-  gap: 9px;
-}
-
-.compactMarketProbability {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.compactMarketProbabilityLabel {
-  color: var(--mantis-text-dim);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.compactMarketProbability strong {
-  font-size: 26px;
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-
-.compactMarketRail {
-  min-width: 180px;
-}
-
-.compactMarketPricing {
-  display: grid;
-  justify-items: end;
-  gap: 10px;
-}
-
-.compactMarketPricePair {
-  justify-content: flex-end;
-}
-
-.compactMarketOpenLink,
-.marketPulseKind {
-  color: var(--mantis-text-main);
-  font-size: 10px;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.marketPulsePanel {
-  min-height: 100%;
-  display: grid;
-  gap: 12px;
-  align-content: start;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--mantis-stroke-soft);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.024), rgba(255, 255, 255, 0.012)),
-    linear-gradient(180deg, rgba(82, 183, 255, 0.05), transparent 52%),
-    var(--mantis-panel-0);
-}
-
-.marketPulseHead {
-  display: grid;
-  gap: 4px;
-}
-
-.marketPulseEyebrow {
-  color: var(--mantis-signal-strong);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.marketPulseHead strong {
-  font-size: 18px;
-  line-height: 1.15;
-}
-
-.marketPulseList {
-  display: grid;
-  gap: 8px;
-}
-
-.marketPulseRow {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
-  align-items: center;
-  min-height: 72px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--mantis-stroke-soft);
-  background: rgba(255, 255, 255, 0.016);
-}
-
-.marketPulseCopy {
-  min-width: 0;
-  display: grid;
-  gap: 4px;
-}
-
-.marketPulseCopy strong {
-  font-size: 14px;
-  line-height: 1.28;
-  color: var(--mantis-text-main);
-}
-
-.marketPulseCopy small {
-  color: var(--mantis-text-dim);
-  font-size: 11px;
-  line-height: 1.28;
-}
-
-.marketPulseSignal {
-  min-width: 64px;
-  text-align: right;
-}
-
-.marketPulseSignal span {
-  font-size: 24px;
-  line-height: 1;
-  color: var(--mantis-signal-strong);
-}
-
-.groupedEventGrid,
-.standardMarketGrid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .eventDetailMain {
@@ -3562,31 +3237,16 @@ code {
     max-width: 100%;
   }
 
+  .featuredDistinctContext {
+    font-size: 12px;
+  }
+
   .featuredDistinctForecastValue {
     font-size: clamp(38px, 11vw, 50px);
   }
 
-  .discoverHeroGrid {
+  .featuredDistinctActions {
     grid-template-columns: 1fr;
-  }
-
-  .groupedEventGrid,
-  .standardMarketGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .compactMarketRow {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-
-  .compactMarketPricing {
-    justify-items: start;
-  }
-
-  .compactMarketPricePair,
-  .eventMarketPricePair {
-    justify-content: flex-start;
   }
 
   .marketHeroGrid {
