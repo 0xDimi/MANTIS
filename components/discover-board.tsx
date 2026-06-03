@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { loadEventsBoard, loadMarketsBoard } from '@/lib/alpha-read-model';
 import { localizeBoardMarketCopy, localizedCategory, localizedMarketSearchBlob } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
+import { CompactMarketRow } from '@/components/compact-market-row';
 import { EventCard } from '@/components/event-card';
+import { MarketPulsePanel } from '@/components/market-pulse-panel';
 import { MarketCard } from '@/components/market-card';
 import { FeaturedMarketsCarousel } from '@/components/featured-markets-carousel';
 import { DISCOVER_BOARD_SCOPE, isInternalMarket } from '@/lib/discover-board-config';
@@ -92,15 +94,21 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
   const filtered = normalizedQuery
     ? categoryFiltered.filter((market) => localizedMarketSearchBlob(market, lang).includes(normalizedQuery))
     : categoryFiltered;
-  const featuredPool = [...curatedBase].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
+  const featuredSource = normalizedQuery || category || normalizedView !== 'trending' ? filtered : curatedBase;
+  const pulseSource = (normalizedQuery || category || normalizedView !== 'trending' ? filtered : activeMarkets).filter(
+    (market) => market.status === 'open' || market.status === 'paused'
+  );
+  const featuredPool = [...featuredSource].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
   const pinnedFeatured = FEATURED_PINNED_SLUGS
     .map((slug) => featuredPool.find((market) => market.slug === slug))
     .filter((market): market is (typeof featuredPool)[number] => Boolean(market));
   const pinnedSlugs = new Set(pinnedFeatured.map((market) => market.slug));
   const fallbackFeatured = featuredPool.filter((market) => !pinnedSlugs.has(market.slug));
-  const featured = [...pinnedFeatured, ...fallbackFeatured].slice(0, 3);
+  const featured = [...pinnedFeatured, ...fallbackFeatured].slice(0, 2);
   const featuredIds = new Set(featured.map((market) => market.id));
   const gridMarkets = filtered.filter((market) => !featuredIds.has(market.id));
+  const leadStandardMarkets = gridMarkets.slice(0, 2);
+  const compactMarkets = gridMarkets.slice(2);
   const featuredWithinFilterCount = filtered.filter((market) => featuredIds.has(market.id)).length;
   const categories = Array.from(new Set(userMarkets.map((market) => market.category)));
 
@@ -127,7 +135,14 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
         ))}
       </section>
 
-      {featured.length > 0 ? <FeaturedMarketsCarousel markets={featured} lang={lang} /> : null}
+      {(featured.length > 0 || pulseSource.length > 0) ? (
+        <section className="discoverHeroGrid" aria-label={tr(lang, 'Board highlights', 'Κύρια σημεία ταμπλό')}>
+          <div className="discoverHeroMain">
+            {featured.length > 0 ? <FeaturedMarketsCarousel markets={featured} lang={lang} /> : null}
+          </div>
+          <MarketPulsePanel markets={pulseSource.filter((market) => !featuredIds.has(market.id))} lang={lang} />
+        </section>
+      ) : null}
 
       <section className="categoryStrip" aria-label={tr(lang, 'Categories', 'Κατηγορίες')}>
         <Link className={!category ? 'categoryPill categoryPillActive' : 'categoryPill'} href={hrefWith(lang, view, null, normalizedQuery)}>
@@ -160,21 +175,53 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
         </p>
       ) : null}
 
-      <section className="marketList" aria-label={tr(lang, 'Market list', 'Λίστα αγορών')}>
-        {eventBoard.events.map((event) => (
-          <EventCard key={event.id} event={event} lang={lang} />
-        ))}
-
-        {gridMarkets.map((market) => (
-          <MarketCard key={market.id} market={market} lang={lang} />
-        ))}
-
-        {gridMarkets.length === 0 && eventBoard.events.length === 0 ? (
-          <div className="card stackSm">
-            <p className="subtle">{tr(lang, 'No markets matched your current filters.', 'Δεν βρέθηκαν αγορές με τα τρέχοντα φίλτρα.')}</p>
+      {eventBoard.events.length > 0 ? (
+        <section className="discoverSection stackSm" aria-label={tr(lang, 'Grouped market clusters', 'Ομαδοποιημένα clusters')}>
+          <div className="sectionHeaderInline">
+            <h2>{tr(lang, 'Grouped clusters', 'Ομαδοποιημένα clusters')}</h2>
+            <p className="subtle">{tr(lang, 'Independent binary markets under one thesis.', 'Ανεξάρτητες δυαδικές αγορές κάτω από μία ενιαία θεματική.')}</p>
           </div>
-        ) : null}
-      </section>
+          <div className="marketList groupedEventGrid">
+            {eventBoard.events.map((event) => (
+              <EventCard key={event.id} event={event} lang={lang} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {leadStandardMarkets.length > 0 ? (
+        <section className="discoverSection stackSm" aria-label={tr(lang, 'Board leaders', 'Κύριες αγορές')}>
+          <div className="sectionHeaderInline">
+            <h2>{tr(lang, 'Board leaders', 'Κύριες αγορές')}</h2>
+            <p className="subtle">{tr(lang, 'Highest-conviction questions on the board right now.', 'Οι πιο σημαντικές ερωτήσεις του ταμπλό αυτή τη στιγμή.')}</p>
+          </div>
+          <div className="marketList standardMarketGrid">
+            {leadStandardMarkets.map((market) => (
+              <MarketCard key={market.id} market={market} lang={lang} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {compactMarkets.length > 0 ? (
+        <section className="discoverSection stackSm" aria-label={tr(lang, 'More markets', 'Περισσότερες αγορές')}>
+          <div className="sectionHeaderInline">
+            <h2>{tr(lang, 'More markets', 'Περισσότερες αγορές')}</h2>
+            <p className="subtle">{tr(lang, 'A denser scan of the live board without turning into an odds wall.', 'Πιο πυκνή σάρωση του live ταμπλό χωρίς να μοιάζει με τοίχο αποδόσεων.')}</p>
+          </div>
+          <div className="compactMarketList">
+            {compactMarkets.map((market) => (
+              <CompactMarketRow key={market.id} market={market} lang={lang} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {gridMarkets.length === 0 && eventBoard.events.length === 0 ? (
+        <div className="card stackSm">
+          <p className="subtle">{tr(lang, 'No markets matched your current filters.', 'Δεν βρέθηκαν αγορές με τα τρέχοντα φίλτρα.')}</p>
+        </div>
+      ) : null}
     </>
   );
 }

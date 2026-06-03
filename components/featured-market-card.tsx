@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { ProbabilityRail } from '@/components/probability-rail';
+import { marketHref, marketBoardTone, statusTone } from '@/components/market-card-shared';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
-import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
+import { localizedCategory, localizedMarketStatus } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type FeaturedMarketCardProps = {
@@ -13,53 +14,11 @@ type FeaturedMarketCardProps = {
   lead?: boolean;
 };
 
-const contextByCategory: Record<string, { en: string; el: string }> = {
-  politics: {
-    en: 'Policy shifts can reprice this market fast if narrative momentum flips.',
-    el: 'Οι πολιτικές μετατοπίσεις μπορούν να αλλάξουν γρήγορα την τιμολόγηση αν αλλάξει η δυναμική.'
-  },
-  economy: {
-    en: 'Macro prints and policy tone are the main drivers for this contract.',
-    el: 'Οι μακροοικονομικές ανακοινώσεις και ο τόνος πολιτικής είναι οι βασικοί οδηγοί.'
-  },
-  weather: {
-    en: 'Official station updates can move implied odds quickly near the deadline.',
-    el: 'Οι επίσημες μετεωρολογικές ενημερώσεις μετακινούν γρήγορα τις πιθανότητες κοντά στη λήξη.'
-  },
-  technology: {
-    en: 'Company guidance and product timing updates are the key catalysts.',
-    el: 'Οι ενημερώσεις για καθοδήγηση εταιρειών και χρονοδιάγραμμα προϊόντων είναι οι βασικοί καταλύτες.'
-  }
-};
-
-function statusTone(status: string) {
-  if (status === 'open') return 'badgeYes';
-  if (status === 'resolved' || status === 'settled') return 'badgeNeutral';
-  return 'badgeNo';
-}
-
-function marketHref(slug: string, lang: UiLang, side?: 'yes' | 'no') {
-  const params = new URLSearchParams();
-  if (lang === 'el') params.set('lang', 'el');
-  if (side) params.set('side', side);
-
-  const query = params.toString();
-  return `/markets/${slug}${query ? `?${query}` : ''}`;
-}
-
 export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarketCardProps) {
   const yesProb = market.state?.yesPrice ?? 0.5;
   const noProb = market.state?.noPrice ?? 1 - yesProb;
-  const yesCents = Math.round(yesProb * 100);
-  const noCents = Math.round(noProb * 100);
   const href = marketHref(market.slug, lang);
   const volume = market.state?.volumeTotal ?? 0;
-  const yesLabel = localizedOutcomeLabel('yes', 'yes', lang);
-  const noLabel = localizedOutcomeLabel('no', 'no', lang);
-  const context = contextByCategory[market.category.toLowerCase()] ?? {
-    en: 'Watch for new verified updates, this market can reprice quickly close to deadline.',
-    el: 'Παρακολούθησε τις νέες επιβεβαιωμένες ενημερώσεις, αυτή η αγορά μπορεί να ανατιμολογηθεί γρήγορα κοντά στη λήξη.'
-  };
 
   return (
     <article className={`card featuredDistinctCard${lead ? ' featuredDistinctLead' : ' featuredDistinctFollow'}`}>
@@ -72,16 +31,20 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
         </div>
 
         <div className="featuredDistinctBody">
-          <h2 className="featuredDistinctTitle">
+          <h2 className={`featuredDistinctTitle${lang === 'el' ? ' marketTitleGreek' : ''}`}>
             <Link className="marketTitleLink" href={href}>{market.question}</Link>
           </h2>
-          <p className="featuredDistinctContext">{lang === 'el' ? context.el : context.en}</p>
+          <div className="featuredDistinctContextRow">
+            <span>{marketBoardTone(market.status, lang)}</span>
+            <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(market.closeTime, { lang })}</span>
+            {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt, lang)}</span> : null}
+          </div>
         </div>
 
         <div className="featuredDistinctSignal">
           <div className="featuredDistinctForecast">
             <span className="featuredDistinctForecastLabel">{tr(lang, 'Forecast', 'Πρόβλεψη')}</span>
-            <strong className="featuredDistinctForecastValue">{formatPercent(yesProb)}</strong>
+            <strong className="featuredDistinctForecastValue mantis-number">{formatPercent(yesProb)}</strong>
           </div>
           <ProbabilityRail
             yesProbability={yesProb}
@@ -92,23 +55,25 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
             locale={lang}
             className="featuredDistinctRail"
           />
+          <div className="marketPricePair featuredDistinctPricePair" aria-label={tr(lang, 'Market pricing', 'Τιμολόγηση αγοράς')}>
+            <span className="marketPriceChip marketPriceChipYes">
+              <em>{tr(lang, 'YES', 'ΝΑΙ')}</em>
+              <strong className="mantis-number">{Math.round(yesProb * 100)}¢</strong>
+            </span>
+            <span className="marketPriceChip marketPriceChipNo">
+              <em>{tr(lang, 'NO', 'ΟΧΙ')}</em>
+              <strong className="mantis-number">{Math.round(noProb * 100)}¢</strong>
+            </span>
+          </div>
         </div>
 
         <div className="featuredDistinctMeta">
           {volume > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(volume, lang)}</span> : null}
-          <span>{tr(lang, 'Close', 'Λήξη')} {formatRelativeClose(market.closeTime, { lang })}</span>
-          {market.state?.lastTradeAt ? <span>{tr(lang, 'Trade', 'Συναλλαγή')} {formatRelativeTime(market.state.lastTradeAt, lang)}</span> : null}
+          <span>{tr(lang, 'Liquidity', 'Ρευστότητα')} €{formatCompact(market.liquidity, lang)}</span>
         </div>
 
-        <div className="featuredDistinctActions">
-          <Link className="button buttonYes featuredActionBtn" href={marketHref(market.slug, lang, 'yes')}>
-            <span>{yesLabel}</span>
-            <strong>{yesCents}¢</strong>
-          </Link>
-          <Link className="button buttonNo featuredActionBtn" href={marketHref(market.slug, lang, 'no')}>
-            <span>{noLabel}</span>
-            <strong>{noCents}¢</strong>
-          </Link>
+        <div className="featuredDistinctFoot">
+          <Link className="featuredOpenLink" href={href}>{tr(lang, 'Open market', 'Άνοιγμα αγοράς')}</Link>
         </div>
       </div>
 
