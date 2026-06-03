@@ -1,0 +1,157 @@
+/* MANTIS Midnight Market Terminal token contract.
+   Semantic tokens carry product meaning. Compatibility aliases keep the
+   existing stylesheet stable while sessions progressively migrate classes. */
+
+:root {
+  color-scheme: dark;
+
+  --mantis-bg-0: #050814;
+  --mantis-bg-1: #080d19;
+  --mantis-bg-2: #0a1020;
+
+  --mantis-panel-0: #0c1220;
+  --mantis-panel-1: #111827;
+  --mantis-panel-2: #151d2d;
+  --mantis-panel-inset: #090f1d;
+
+  --mantis-stroke-soft: rgba(190, 204, 230, 0.12);
+  --mantis-stroke-mid: rgba(205, 218, 245, 0.18);
+  --mantis-stroke-hard: rgba(220, 230, 255, 0.26);
+
+  --mantis-text-main: #f4f7fb;
+  --mantis-text-soft: #b9c3d8;
+  --mantis-text-dim: #718096;
+  --mantis-text-faint: #4e5a70;
+
+  --mantis-signal: #52b7ff;
+  --mantis-signal-strong: #82d8ff;
+  --mantis-signal-bg: rgba(82, 183, 255, 0.13);
+
+  --mantis-yes: #45d483;
+  --mantis-yes-bg: rgba(69, 212, 131, 0.14);
+  --mantis-yes-stroke: rgba(69, 212, 131, 0.38);
+
+  --mantis-no: #ff6b72;
+  --mantis-no-bg: rgba(255, 107, 114, 0.13);
+  --mantis-no-stroke: rgba(255, 107, 114, 0.36);
+
+  --mantis-source: #d6a85a;
+  --mantis-source-bg: rgba(214, 168, 90, 0.12);
+  --mantis-review: #ffbf5b;
+
+  --mantis-brand: #7b61ff;
+  --mantis-brand-bg: rgba(123, 97, 255, 0.12);
+  --mantis-focus: #82d8ff;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+
+  --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.28);
+  --shadow-raised: 0 14px 34px rgba(4, 8, 20, 0.34);
+  --shadow-signal: 0 0 0 1px rgba(82, 183, 255, 0.16), 0 0 28px rgba(82, 183, 255, 0.08);
+
+  --duration-fast: 120ms;
+  --duration-med: 220ms;
+  --duration-slow: 420ms;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --font-display: var(--font-mantis-body), "IBM Plex Sans", sans-serif;
+  --font-body: var(--font-mantis-body), "IBM Plex Sans", sans-serif;
+  --font-mono: var(--font-mantis-mono), "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Compatibility aliases for the pre-tokenized stylesheet. */
+  --bg-0: var(--mantis-bg-0);
+  --bg-1: var(--mantis-bg-1);
+  --bg-2: var(--mantis-bg-2);
+  --surface-1: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --border: var(--mantis-stroke-soft);
+  --text-1: var(--mantis-text-main);
+  --text-2: var(--mantis-text-soft);
+  --text-3: var(--mantis-text-dim);
+  --yes: var(--mantis-yes);
+  --no: var(--mantis-no);
+  --focus: var(--mantis-focus);
+  --container: 1120px;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+code,
+pre,
+.mantis-mono {
+  font-family: var(--font-mono);
+}
+
+:where(
+  h1,
+  h2,
+  h3,
+  h4,
+  .pageIntro h1,
+  .marketTitle,
+  .featuredDistinctTitle,
+  .ticketActionTab
+) {
+  font-family: var(--font-display);
+}
+
+:where(
+  .mantis-number,
+  .miniStatValue,
+  .metricValue,
+  .metricTileValue,
+  .metricTileValueSmall,
+  .probabilityPrimary,
+  .featuredDistinctForecastValue,
+  .marketTrendValue,
+  .ticketSidePrice,
+  .ticketAmountInput,
+  .ticketPreviewMetric strong,
+  .ticketSurfaceLive,
+  .marketMetaItem strong
+) {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--mantis-focus);
+  outline-offset: 2px;
+}
+
+.mantis-surface {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.008)), var(--mantis-panel-0);
+  border: 1px solid var(--mantis-stroke-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+.mantis-inset {
+  background: var(--mantis-panel-inset);
+  border: 1px solid var(--mantis-stroke-soft);
+  border-radius: var(--radius-md);
+}
+
+.mantis-chip {
+  min-height: 28px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--mantis-text-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

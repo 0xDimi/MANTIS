@@ -1,21 +1,3 @@
-:root {
-  --bg-0: #050816;
-  --bg-1: #0b1020;
-  --bg-2: #161b2e;
-  --surface-1: rgba(255, 255, 255, 0.04);
-  --surface-2: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.1);
-  --text-1: #ffffff;
-  --text-2: #b8c0d4;
-  --text-3: #7f8aa3;
-  --yes: #22c55e;
-  --no: #ef4444;
-  --focus: #7c5cff;
-  --radius-lg: 18px;
-  --radius-md: 14px;
-  --container: 1120px;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -30,8 +12,8 @@ body {
   min-height: 100vh;
   color: var(--text-1);
   background:
-    radial-gradient(1200px 680px at 8% -10%, rgba(124, 92, 255, 0.18), transparent 55%),
-    radial-gradient(900px 620px at 100% 0%, rgba(60, 116, 255, 0.15), transparent 52%),
+    radial-gradient(1200px 680px at 8% -10%, rgba(82, 183, 255, 0.14), transparent 55%),
+    radial-gradient(900px 620px at 100% 0%, rgba(214, 168, 90, 0.08), transparent 52%),
     linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 46%, var(--bg-2) 100%);
   font-variant-numeric: tabular-nums;
 }
@@ -52,7 +34,7 @@ ul {
 }
 
 code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.92em;
 }
 
@@ -126,17 +108,28 @@ code {
 
 .headerSearchInput {
   width: 100%;
-  min-height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.035);
+  min-height: 42px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--mantis-stroke-mid);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.012)), var(--mantis-panel-inset);
   color: var(--text-1);
-  padding: 0 14px;
+  padding: 0 14px 0 16px;
   font: inherit;
+  transition: border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .headerSearchInput::placeholder {
   color: var(--text-3);
+  letter-spacing: 0.01em;
+}
+
+.headerSearchInput:hover {
+  border-color: var(--mantis-stroke-hard);
+}
+
+.headerSearchInput:focus-visible {
+  border-color: rgba(82, 183, 255, 0.48);
+  box-shadow: var(--shadow-signal);
 }
 
 .headerRightGroup {
@@ -158,7 +151,7 @@ code {
 
 .miniStatValue {
   font-size: 13px;
-  color: #d4fbe2;
+  color: var(--mantis-text-main);
 }
 
 .profileButton {
@@ -166,22 +159,22 @@ code {
   height: 34px;
   padding: 0 6px 0 3px;
   gap: 4px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: rgba(255, 255, 255, 0.03);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   cursor: pointer;
-  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+  transition: border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
 }
 
 .profileButton:hover,
 .profileButton:focus-visible,
 .profileButtonActive {
-  border-color: rgba(124, 92, 255, 0.5);
-  background: rgba(124, 92, 255, 0.18);
+  border-color: rgba(82, 183, 255, 0.4);
+  background: var(--mantis-signal-bg);
   transform: translateY(-1px);
 }
 
@@ -192,9 +185,9 @@ code {
 .profileAvatarCircle {
   width: 24px;
   height: 24px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-mid);
+  background: rgba(255, 255, 255, 0.06);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -206,11 +199,11 @@ code {
 .profileAvatarIcon {
   width: 14px;
   height: 14px;
-  color: #9fb9ff;
+  color: var(--mantis-signal-strong);
 }
 
 .profileButtonCaret {
-  color: #9ba6bb;
+  color: var(--mantis-text-dim);
   font-size: 12px;
   line-height: 1;
 }
@@ -220,17 +213,17 @@ code {
   top: calc(100% + 8px);
   right: 0;
   width: min(216px, calc(100vw - 20px));
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(180deg, rgba(12, 17, 34, 0.97), rgba(10, 14, 28, 0.98));
-  box-shadow: 0 16px 36px rgba(4, 7, 17, 0.5);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--mantis-stroke-mid);
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(9, 15, 29, 0.98));
+  box-shadow: var(--shadow-panel);
   z-index: 75;
   overflow: hidden;
 }
 
 .accountMenuHeader {
   padding: 9px 10px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--mantis-stroke-soft);
   display: grid;
   gap: 2px;
 }
@@ -255,7 +248,7 @@ code {
   border-radius: 9px;
   border: 1px solid transparent;
   background: transparent;
-  color: #d6dff2;
+  color: var(--mantis-text-soft);
   font: inherit;
   text-align: left;
   padding: 0 8px;
@@ -266,27 +259,27 @@ code {
 }
 
 .accountMenuItem:hover {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--mantis-stroke-mid);
   background: rgba(255, 255, 255, 0.04);
 }
 
 .accountMenuDanger {
-  color: #fcb2b2;
+  color: #ffd2d5;
 }
 
 .accountMenuError {
   margin: 0;
   padding: 0 12px 10px;
-  color: #fcb2b2;
+  color: #ffd2d5;
   font-size: 11px;
 }
 
 .langToggle {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-1);
+  border: 1px solid var(--mantis-stroke-soft);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.03);
   padding: 2px;
 }
 
@@ -306,7 +299,7 @@ code {
 }
 
 .langToggleItemActive {
-  background: rgba(124, 92, 255, 0.24);
+  background: var(--mantis-signal-bg);
   color: var(--text-1);
 }
 
@@ -330,8 +323,8 @@ code {
 
 .topbar,
 .card {
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.012) 100%), var(--mantis-panel-0);
   border-radius: var(--radius-lg);
 }
 
@@ -356,13 +349,14 @@ code {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 11px;
-  color: var(--text-3);
+  color: var(--mantis-text-faint);
 }
 
 .metricValue {
   font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--mantis-text-main);
 }
 
 .routeGrid,
@@ -434,7 +428,7 @@ code {
 
 .statusRow {
   align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--mantis-stroke-soft);
   padding-top: 10px;
 }
 
@@ -465,51 +459,51 @@ code {
 }
 
 .badgeYes {
-  background: rgba(34, 197, 94, 0.14);
-  color: #86efac;
-  border-color: rgba(34, 197, 94, 0.3);
+  background: var(--mantis-yes-bg);
+  color: #bff2d4;
+  border-color: var(--mantis-yes-stroke);
 }
 
 .badgeNo {
-  background: rgba(239, 68, 68, 0.14);
-  color: #fca5a5;
-  border-color: rgba(239, 68, 68, 0.28);
+  background: var(--mantis-no-bg);
+  color: #ffd0d3;
+  border-color: var(--mantis-no-stroke);
 }
 
 .badgeNeutral {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text-2);
-  border-color: var(--border);
+  border-color: var(--mantis-stroke-soft);
 }
 
 .notice {
   padding: 11px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--mantis-stroke-soft);
 }
 
 .noticeSuccess {
-  background: rgba(34, 197, 94, 0.12);
-  color: #bbf7d0;
-  border-color: rgba(34, 197, 94, 0.28);
+  background: var(--mantis-yes-bg);
+  color: #d7f8e4;
+  border-color: var(--mantis-yes-stroke);
 }
 
 .noticeWarn {
-  background: rgba(245, 158, 11, 0.12);
-  color: #fde68a;
-  border-color: rgba(245, 158, 11, 0.3);
+  background: var(--mantis-source-bg);
+  color: #f4dba9;
+  border-color: rgba(214, 168, 90, 0.34);
 }
 
 .noticeError {
-  background: rgba(239, 68, 68, 0.12);
-  color: #fecaca;
-  border-color: rgba(239, 68, 68, 0.3);
+  background: var(--mantis-no-bg);
+  color: #ffd7da;
+  border-color: var(--mantis-no-stroke);
 }
 
 .noticeStrong {
-  background: rgba(34, 197, 94, 0.24);
-  color: #f0fff5;
-  border-color: rgba(134, 239, 172, 0.62);
+  background: rgba(82, 183, 255, 0.16);
+  color: #eff8ff;
+  border-color: rgba(82, 183, 255, 0.4);
 }
 
 .alphaModalOverlay {
@@ -553,15 +547,16 @@ code {
 .button {
   min-height: 44px;
   padding: 0 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
   color: var(--text-1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font: inherit;
   cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .button:disabled {
@@ -569,30 +564,35 @@ code {
   cursor: not-allowed;
 }
 
+.button:hover:not(:disabled) {
+  border-color: var(--mantis-stroke-hard);
+  transform: translateY(-1px);
+}
+
 .buttonPrimary {
-  border-color: rgba(124, 92, 255, 0.5);
-  background: linear-gradient(180deg, rgba(124, 92, 255, 0.46) 0%, rgba(124, 92, 255, 0.32) 100%);
+  border-color: rgba(123, 97, 255, 0.4);
+  background: linear-gradient(180deg, rgba(123, 97, 255, 0.32) 0%, rgba(123, 97, 255, 0.2) 100%);
 }
 
 .buttonGhost {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.025);
 }
 
 .buttonYes {
-  border-color: rgba(34, 197, 94, 0.35);
-  background: rgba(34, 197, 94, 0.16);
-  color: #86efac;
+  border-color: var(--mantis-yes-stroke);
+  background: var(--mantis-yes-bg);
+  color: #d4f7e2;
 }
 
 .buttonNo {
-  border-color: rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.16);
-  color: #fca5a5;
+  border-color: var(--mantis-no-stroke);
+  background: var(--mantis-no-bg);
+  color: #ffd5d8;
 }
 
 .fieldLabel {
   font-size: 13px;
-  color: #d7deef;
+  color: var(--mantis-text-soft);
 }
 
 .input,
@@ -600,9 +600,9 @@ code {
 .select {
   width: 100%;
   min-height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--mantis-stroke-soft);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.012)), var(--mantis-panel-inset);
   color: var(--text-1);
   font: inherit;
   padding: 10px 12px;
@@ -620,9 +620,9 @@ code {
 
 .metricTile,
 .panelBlock {
-  border: 1px solid var(--border);
+  border: 1px solid var(--mantis-stroke-soft);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.01)), var(--mantis-panel-1);
   padding: 12px;
 }
 
@@ -683,9 +683,9 @@ code {
   position: relative;
   width: 40px;
   height: 40px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface-1);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: rgba(255, 255, 255, 0.03);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -693,8 +693,8 @@ code {
 }
 
 .notifButtonActive {
-  border-color: rgba(124, 92, 255, 0.44);
-  background: rgba(124, 92, 255, 0.14);
+  border-color: rgba(214, 168, 90, 0.38);
+  background: var(--mantis-source-bg);
 }
 
 .notifPopoverRoot {
@@ -706,17 +706,17 @@ code {
   top: calc(100% + 10px);
   right: 0;
   width: min(420px, calc(100vw - 24px));
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(13, 18, 37, 0.97), rgba(10, 15, 30, 0.98));
-  box-shadow: 0 18px 52px rgba(4, 7, 17, 0.56);
+  border: 1px solid var(--mantis-stroke-mid);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(9, 15, 29, 0.98));
+  box-shadow: var(--shadow-panel);
   z-index: 70;
   overflow: hidden;
 }
 
 .notifPopoverHeader {
   padding: 14px 14px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--mantis-stroke-soft);
 }
 
 .notifPopoverHeader h3 {
@@ -739,9 +739,9 @@ code {
 }
 
 .notifRow {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--mantis-stroke-soft);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.016);
   padding: 10px;
   display: grid;
   gap: 5px;
@@ -766,9 +766,9 @@ code {
   min-width: 19px;
   height: 19px;
   border-radius: 999px;
-  border: 1px solid rgba(124, 92, 255, 0.44);
-  background: #7c5cff;
-  color: #fff;
+  border: 1px solid rgba(214, 168, 90, 0.34);
+  background: var(--mantis-source);
+  color: #130f08;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -813,7 +813,7 @@ code {
 
 .shelfTab,
 .categoryPill {
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid transparent;
   color: var(--text-3);
   white-space: nowrap;
@@ -821,15 +821,15 @@ code {
   padding: 0 11px;
   display: inline-flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.008);
+  background: rgba(255, 255, 255, 0.012);
   font-size: 12px;
   letter-spacing: 0.01em;
 }
 
 .shelfTabActive,
 .categoryPillActive {
-  border-color: rgba(124, 92, 255, 0.34);
-  background: rgba(124, 92, 255, 0.13);
+  border-color: rgba(82, 183, 255, 0.3);
+  background: rgba(82, 183, 255, 0.12);
   color: var(--text-1);
 }
 
@@ -859,8 +859,8 @@ code {
 .featuredNavButton {
   width: 38px;
   height: 38px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text-1);
   cursor: pointer;
@@ -871,13 +871,14 @@ code {
   min-height: 318px;
   position: relative;
   overflow: hidden;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--mantis-stroke-soft);
   background:
-    radial-gradient(132% 88% at 0% 0%, rgba(124, 92, 255, 0.16), transparent 58%),
-    radial-gradient(100% 120% at 100% 100%, rgba(34, 197, 94, 0.08), transparent 64%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.036), rgba(255, 255, 255, 0.014));
-  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    radial-gradient(132% 88% at 0% 0%, rgba(82, 183, 255, 0.14), transparent 58%),
+    radial-gradient(100% 120% at 100% 100%, rgba(214, 168, 90, 0.07), transparent 64%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.012)),
+    var(--mantis-panel-0);
+  transition: transform var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
 }
 
 .featuredDistinctLead {
@@ -891,11 +892,12 @@ code {
 .featuredDistinctCard:hover,
 .featuredDistinctCard:focus-within {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.24);
+  border-color: var(--mantis-stroke-hard);
   background:
-    radial-gradient(130% 88% at 0% 0%, rgba(124, 92, 255, 0.22), transparent 58%),
-    radial-gradient(100% 120% at 100% 100%, rgba(34, 197, 94, 0.11), transparent 64%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.018));
+    radial-gradient(130% 88% at 0% 0%, rgba(82, 183, 255, 0.18), transparent 58%),
+    radial-gradient(100% 120% at 100% 100%, rgba(214, 168, 90, 0.1), transparent 64%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.036), rgba(255, 255, 255, 0.016)),
+    var(--mantis-panel-0);
 }
 
 .featuredDistinctShell {
@@ -934,7 +936,7 @@ code {
 
 .featuredDistinctContext {
   margin: 0;
-  color: #c2cbe0;
+  color: var(--mantis-text-soft);
   font-size: 13px;
   line-height: 1.38;
   max-width: 93%;
@@ -967,16 +969,16 @@ code {
 
 .featuredDistinctTrack {
   height: 7px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: rgba(255, 255, 255, 0.04);
   overflow: hidden;
 }
 
 .featuredDistinctTrack span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, rgba(34, 197, 94, 0.84), rgba(124, 92, 255, 0.68));
+  background: linear-gradient(90deg, rgba(82, 183, 255, 0.92), rgba(130, 216, 255, 0.82));
 }
 
 .featuredDistinctMeta {
@@ -1020,7 +1022,7 @@ code {
   bottom: 14px;
   letter-spacing: 0.12em;
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.24);
+  color: rgba(214, 168, 90, 0.52);
   pointer-events: none;
   z-index: 2;
 }
@@ -1034,7 +1036,7 @@ code {
 }
 
 .marketMiniMetaStrong {
-  color: #c4cee4;
+  color: var(--mantis-text-main);
 }
 
 .marketList {
@@ -1056,18 +1058,18 @@ code {
   min-height: 198px;
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
-  border-color: rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.016));
-  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+  border-radius: var(--radius-lg);
+  border-color: var(--mantis-stroke-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.012)), var(--mantis-panel-0);
+  transition: transform var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .marketCardPoly:hover,
 .marketCardPoly:focus-within {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.22);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.044), rgba(255, 255, 255, 0.024));
-  box-shadow: 0 14px 34px rgba(4, 8, 20, 0.34);
+  border-color: var(--mantis-stroke-hard);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.016)), var(--mantis-panel-0);
+  box-shadow: var(--shadow-raised);
 }
 
 .marketCardPoly:active {
@@ -1223,18 +1225,18 @@ code {
   gap: 12px;
   align-items: center;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.026);
+  border: 1px solid var(--mantis-stroke-soft);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
   text-decoration: none;
-  transition: border-color 0.16s ease, background 0.16s ease;
+  transition: border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
 }
 
 .eventOutcomeRow:hover,
 .eventOutcomeRow:focus-visible,
 .eventOutcomeRowSelected {
-  border-color: rgba(124, 92, 255, 0.42);
-  background: rgba(124, 92, 255, 0.08);
+  border-color: rgba(82, 183, 255, 0.32);
+  background: rgba(82, 183, 255, 0.08);
 }
 
 .eventOutcomeCopy,
@@ -1293,7 +1295,7 @@ code {
 
 .marketCardPoly:hover .marketTitleLink,
 .featuredDistinctCard:hover .marketTitleLink {
-  color: #ffffff;
+  color: var(--mantis-text-main);
 }
 
 .marketHeroGrid {
@@ -1322,7 +1324,7 @@ code {
   max-width: 86ch;
   font-size: 14px;
   line-height: 1.55;
-  color: #ccd5e8;
+  color: var(--mantis-text-soft);
 }
 
 .marketMetaStrip {
@@ -1335,7 +1337,7 @@ code {
 .marketMetaItem {
   min-width: 0;
   min-height: 58px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--mantis-stroke-soft);
   display: grid;
   align-content: center;
   gap: 4px;
@@ -1346,12 +1348,12 @@ code {
   font-size: 11px;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: #91a0ba;
+  color: var(--mantis-text-dim);
 }
 
 .marketMetaItem strong {
   font-size: 13px;
-  color: #dbe4f4;
+  color: var(--mantis-text-main);
   overflow-wrap: anywhere;
 }
 
@@ -1389,7 +1391,7 @@ code {
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #9eaac0;
+  color: var(--mantis-text-dim);
 }
 
 .marketTrendValue {
@@ -1400,29 +1402,29 @@ code {
 }
 
 .marketTrendDelta {
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: rgba(255, 255, 255, 0.03);
   padding: 4px 10px;
   font-size: 11px;
-  color: #c2cde1;
+  color: var(--mantis-text-soft);
 }
 
 .marketTrendDeltaUp {
-  border-color: rgba(34, 197, 94, 0.4);
-  color: #9befbf;
+  border-color: var(--mantis-yes-stroke);
+  color: #bff2d4;
 }
 
 .marketTrendDeltaDown {
-  border-color: rgba(239, 68, 68, 0.38);
-  color: #fcb2b2;
+  border-color: var(--mantis-no-stroke);
+  color: #ffd0d3;
 }
 
 .marketTrendLine {
   height: 224px;
   position: relative;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   background: transparent;
   overflow: hidden;
 }
@@ -1459,9 +1461,9 @@ code {
   display: inline-flex;
   gap: 4px;
   padding: 1px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--mantis-stroke-soft);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.012);
 }
 
 .marketTrendRangeButton {
@@ -1469,7 +1471,7 @@ code {
   border-radius: 999px;
   border: 1px solid transparent;
   background: transparent;
-  color: #a3aec2;
+  color: var(--mantis-text-dim);
   font-size: 10px;
   font-weight: 650;
   letter-spacing: 0.05em;
@@ -1479,9 +1481,9 @@ code {
 }
 
 .marketTrendRangeButtonActive {
-  border-color: rgba(124, 92, 255, 0.4);
-  background: rgba(124, 92, 255, 0.16);
-  color: #ece8ff;
+  border-color: rgba(82, 183, 255, 0.36);
+  background: rgba(82, 183, 255, 0.12);
+  color: var(--mantis-text-main);
 }
 
 .marketTrendLatestTag {
@@ -1817,7 +1819,7 @@ code {
 }
 
 .marketTrustSettlement {
-  border-color: rgba(124, 92, 255, 0.18);
+  border-color: rgba(214, 168, 90, 0.26);
 }
 
 .marketCategory,
@@ -1849,6 +1851,7 @@ code {
   font-size: 36px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--mantis-text-main);
 }
 
 .marketListCard .probabilityPrimary {
@@ -1862,7 +1865,7 @@ code {
   right: 0;
   bottom: 0;
   padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, rgba(5, 8, 22, 0.14), rgba(5, 8, 22, 0.96) 40%);
+  background: linear-gradient(180deg, rgba(5, 8, 20, 0.14), rgba(5, 8, 20, 0.96) 40%);
   z-index: 44;
 }
 
@@ -1870,9 +1873,9 @@ code {
   width: min(calc(100% - 8px), 420px);
   margin: 0 auto;
   padding: 8px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)), var(--mantis-panel-0);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
@@ -1883,19 +1886,19 @@ code {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   color: var(--text-2);
 }
 
 .bottomDockLink:hover {
-  background: rgba(124, 92, 255, 0.16);
+  background: rgba(82, 183, 255, 0.12);
   color: var(--text-1);
 }
 
 .ticketShell {
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #171c23;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01)), var(--mantis-panel-1);
   padding: 18px;
 }
 
@@ -1908,18 +1911,18 @@ code {
 }
 
 .marketTicketCard .ticketShell {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: #171c23;
+  border-color: var(--mantis-stroke-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01)), var(--mantis-panel-1);
 }
 
 .marketTicketCard .segmentButton {
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: var(--mantis-stroke-mid);
   background: rgba(255, 255, 255, 0.025);
 }
 
 .marketTicketCard .segmentButtonActive {
-  border-color: rgba(124, 92, 255, 0.6);
-  background: rgba(124, 92, 255, 0.2);
+  border-color: rgba(82, 183, 255, 0.42);
+  background: rgba(82, 183, 255, 0.14);
 }
 
 .ticketSurfaceStack {
@@ -1963,24 +1966,24 @@ code {
 }
 
 .ticketSurfaceLiveYes {
-  color: #9befbf;
+  color: #bff2d4;
 }
 
 .ticketSurfaceLiveNo {
-  color: #fcb2b2;
+  color: #ffd0d3;
 }
 
 .ticketSurfaceClose {
-  color: #9aa6bf;
+  color: var(--mantis-text-dim);
   font-size: 11px;
 }
 
 .ticketSurfaceStatus {
   min-height: 24px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
   background: rgba(255, 255, 255, 0.03);
-  color: #d3ddee;
+  color: var(--mantis-text-soft);
   display: inline-flex;
   align-items: center;
   padding: 0 9px;
@@ -1991,8 +1994,8 @@ code {
 
 .ticketSurfaceRail {
   height: 5px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
   background: rgba(255, 255, 255, 0.04);
   overflow: hidden;
 }
@@ -2000,7 +2003,7 @@ code {
 .ticketSurfaceRail span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, rgba(34, 197, 94, 0.8), rgba(124, 92, 255, 0.66));
+  background: linear-gradient(90deg, rgba(82, 183, 255, 0.92), rgba(130, 216, 255, 0.82));
 }
 
 .ticketQuoteHead {
@@ -2016,7 +2019,7 @@ code {
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #d8d0ff;
+  color: var(--mantis-source);
 }
 
 .ticketTopTabs {
@@ -2025,7 +2028,7 @@ code {
   align-items: center;
   gap: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--mantis-stroke-soft);
 }
 
 .ticketActionTabs {
@@ -2039,7 +2042,7 @@ code {
   border: 0;
   border-bottom: 3px solid transparent;
   background: transparent;
-  color: #8a93a3;
+  color: var(--mantis-text-dim);
   font: inherit;
   font-size: 18px;
   font-weight: 600;
@@ -2048,16 +2051,16 @@ code {
 }
 
 .ticketActionTabActive {
-  color: #eef2f8;
-  border-bottom-color: rgba(238, 242, 248, 0.95);
+  color: var(--mantis-text-main);
+  border-bottom-color: var(--mantis-signal-strong);
 }
 
 .ticketOrderType {
   min-height: 26px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
   background: rgba(255, 255, 255, 0.03);
-  color: #d2dbeb;
+  color: var(--mantis-text-soft);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -2070,7 +2073,7 @@ code {
 }
 
 .ticketOrderTypeCaret {
-  color: #b2bbc8;
+  color: var(--mantis-text-dim);
   font-size: 14px;
   line-height: 1;
 }
@@ -2083,9 +2086,9 @@ code {
 
 .ticketSideButton {
   min-height: 68px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: #262d36;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)), var(--mantis-panel-2);
   color: rgba(231, 237, 246, 0.68);
   font: inherit;
   cursor: pointer;
@@ -2094,7 +2097,12 @@ code {
   justify-content: space-between;
   gap: 10px;
   padding: 0 12px;
-  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  transition: background var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
+}
+
+.ticketSideButton:hover {
+  border-color: var(--mantis-stroke-mid);
+  transform: translateY(-1px);
 }
 
 .ticketSideLabel {
@@ -2112,15 +2120,15 @@ code {
 }
 
 .ticketSideButtonYesActive {
-  border-color: rgba(67, 160, 100, 0.9);
-  background: #3ca15f;
-  color: #f4faf5;
+  border-color: var(--mantis-yes-stroke);
+  background: linear-gradient(180deg, rgba(69, 212, 131, 0.22), rgba(69, 212, 131, 0.12));
+  color: #effbf4;
 }
 
 .ticketSideButtonNoActive {
-  border-color: rgba(177, 70, 92, 0.94);
-  background: #b1465c;
-  color: #fff5f7;
+  border-color: var(--mantis-no-stroke);
+  background: linear-gradient(180deg, rgba(255, 107, 114, 0.22), rgba(255, 107, 114, 0.12));
+  color: #fff5f6;
 }
 
 .ticketAmountBlock {
@@ -2140,11 +2148,11 @@ code {
 
 .ticketAmountLabel {
   font-size: 16px;
-  color: #e4e8ef;
+  color: var(--mantis-text-main);
 }
 
 .ticketAmountBalance {
-  color: #7f8aa3;
+  color: var(--mantis-text-dim);
   font-size: 13px;
 }
 
@@ -2153,7 +2161,7 @@ code {
   min-width: 0;
   border: 0;
   background: transparent;
-  color: #64748b;
+  color: var(--mantis-text-main);
   font: inherit;
   font-size: clamp(27px, 2.25vw, 36px);
   font-weight: 600;
@@ -2165,7 +2173,7 @@ code {
 }
 
 .ticketAmountInput::placeholder {
-  color: #64748b;
+  color: var(--mantis-text-dim);
 }
 
 .ticketAmountInput::-webkit-outer-spin-button,
@@ -2186,16 +2194,16 @@ code {
 
 .segmentButton {
   min-height: 44px;
-  border-radius: 11px;
-  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--mantis-stroke-soft);
   background: rgba(255, 255, 255, 0.02);
   color: var(--text-2);
   cursor: pointer;
 }
 
 .segmentButtonActive {
-  border-color: rgba(124, 92, 255, 0.5);
-  background: rgba(124, 92, 255, 0.22);
+  border-color: rgba(82, 183, 255, 0.42);
+  background: rgba(82, 183, 255, 0.14);
   color: var(--text-1);
 }
 
@@ -2207,10 +2215,10 @@ code {
 
 .ticketQuickAmount {
   min-height: 40px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: #262d36;
-  color: #dde3ec;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--mantis-stroke-soft);
+  background: var(--mantis-panel-2);
+  color: var(--mantis-text-soft);
   padding: 0 16px;
   font-size: 13px;
   font-weight: 600;
@@ -2218,9 +2226,9 @@ code {
 }
 
 .ticketQuickAmountActive {
-  border-color: rgba(255, 255, 255, 0.06);
-  background: #262d36;
-  color: #dde3ec;
+  border-color: rgba(82, 183, 255, 0.28);
+  background: rgba(82, 183, 255, 0.1);
+  color: var(--mantis-text-main);
 }
 
 .ticketLiveMeta {
@@ -2228,13 +2236,13 @@ code {
   justify-content: flex-start;
   gap: 10px;
   flex-wrap: wrap;
-  color: #8f9db7;
+  color: var(--mantis-text-dim);
   font-size: 11px;
 }
 
 .ticketPreviewPanel {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
+  border: 1px solid var(--mantis-stroke-soft);
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.018);
   padding: 12px;
 }
@@ -2253,8 +2261,8 @@ code {
 }
 
 .ticketPreviewMetric {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--mantis-stroke-soft);
   background: rgba(255, 255, 255, 0.012);
   padding: 8px;
   display: grid;
@@ -2262,12 +2270,12 @@ code {
 }
 
 .ticketPreviewMetric span {
-  color: #95a3bb;
+  color: var(--mantis-text-dim);
   font-size: 11px;
 }
 
 .ticketPreviewMetric strong {
-  color: #e7edf8;
+  color: var(--mantis-text-main);
   font-size: 14px;
 }
 
@@ -2289,14 +2297,14 @@ code {
 }
 
 .ticketDetailsFold {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--mantis-stroke-soft);
   padding-top: 8px;
 }
 
 .ticketDetailsFold summary {
   list-style: none;
   cursor: pointer;
-  color: #c8d3e7;
+  color: var(--mantis-text-soft);
   font-size: 12px;
   font-weight: 600;
 }
@@ -2307,10 +2315,10 @@ code {
 
 .quoteFreshness {
   min-height: 24px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-soft);
   background: rgba(255, 255, 255, 0.03);
-  color: #c6d3ea;
+  color: var(--mantis-text-soft);
   font-size: 10px;
   display: inline-flex;
   align-items: center;
@@ -2322,15 +2330,15 @@ code {
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: #93c5fd;
+  background: var(--mantis-signal);
 }
 
 .quoteFreshnessLive span {
-  background: #4ade80;
+  background: var(--mantis-yes);
 }
 
 .quoteFreshnessStale span {
-  background: #fb7185;
+  background: var(--mantis-no);
 }
 
 .stateChips {
@@ -2340,54 +2348,54 @@ code {
 }
 
 .stateChip {
-  border-color: var(--border);
+  border-color: var(--mantis-stroke-soft);
   color: var(--text-2);
   background: rgba(255, 255, 255, 0.03);
 }
 
 .stateChipYes {
-  border-color: rgba(34, 197, 94, 0.35);
-  color: #86efac;
-  background: rgba(34, 197, 94, 0.1);
+  border-color: var(--mantis-yes-stroke);
+  color: #bff2d4;
+  background: var(--mantis-yes-bg);
 }
 
 .stateChipNo {
-  border-color: rgba(239, 68, 68, 0.35);
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--mantis-no-stroke);
+  color: #ffd0d3;
+  background: var(--mantis-no-bg);
 }
 
 .stateChipFocus {
-  border-color: rgba(124, 92, 255, 0.45);
-  color: #d5ccff;
-  background: rgba(124, 92, 255, 0.16);
+  border-color: rgba(214, 168, 90, 0.34);
+  color: #f4dba9;
+  background: var(--mantis-source-bg);
 }
 
 .ticketCta {
   width: 100%;
   min-height: 56px;
-  border-radius: 16px;
-  border: 1px solid rgba(67, 140, 227, 0.96);
-  background: #418de8;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(82, 183, 255, 0.54);
+  background: linear-gradient(180deg, rgba(82, 183, 255, 0.96), rgba(60, 143, 224, 0.94));
   color: #f7fbff;
   font-weight: 700;
   font-size: 15px;
   letter-spacing: -0.01em;
-  box-shadow: inset 0 -10px 0 rgba(26, 102, 190, 0.28);
+  box-shadow: inset 0 -10px 0 rgba(22, 92, 167, 0.28), 0 10px 24px rgba(15, 63, 117, 0.28);
 }
 
 .ticketCta.ticketCtaYes,
 .ticketCta.ticketCtaNo {
-  border-color: rgba(67, 140, 227, 0.96);
-  background: #418de8;
+  border-color: rgba(82, 183, 255, 0.54);
+  background: linear-gradient(180deg, rgba(82, 183, 255, 0.96), rgba(60, 143, 224, 0.94));
   color: #f7fbff;
 }
 
 .ticketCtaConfirm {
   min-height: 58px;
-  border-color: rgba(89, 167, 255, 0.98);
-  background: linear-gradient(180deg, #4ea0ff, #3f8bea);
-  box-shadow: inset 0 -12px 0 rgba(23, 96, 180, 0.3), 0 10px 24px rgba(28, 80, 150, 0.32);
+  border-color: rgba(130, 216, 255, 0.8);
+  background: linear-gradient(180deg, rgba(130, 216, 255, 0.98), rgba(82, 183, 255, 0.94));
+  box-shadow: inset 0 -12px 0 rgba(23, 96, 180, 0.28), 0 10px 24px rgba(19, 74, 126, 0.3);
 }
 
 .accountPageShell {
@@ -2403,9 +2411,9 @@ code {
 .accountIdentityAvatar {
   width: 52px;
   height: 52px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: radial-gradient(120% 120% at 20% 20%, rgba(124, 92, 255, 0.34), rgba(255, 255, 255, 0.04));
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--mantis-stroke-mid);
+  background: radial-gradient(120% 120% at 20% 20%, rgba(82, 183, 255, 0.3), rgba(255, 255, 255, 0.04));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2472,8 +2480,8 @@ code {
 }
 
 .portfolioTabActive {
-  border-color: rgba(124, 92, 255, 0.46);
-  background: rgba(124, 92, 255, 0.14);
+  border-color: rgba(82, 183, 255, 0.36);
+  background: rgba(82, 183, 255, 0.12);
   color: #f1f4fa;
 }
 
@@ -2514,7 +2522,7 @@ code {
 }
 
 .portfolioTableRowClickable:hover {
-  background: rgba(124, 92, 255, 0.08);
+  background: rgba(82, 183, 255, 0.08);
 }
 
 .portfolioRowActions {
@@ -2646,7 +2654,7 @@ code {
 }
 
 .portfolioAttributionRow:hover {
-  background: rgba(124, 92, 255, 0.08);
+  background: rgba(82, 183, 255, 0.08);
 }
 
 .portfolioAttributionRank {
@@ -2737,7 +2745,7 @@ code {
 }
 
 .portfolioSplitBar span:last-child {
-  background: linear-gradient(90deg, rgba(124, 92, 255, 0.92), rgba(88, 67, 200, 0.82));
+  background: linear-gradient(90deg, rgba(214, 168, 90, 0.92), rgba(179, 132, 62, 0.82));
 }
 
 .portfolioSplitLegend {

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
-import { IBM_Plex_Sans } from 'next/font/google';
+import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
+import './tokens.css';
 import './globals.css';
 import { appConfig } from '@/lib/app-config';
 import { TelemetryProvider } from '@/components/telemetry-provider';
@@ -9,7 +10,15 @@ import { PageTelemetry } from '@/components/page-telemetry';
 const ibmPlex = IBM_Plex_Sans({
   subsets: ['latin', 'greek'],
   weight: ['400', '500', '600', '700'],
-  display: 'swap'
+  display: 'swap',
+  variable: '--font-mantis-body'
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-mantis-mono'
 });
 
 export const metadata: Metadata = {
@@ -25,7 +34,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={ibmPlex.className}>
+      <body className={`${ibmPlex.className} ${ibmPlex.variable} ${ibmPlexMono.variable}`}>
         <TelemetryProvider>
           <Suspense fallback={null}>
             <PageTelemetry />
