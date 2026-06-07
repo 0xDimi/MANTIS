@@ -12,8 +12,7 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: '/', en: 'Home', el: 'Αρχική', matches: ['/'] },
-  { href: '/markets', en: 'Markets', el: 'Αγορές', matches: ['/markets', '/events'] },
+  { href: '/markets', en: 'Markets', el: 'Αγορές', matches: ['/', '/markets', '/events'] },
   { href: '/portfolio', en: 'Portfolio', el: 'Χαρτοφυλάκιο', matches: ['/portfolio'] },
   { href: '/more', en: 'More', el: 'Περισσότερα', matches: ['/more', '/notifications', '/rules', '/profile', '/access'] }
 ];

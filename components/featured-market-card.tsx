@@ -5,7 +5,7 @@ import { MarketCardIcon } from '@/components/market-card-icon';
 import { ProbabilityRail } from '@/components/probability-rail';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
-import { localizedCategory, localizedOutcomeLabel } from '@/lib/market-copy';
+import { localizedOutcomeLabel } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type FeaturedMarketCardProps = {
@@ -65,9 +65,6 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
           <MarketCardIcon item={market} size={56} className="marketCardIconFeatured" />
           <div className="featuredDistinctHeroCopy">
             <div className="featuredDistinctBody">
-              <div className="featuredDistinctEyebrow">
-                <span>{localizedCategory(market.category, lang)}</span>
-              </div>
               <h2 className="featuredDistinctTitle">
                 <Link className="marketTitleLink" href={href}>{market.question}</Link>
               </h2>
