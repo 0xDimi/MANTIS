@@ -14,25 +14,6 @@ type FeaturedMarketCardProps = {
   lead?: boolean;
 };
 
-const contextByCategory: Record<string, { en: string; el: string }> = {
-  politics: {
-    en: 'Policy shifts can reprice this market fast if narrative momentum flips.',
-    el: 'Οι πολιτικές μετατοπίσεις μπορούν να αλλάξουν γρήγορα την τιμολόγηση αν αλλάξει η δυναμική.'
-  },
-  economy: {
-    en: 'Macro prints and policy tone are the main drivers for this contract.',
-    el: 'Οι μακροοικονομικές ανακοινώσεις και ο τόνος πολιτικής είναι οι βασικοί οδηγοί.'
-  },
-  weather: {
-    en: 'Official station updates can move implied odds quickly near the deadline.',
-    el: 'Οι επίσημες μετεωρολογικές ενημερώσεις μετακινούν γρήγορα τις πιθανότητες κοντά στη λήξη.'
-  },
-  technology: {
-    en: 'Company guidance and product timing updates are the key catalysts.',
-    el: 'Οι ενημερώσεις για καθοδήγηση εταιρειών και χρονοδιάγραμμα προϊόντων είναι οι βασικοί καταλύτες.'
-  }
-};
-
 function marketHref(slug: string, lang: UiLang, side?: 'yes' | 'no') {
   const params = new URLSearchParams();
   if (lang === 'el') params.set('lang', 'el');
@@ -51,11 +32,6 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
   const volume = market.state?.volumeTotal ?? 0;
   const yesLabel = localizedOutcomeLabel('yes', 'yes', lang);
   const noLabel = localizedOutcomeLabel('no', 'no', lang);
-  const context = contextByCategory[market.category.toLowerCase()] ?? {
-    en: 'Watch for new verified updates, this market can reprice quickly close to deadline.',
-    el: 'Παρακολούθησε τις νέες επιβεβαιωμένες ενημερώσεις, αυτή η αγορά μπορεί να ανατιμολογηθεί γρήγορα κοντά στη λήξη.'
-  };
-
   return (
     <article className={`card featuredDistinctCard${lead ? ' featuredDistinctLead' : ' featuredDistinctFollow'}`}>
       <Link className="marketCardHitArea" href={href} aria-label={market.question} />
@@ -68,7 +44,6 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
               <h2 className="featuredDistinctTitle">
                 <Link className="marketTitleLink" href={href}>{market.question}</Link>
               </h2>
-              <p className="featuredDistinctContext">{lang === 'el' ? context.el : context.en}</p>
             </div>
           </div>
         </div>

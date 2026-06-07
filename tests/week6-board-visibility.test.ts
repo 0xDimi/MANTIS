@@ -54,4 +54,22 @@ test('new live markets have Greek question copy', () => {
     ),
     /πληθωρισμός/
   );
+
+  assert.match(
+    localizedQuestionFromSlug(
+      'gre-gas-unleaded-above-206-jun11-2026',
+      "Will Greece's average unleaded 95 price stay above €2.06 per litre?",
+      'el'
+    ),
+    /αμόλυβδης 95/
+  );
+
+  assert.match(
+    localizedQuestionFromSlug(
+      'global-albania-rama-ceases-pm-before-2027',
+      'Will Edi Rama cease to be Prime Minister of Albania before December 31, 2026?',
+      'el'
+    ),
+    /Έντι Ράμα/
+  );
 });
