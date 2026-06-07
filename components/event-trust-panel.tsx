@@ -11,7 +11,6 @@ type EventTrustPanelProps = {
   resolutionRule: string;
   voidRule: string;
   description: string | null;
-  educationCopy: string;
   status: string;
   childCount: number;
   updatedAt: string;
@@ -81,7 +80,6 @@ export function EventTrustPanel({
   resolutionRule,
   voidRule,
   description,
-  educationCopy,
   status,
   childCount,
   updatedAt
@@ -179,7 +177,6 @@ export function EventTrustPanel({
             <i aria-hidden="true" />
           </summary>
           <div className="marketTrustDisclosureBody">
-            <p className="marketTrustQuietLine">{educationCopy}</p>
             <div className="marketTrustRuleGrid">
               <div className="marketTrustRule marketTrustRuleYes">
                 <span>{tr(lang, 'Yes', 'Ναι')}</span>

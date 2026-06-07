@@ -3,14 +3,15 @@ import { AlphaShell } from '@/components/alpha-shell';
 import { EventTrustPanel } from '@/components/event-trust-panel';
 import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { loadEventDetail } from '@/lib/alpha-read-model';
-import { formatCompact, formatDateTime, formatPercent, formatRelativeClose } from '@/lib/format';
-import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
+import { formatCompact, formatPercent } from '@/lib/format';
+import { localizedCategory, localizedOutcomeLabel } from '@/lib/market-copy';
 import { resolveServerLang } from '@/lib/ui-lang-server';
 import { tr } from '@/lib/ui-lang';
 
-function childHref(eventSlug: string, childMarketId: string, lang: 'en' | 'el') {
+function childHref(eventSlug: string, childMarketId: string, lang: 'en' | 'el', side?: 'yes' | 'no') {
   const params = new URLSearchParams({ child: childMarketId });
   if (lang === 'el') params.set('lang', 'el');
+  if (side) params.set('side', side);
   return `/events/${eventSlug}?${params.toString()}`;
 }
 
@@ -48,56 +49,40 @@ export default async function EventDetailPage({
             <h1 className="marketTitle">{eventDetail.event.title}</h1>
             {eventDetail.event.subtitle ? <p className="marketContextLine">{eventDetail.event.subtitle}</p> : null}
 
-            <div className="notice eventEducationNotice">
-              <strong>{tr(lang, 'Multiple markets can resolve YES.', 'Περισσότερες από μία αγορές μπορούν να κλείσουν στο ΝΑΙ.')}</strong>{' '}
-              {tr(
-                lang,
-                'Each row is a separate YES/NO market with its own price.',
-                'Κάθε γραμμή είναι ξεχωριστή αγορά ΝΑΙ/ΟΧΙ με δική της τιμή.'
-              )}
-            </div>
-
-            <section className="marketMetaStrip">
-              <div className="marketMetaItem">
-                <span>{tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}</span>
-                <strong>{formatDateTime(eventDetail.event.closeTime, lang)} ({formatRelativeClose(eventDetail.event.closeTime, { lang })})</strong>
-              </div>
-              <div className="marketMetaItem">
-                <span>{tr(lang, 'Event status', 'Κατάσταση γεγονότος')}</span>
-                <strong>{localizedMarketStatus(eventDetail.event.status, lang, 'long')}</strong>
-              </div>
-              <div className="marketMetaItem">
-                <span>{tr(lang, 'Child markets', 'Επιμέρους αγορές')}</span>
-                <strong>{eventDetail.aggregate.childCount}</strong>
-              </div>
-              <div className="marketMetaItem">
-                <span>{tr(lang, 'Expected YES count', 'Αναμενόμενα ΝΑΙ')}</span>
-                <strong>{eventDetail.aggregate.expectedYesCount.toFixed(2)}</strong>
-              </div>
-            </section>
-
             <section className="eventOutcomeTable" aria-label={tr(lang, 'Event markets', 'Αγορές γεγονότος')}>
               {eventDetail.children.map((child) => {
                 const selected = selectedChild?.marketId === child.marketId;
                 return (
-                  <Link
+                  <div
                     className={selected ? 'eventOutcomeRow eventOutcomeRowSelected' : 'eventOutcomeRow'}
-                    href={childHref(eventDetail.event.slug, child.marketId, lang)}
                     key={child.outcomeId}
                   >
                     <div className="eventOutcomeCopy">
-                      <strong>{child.label}</strong>
-                      <span>{child.childQuestion}</span>
+                      <Link className="eventOutcomeTitleLink" href={childHref(eventDetail.event.slug, child.marketId, lang)}>
+                        {child.label}
+                      </Link>
+                      <span>
+                        {lang === 'el'
+                          ? `${tr(lang, 'Όγκος', 'Όγκος')} €${formatCompact(child.volumeTotal, lang)}`
+                          : `€${formatCompact(child.volumeTotal, lang)} ${tr(lang, 'Vol.', 'Όγκος')}`}
+                      </span>
                     </div>
-                    <div className="eventOutcomeStats">
-                      <strong>{formatPercent(child.yesPrice)} {tr(lang, 'YES', 'ΝΑΙ')}</strong>
-                      <span>{formatPercent(child.noPrice)} {tr(lang, 'NO', 'ΟΧΙ')}</span>
+
+                    <div className="eventOutcomeChance">
+                      <strong>{formatPercent(child.yesPrice)}</strong>
                     </div>
-                    <div className="eventOutcomeMeta">
-                      <span>{localizedMarketStatus(child.status, lang)}</span>
-                      {child.volumeTotal > 0 ? <span>{tr(lang, 'Vol', 'Όγκος')} €{formatCompact(child.volumeTotal, lang)}</span> : null}
+
+                    <div className="buttonRow eventOutcomeTradeButtons">
+                      <Link className="button buttonYes eventMarketButton eventOutcomeTradeButton" href={childHref(eventDetail.event.slug, child.marketId, lang, 'yes')}>
+                        <span>{tr(lang, 'Yes', 'Ναι')}</span>
+                        <strong>{Math.round(child.yesPrice * 100)}¢</strong>
+                      </Link>
+                      <Link className="button buttonNo eventMarketButton eventOutcomeTradeButton" href={childHref(eventDetail.event.slug, child.marketId, lang, 'no')}>
+                        <span>{tr(lang, 'No', 'Όχι')}</span>
+                        <strong>{Math.round(child.noPrice * 100)}¢</strong>
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 );
               })}
             </section>
@@ -111,7 +96,6 @@ export default async function EventDetailPage({
               resolutionRule={eventDetail.event.resolutionRule}
               voidRule={eventDetail.event.voidRule}
               description={eventDetail.event.description}
-              educationCopy={eventDetail.event.educationCopy}
               status={eventDetail.event.status}
               childCount={eventDetail.aggregate.childCount}
               updatedAt={eventDetail.serverTime}
