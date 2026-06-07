@@ -14,6 +14,7 @@ type DiscoverBoardProps = {
   view: DiscoverView;
   category: string | null;
   query?: string | null;
+  basePath?: '/' | '/markets';
 };
 
 function normalizeView(value: string | null | undefined): DiscoverView {
@@ -31,7 +32,7 @@ function statusPriority(status: string) {
   return 3;
 }
 
-function hrefWith(lang: UiLang, view: DiscoverView, category: string | null, queryText?: string | null) {
+function hrefWith(basePath: '/' | '/markets', lang: UiLang, view: DiscoverView, category: string | null, queryText?: string | null) {
   const params = new URLSearchParams();
 
   if (lang === 'el') params.set('lang', 'el');
@@ -40,7 +41,7 @@ function hrefWith(lang: UiLang, view: DiscoverView, category: string | null, que
   if (queryText) params.set('q', queryText);
 
   const queryString = params.toString();
-  return queryString ? `?${queryString}` : '';
+  return queryString ? `${basePath}?${queryString}` : basePath;
 }
 
 function sortMarkets(markets: Awaited<ReturnType<typeof loadMarketsBoard>>['markets'], view: DiscoverView) {
@@ -72,7 +73,7 @@ const FEATURED_PINNED_SLUGS = [
   'gre-economy-cpi-above-5-may2026'
 ] as const;
 
-export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoardProps) {
+export async function DiscoverBoard({ lang, view, category, query, basePath = '/' }: DiscoverBoardProps) {
   const [{ markets, error }, eventBoard] = await Promise.all([
     loadMarketsBoard({ scope: DISCOVER_BOARD_SCOPE, lang }),
     loadEventsBoard({ lang, category, search: query })
@@ -120,7 +121,7 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
           <Link
             key={tab.key}
             className={view === tab.key ? 'shelfTab shelfTabActive' : 'shelfTab'}
-            href={hrefWith(lang, tab.key, category, normalizedQuery)}
+            href={hrefWith(basePath, lang, tab.key, category, normalizedQuery)}
           >
             {lang === 'el' ? tab.el : tab.en}
           </Link>
@@ -130,14 +131,14 @@ export async function DiscoverBoard({ lang, view, category, query }: DiscoverBoa
       {featured.length > 0 ? <FeaturedMarketsCarousel markets={featured} lang={lang} /> : null}
 
       <section className="categoryStrip" aria-label={tr(lang, 'Categories', 'Κατηγορίες')}>
-        <Link className={!category ? 'categoryPill categoryPillActive' : 'categoryPill'} href={hrefWith(lang, view, null, normalizedQuery)}>
+        <Link className={!category ? 'categoryPill categoryPillActive' : 'categoryPill'} href={hrefWith(basePath, lang, view, null, normalizedQuery)}>
           {tr(lang, 'All', 'Όλες')}
         </Link>
         {categories.map((item) => (
           <Link
             key={item}
             className={category === item ? 'categoryPill categoryPillActive' : 'categoryPill'}
-            href={hrefWith(lang, view, item, normalizedQuery)}
+            href={hrefWith(basePath, lang, view, item, normalizedQuery)}
           >
             {localizedCategory(item, lang)}
           </Link>

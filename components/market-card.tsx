@@ -3,7 +3,7 @@ import { MarketCardIcon } from '@/components/market-card-icon';
 import { ProbabilityRail } from '@/components/probability-rail';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
-import { localizedCategory, localizedOutcomeLabel } from '@/lib/market-copy';
+import { localizedOutcomeLabel } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type MarketCardProps = {
@@ -42,9 +42,6 @@ export function MarketCard({ market, lang }: MarketCardProps) {
             <h3 className="marketQuestion">
               <Link className="marketTitleLink" href={href}>{market.question}</Link>
             </h3>
-            <div className="marketCardInlineMeta">
-              <span className="marketCardInlineLabel">{localizedCategory(market.category, lang)}</span>
-            </div>
           </div>
         </div>
 

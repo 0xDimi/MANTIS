@@ -54,7 +54,7 @@ export default async function HomePage({
           walletVisible={onboardingContext.walletVisible}
         />
       ) : null}
-      <DiscoverBoard lang={lang} view={view} category={params.cat ?? null} query={params.q ?? null} />
+      <DiscoverBoard lang={lang} view={view} category={params.cat ?? null} query={params.q ?? null} basePath="/" />
     </AlphaShell>
   );
 }

@@ -14,7 +14,7 @@ export default async function MarketsPage({
 
   return (
     <AlphaShell title={tr(lang, 'Markets', 'Αγορές')} lang={lang} showIntro={false}>
-      <DiscoverBoard lang={lang} view={view} category={params.cat ?? null} query={params.q ?? null} />
+      <DiscoverBoard lang={lang} view={view} category={params.cat ?? null} query={params.q ?? null} basePath="/markets" />
     </AlphaShell>
   );
 }

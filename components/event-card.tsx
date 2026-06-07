@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { MarketCardIcon } from '@/components/market-card-icon';
 import type { EventCardRead } from '@/lib/event-read-model';
 import { formatCompact, formatRelativeClose } from '@/lib/format';
-import { localizedCategory } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type EventCardProps = {
@@ -39,9 +38,6 @@ export function EventCard({ event, lang }: EventCardProps) {
             <h3 className="marketQuestion">
               <Link className="marketTitleLink" href={href}>{event.title}</Link>
             </h3>
-            <div className="marketCardInlineMeta">
-              <span className="marketCardInlineLabel">{localizedCategory(event.category, lang)}</span>
-            </div>
           </div>
         </div>
 
