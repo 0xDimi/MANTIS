@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { MarketCardIcon } from '@/components/market-card-icon';
 import { ProbabilityRail } from '@/components/probability-rail';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
-import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
+import { localizedCategory, localizedOutcomeLabel } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type FeaturedMarketCardProps = {
@@ -31,12 +32,6 @@ const contextByCategory: Record<string, { en: string; el: string }> = {
     el: 'Οι ενημερώσεις για καθοδήγηση εταιρειών και χρονοδιάγραμμα προϊόντων είναι οι βασικοί καταλύτες.'
   }
 };
-
-function statusTone(status: string) {
-  if (status === 'open') return 'badgeYes';
-  if (status === 'resolved' || status === 'settled') return 'badgeNeutral';
-  return 'badgeNo';
-}
 
 function marketHref(slug: string, lang: UiLang, side?: 'yes' | 'no') {
   const params = new URLSearchParams();
@@ -66,16 +61,19 @@ export function FeaturedMarketCard({ market, lang, lead = false }: FeaturedMarke
       <Link className="marketCardHitArea" href={href} aria-label={market.question} />
 
       <div className="featuredDistinctShell">
-        <div className="featuredDistinctTop">
-          <span className="marketCategory">{localizedCategory(market.category, lang)}</span>
-          <span className={statusTone(market.status)}>{localizedMarketStatus(market.status, lang)}</span>
-        </div>
-
-        <div className="featuredDistinctBody">
-          <h2 className="featuredDistinctTitle">
-            <Link className="marketTitleLink" href={href}>{market.question}</Link>
-          </h2>
-          <p className="featuredDistinctContext">{lang === 'el' ? context.el : context.en}</p>
+        <div className="featuredDistinctHero">
+          <MarketCardIcon item={market} size={56} className="marketCardIconFeatured" />
+          <div className="featuredDistinctHeroCopy">
+            <div className="featuredDistinctBody">
+              <div className="featuredDistinctEyebrow">
+                <span>{localizedCategory(market.category, lang)}</span>
+              </div>
+              <h2 className="featuredDistinctTitle">
+                <Link className="marketTitleLink" href={href}>{market.question}</Link>
+              </h2>
+              <p className="featuredDistinctContext">{lang === 'el' ? context.el : context.en}</p>
+            </div>
+          </div>
         </div>
 
         <div className="featuredDistinctSignal">

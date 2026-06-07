@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import { MarketCardIcon } from '@/components/market-card-icon';
 import type { EventCardRead } from '@/lib/event-read-model';
 import { formatCompact, formatRelativeClose } from '@/lib/format';
-import { localizedCategory, localizedMarketStatus } from '@/lib/market-copy';
+import { localizedCategory } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type EventCardProps = {
@@ -32,21 +33,27 @@ export function EventCard({ event, lang }: EventCardProps) {
       <Link className="marketCardHitArea" href={href} aria-label={event.title} />
 
       <div className="marketCardContent">
-        <div className="marketMetaRow marketMetaRowTight">
-          <span className="marketCategory">{localizedCategory(event.category, lang)}</span>
-          <span className={event.status === 'open' ? 'badgeYes' : 'badgeNo'}>{localizedMarketStatus(event.status, lang)}</span>
-          <span className="badgeNeutral">{tr(lang, 'Grouped', 'Ομαδοποιημένη')}</span>
+        <div className="marketCardHeader">
+          <MarketCardIcon item={event} size={44} />
+          <div className="marketCardHeading">
+            <h3 className="marketQuestion">
+              <Link className="marketTitleLink" href={href}>{event.title}</Link>
+            </h3>
+            <div className="marketCardInlineMeta">
+              <span className="marketCardInlineLabel">{localizedCategory(event.category, lang)}</span>
+            </div>
+          </div>
         </div>
-
-        <h3 className="marketQuestion">
-          <Link className="marketTitleLink" href={href}>{event.title}</Link>
-        </h3>
 
         <div className="eventMarketRows">
           {visibleChildren.map((child) => (
             <div className="eventMarketRow" key={child.marketId}>
               <Link className="eventMarketLabel" href={eventChildHref(event.slug, child.marketId, lang)}>
-                {child.label}
+                <span className="eventMarketLabelText">{child.label}</span>
+                <span
+                  className="eventMarketOddsLine"
+                  style={{ width: `${Math.max(12, Math.round(child.yesPrice * 100))}%` }}
+                />
               </Link>
               <div className="buttonRow eventMarketActions">
                 <Link className="button buttonYes eventMarketButton" href={eventChildHref(event.slug, child.marketId, lang, 'yes')}>

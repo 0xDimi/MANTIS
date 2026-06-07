@@ -1,20 +1,15 @@
 import Link from 'next/link';
+import { MarketCardIcon } from '@/components/market-card-icon';
 import { ProbabilityRail } from '@/components/probability-rail';
 import type { BoardMarket } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent, formatRelativeClose, formatRelativeTime } from '@/lib/format';
-import { localizedCategory, localizedMarketStatus, localizedOutcomeLabel } from '@/lib/market-copy';
+import { localizedCategory, localizedOutcomeLabel } from '@/lib/market-copy';
 import { tr, type UiLang } from '@/lib/ui-lang';
 
 type MarketCardProps = {
   market: BoardMarket;
   lang: UiLang;
 };
-
-function statusTone(status: string) {
-  if (status === 'open') return 'badgeYes';
-  if (status === 'resolved' || status === 'settled') return 'badgeNeutral';
-  return 'badgeNo';
-}
 
 function marketHref(slug: string, lang: UiLang, side?: 'yes' | 'no') {
   const params = new URLSearchParams();
@@ -41,14 +36,17 @@ export function MarketCard({ market, lang }: MarketCardProps) {
       <Link className="marketCardHitArea" href={href} aria-label={market.question} />
 
       <div className="marketCardContent">
-        <div className="marketMetaRow marketMetaRowTight">
-          <span className="marketCategory">{localizedCategory(market.category, lang)}</span>
-          <span className={statusTone(market.status)}>{localizedMarketStatus(market.status, lang)}</span>
+        <div className="marketCardHeader">
+          <MarketCardIcon item={market} size={44} />
+          <div className="marketCardHeading">
+            <h3 className="marketQuestion">
+              <Link className="marketTitleLink" href={href}>{market.question}</Link>
+            </h3>
+            <div className="marketCardInlineMeta">
+              <span className="marketCardInlineLabel">{localizedCategory(market.category, lang)}</span>
+            </div>
+          </div>
         </div>
-
-        <h3 className="marketQuestion">
-          <Link className="marketTitleLink" href={href}>{market.question}</Link>
-        </h3>
 
         <div className="marketBottomRow marketBottomRowTight">
           <div className="probabilityPrimary">{formatPercent(yesProb)}</div>
