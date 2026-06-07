@@ -5,9 +5,31 @@ import { MarketTrendPanel } from '@/components/market-trend-panel';
 import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { loadMarketDetail, loadMarketsBoard } from '@/lib/alpha-read-model';
 import { formatDateTime, formatPercent, formatRelativeClose } from '@/lib/format';
-import { localizeBoardMarketCopy, localizeMarketDetailCopy, localizedCategory, localizedMarketStatus } from '@/lib/market-copy';
+import { localizeBoardMarketCopy, localizeMarketDetailCopy, localizedCategory } from '@/lib/market-copy';
+import type { UiLang } from '@/lib/ui-lang';
 import { resolveServerLang } from '@/lib/ui-lang-server';
 import { tr } from '@/lib/ui-lang';
+
+function formatMarketCloseDate(value: string, lang: UiLang) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return '—';
+
+  return new Intl.DateTimeFormat(lang === 'el' ? 'el-GR' : 'en-GB', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(date);
+}
+
+function MarketCloseIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="10" cy="10" r="7.25" />
+      <path d="M10 6.2v4.2l2.7 1.7" />
+    </svg>
+  );
+}
 
 export default async function MarketDetailPage({
   params,
@@ -47,26 +69,16 @@ export default async function MarketDetailPage({
             <article className="marketHeroMain">
               <p className="eyebrow">{localizedCategory(market.category, lang)}</p>
               <h1 className="marketTitle">{market.question}</h1>
-              {market.description ? <p className="marketContextLine">{market.description}</p> : null}
-
-              <section className="marketMetaStrip">
-                <div className="marketMetaItem">
-                  <span>{tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}</span>
-                  <strong>{formatDateTime(market.closeTime, lang)} ({formatRelativeClose(market.closeTime, { calendarAfterDays: 999, lang })})</strong>
-                </div>
-                <div className="marketMetaItem">
-                  <span>{tr(lang, 'Resolution target', 'Στόχος επίλυσης')}</span>
-                  <strong>{market.resolutionTime ? formatDateTime(market.resolutionTime, lang) : '—'}</strong>
-                </div>
-                <div className="marketMetaItem">
-                  <span>{tr(lang, 'Primary source', 'Κύρια πηγή')}</span>
-                  <strong>{market.sourcePrimary}</strong>
-                </div>
-                <div className="marketMetaItem">
-                  <span>{tr(lang, 'Market status', 'Κατάσταση αγοράς')}</span>
-                  <strong>{localizedMarketStatus(market.status, lang, 'long')}</strong>
-                </div>
-              </section>
+              <div
+                className="marketCloseMeta"
+                aria-label={tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}
+                title={`${tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}: ${formatDateTime(market.closeTime, lang)}`}
+              >
+                <span className="marketCloseMetaIcon">
+                  <MarketCloseIcon />
+                </span>
+                <span className="marketCloseMetaValue">{formatMarketCloseDate(market.closeTime, lang)}</span>
+              </div>
 
               <section className="marketChartSurface">
                 <MarketTrendPanel

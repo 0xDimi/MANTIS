@@ -2197,6 +2197,44 @@ code {
   overflow-wrap: anywhere;
 }
 
+.marketCloseMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 22px;
+  color: var(--mantis-text-soft);
+}
+
+.marketCloseMeta::before {
+  content: '';
+  width: 1px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.marketCloseMetaIcon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b97a6;
+}
+
+.marketCloseMetaIcon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.marketCloseMetaValue {
+  font-size: clamp(14px, 1.45vw, 16px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--mantis-text-soft);
+}
+
 .marketContextLine {
   margin: -2px 0 0;
   max-width: 86ch;
@@ -3906,6 +3944,19 @@ code {
     overflow-wrap: break-word;
   }
 
+  .marketCloseMeta {
+    gap: 10px;
+  }
+
+  .marketCloseMeta::before {
+    height: 16px;
+  }
+
+  .marketCloseMetaIcon {
+    width: 16px;
+    height: 16px;
+  }
+
 .marketTrendLine {
     height: 150px;
   }
@@ -3994,6 +4045,10 @@ code {
     max-width: 360px;
     font-size: 24px;
     line-height: 1.16;
+  }
+
+  .marketCloseMetaValue {
+    font-size: 13px;
   }
 
   .marketContextLine {
