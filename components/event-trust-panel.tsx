@@ -10,7 +10,6 @@ type EventTrustPanelProps = {
   sourceFallback: string | null;
   resolutionRule: string;
   voidRule: string;
-  description: string | null;
   status: string;
   childCount: number;
   updatedAt: string;
@@ -79,7 +78,6 @@ export function EventTrustPanel({
   sourceFallback,
   resolutionRule,
   voidRule,
-  description,
   status,
   childCount,
   updatedAt
@@ -113,14 +111,6 @@ export function EventTrustPanel({
         <div>
           <p className="eyebrow">{tr(lang, 'Trust layer', 'Επίπεδο εμπιστοσύνης')}</p>
           <h2>{tr(lang, 'How this grouped event is verified', 'Πώς επαληθεύεται αυτό το γεγονός')}</h2>
-          <p>
-            {description ??
-              tr(
-                lang,
-                'This grouped event bundles independent YES/NO markets under one source pack and one resolution policy.',
-                'Αυτό το ομαδοποιημένο γεγονός συγκεντρώνει ανεξάρτητες αγορές ΝΑΙ/ΟΧΙ κάτω από ένα πακέτο πηγών και μία πολιτική επίλυσης.'
-              )}
-          </p>
         </div>
         <div className="marketTrustUpdated">
           <span>{tr(lang, 'Last event update', 'Τελευταία ενημέρωση γεγονότος')}</span>

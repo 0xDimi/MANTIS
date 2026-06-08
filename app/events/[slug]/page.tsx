@@ -95,7 +95,6 @@ export default async function EventDetailPage({
               sourceFallback={eventDetail.event.sourceFallback}
               resolutionRule={eventDetail.event.resolutionRule}
               voidRule={eventDetail.event.voidRule}
-              description={eventDetail.event.description}
               status={eventDetail.event.status}
               childCount={eventDetail.aggregate.childCount}
               updatedAt={eventDetail.serverTime}
