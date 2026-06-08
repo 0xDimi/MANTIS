@@ -233,6 +233,19 @@ type CategoricalTradeHistoryPayload = {
   error?: string;
 };
 
+async function readJsonSafely<T>(response: Response): Promise<T | null> {
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!contentType.toLowerCase().includes('application/json')) {
+    return null;
+  }
+
+  try {
+    return (await response.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
 type PositionRow = {
   id: string;
   marketType: 'binary' | 'categorical';
@@ -888,28 +901,46 @@ export function PortfolioV2Panel({ lang = 'en' }: { lang?: UiLang }) {
         fetch(categoricalTradeUrl, { cache: 'no-store' })
       ]);
 
-      const portfolioPayload = (await portfolioRes.json()) as PortfolioPayload;
-      const tradeHistoryPayload = (await tradeHistoryRes.json()) as TradeHistoryPayload;
-      const performancePayload = (await performanceRes.json()) as PerformancePayload;
-      const categoricalPayload = (await categoricalRes.json()) as CategoricalPayload;
-      const categoricalTradePayload = (await categoricalTradeRes.json()) as CategoricalTradeHistoryPayload;
+      const [portfolioPayload, tradeHistoryPayload, performancePayload, categoricalPayload, categoricalTradePayload] = await Promise.all([
+        readJsonSafely<PortfolioPayload>(portfolioRes),
+        readJsonSafely<TradeHistoryPayload>(tradeHistoryRes),
+        readJsonSafely<PerformancePayload>(performanceRes),
+        readJsonSafely<CategoricalPayload>(categoricalRes),
+        readJsonSafely<CategoricalTradeHistoryPayload>(categoricalTradeRes)
+      ]);
       const categoricalUnavailable = categoricalRes.status === 404;
       const categoricalTradeUnavailable = categoricalTradeRes.status === 404;
 
       if (!portfolioRes.ok) {
-        throw new Error(portfolioPayload.error ?? `portfolio request failed (${portfolioRes.status})`);
+        throw new Error(portfolioPayload?.error ?? `portfolio request failed (${portfolioRes.status})`);
       }
       if (!tradeHistoryRes.ok) {
-        throw new Error(tradeHistoryPayload.error ?? `trade history request failed (${tradeHistoryRes.status})`);
+        throw new Error(tradeHistoryPayload?.error ?? `trade history request failed (${tradeHistoryRes.status})`);
       }
       if (!performanceRes.ok) {
-        throw new Error(performancePayload.error ?? `performance request failed (${performanceRes.status})`);
+        throw new Error(performancePayload?.error ?? `performance request failed (${performanceRes.status})`);
       }
       if (!categoricalRes.ok && !categoricalUnavailable) {
-        throw new Error(categoricalPayload.error ?? `categorical portfolio request failed (${categoricalRes.status})`);
+        throw new Error(categoricalPayload?.error ?? `categorical portfolio request failed (${categoricalRes.status})`);
       }
       if (!categoricalTradeRes.ok && !categoricalTradeUnavailable) {
-        throw new Error(categoricalTradePayload.error ?? `categorical trade history request failed (${categoricalTradeRes.status})`);
+        throw new Error(categoricalTradePayload?.error ?? `categorical trade history request failed (${categoricalTradeRes.status})`);
+      }
+
+      if (!portfolioPayload) {
+        throw new Error('portfolio summary returned a non-JSON response');
+      }
+      if (!tradeHistoryPayload) {
+        throw new Error('trade history returned a non-JSON response');
+      }
+      if (!performancePayload) {
+        throw new Error('portfolio performance returned a non-JSON response');
+      }
+      if (!categoricalUnavailable && !categoricalPayload) {
+        throw new Error('categorical portfolio returned a non-JSON response');
+      }
+      if (!categoricalTradeUnavailable && !categoricalTradePayload) {
+        throw new Error('categorical trade history returned a non-JSON response');
       }
 
       setPortfolio(portfolioPayload);
