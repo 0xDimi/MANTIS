@@ -23,7 +23,11 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: `${appConfig.codename} | Prediction Markets`,
-  description: 'MANTIS prediction markets experience for paper-trading and market resolution testing.'
+  description: 'MANTIS prediction markets experience for paper-trading and market resolution testing.',
+  icons: {
+    icon: '/brand/mantis/logo/mantis-logo-icon-white-on-black.png',
+    apple: '/brand/mantis/logo/mantis-logo-icon-white-on-black.png'
+  }
 };
 
 export const viewport: Viewport = {
