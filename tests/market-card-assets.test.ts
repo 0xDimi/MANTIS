@@ -87,3 +87,14 @@ test('generic category fallbacks still land on stable board thumbnails', () => {
   assert.equal(economy.src, '/market-card-images/economy-chart.jpg');
   assert.equal(sports.src, '/market-card-images/sports-field.jpg');
 });
+
+test('grouped event detail page reuses the shared market-card icon layout', () => {
+  const pageSource = readFileSync(path.join(repoRoot, 'app/events/[slug]/page.tsx'), 'utf8');
+  const cssSource = readFileSync(path.join(repoRoot, 'app/globals.css'), 'utf8');
+
+  assert.match(pageSource, /MarketCardIcon item=\{eventDetail\.event\}/);
+  assert.match(pageSource, /className="eventDetailHeader"/);
+  assert.match(pageSource, /className="eventDetailBody"/);
+  assert.match(cssSource, /\.eventDetailHeader\s*\{/);
+  assert.match(cssSource, /\.eventDetailBody\s*\{/);
+});

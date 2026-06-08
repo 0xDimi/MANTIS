@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AlphaShell } from '@/components/alpha-shell';
 import { EventTrustPanel } from '@/components/event-trust-panel';
+import { MarketCardIcon } from '@/components/market-card-icon';
 import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
 import { loadEventDetail } from '@/lib/alpha-read-model';
 import { formatCompact, formatPercent } from '@/lib/format';
@@ -45,60 +46,67 @@ export default async function EventDetailPage({
       {eventDetail ? (
         <section className="eventDetailGrid">
           <article className="marketHeroMain eventDetailMain">
-            <p className="eyebrow">{localizedCategory(eventDetail.event.category, lang)}</p>
-            <h1 className="marketTitle">{eventDetail.event.title}</h1>
-            {eventDetail.event.subtitle ? <p className="marketContextLine">{eventDetail.event.subtitle}</p> : null}
+            <header className="eventDetailHeader">
+              <MarketCardIcon item={eventDetail.event} size={60} className="eventDetailHeroIcon" />
+              <div className="eventDetailHeaderCopy">
+                <p className="eyebrow">{localizedCategory(eventDetail.event.category, lang)}</p>
+                <h1 className="marketTitle">{eventDetail.event.title}</h1>
+                {eventDetail.event.subtitle ? <p className="marketContextLine">{eventDetail.event.subtitle}</p> : null}
+              </div>
+            </header>
 
-            <section className="eventOutcomeTable" aria-label={tr(lang, 'Event markets', 'Αγορές γεγονότος')}>
-              {eventDetail.children.map((child) => {
-                const selected = selectedChild?.marketId === child.marketId;
-                return (
-                  <div
-                    className={selected ? 'eventOutcomeRow eventOutcomeRowSelected' : 'eventOutcomeRow'}
-                    key={child.outcomeId}
-                  >
-                    <div className="eventOutcomeCopy">
-                      <Link className="eventOutcomeTitleLink" href={childHref(eventDetail.event.slug, child.marketId, lang)}>
-                        {child.label}
-                      </Link>
-                      <span>
-                        {lang === 'el'
-                          ? `${tr(lang, 'Όγκος', 'Όγκος')} €${formatCompact(child.volumeTotal, lang)}`
-                          : `€${formatCompact(child.volumeTotal, lang)} ${tr(lang, 'Vol.', 'Όγκος')}`}
-                      </span>
+            <div className="eventDetailBody">
+              <section className="eventOutcomeTable" aria-label={tr(lang, 'Event markets', 'Αγορές γεγονότος')}>
+                {eventDetail.children.map((child) => {
+                  const selected = selectedChild?.marketId === child.marketId;
+                  return (
+                    <div
+                      className={selected ? 'eventOutcomeRow eventOutcomeRowSelected' : 'eventOutcomeRow'}
+                      key={child.outcomeId}
+                    >
+                      <div className="eventOutcomeCopy">
+                        <Link className="eventOutcomeTitleLink" href={childHref(eventDetail.event.slug, child.marketId, lang)}>
+                          {child.label}
+                        </Link>
+                        <span>
+                          {lang === 'el'
+                            ? `${tr(lang, 'Όγκος', 'Όγκος')} €${formatCompact(child.volumeTotal, lang)}`
+                            : `€${formatCompact(child.volumeTotal, lang)} ${tr(lang, 'Vol.', 'Όγκος')}`}
+                        </span>
+                      </div>
+
+                      <div className="eventOutcomeChance">
+                        <strong>{formatPercent(child.yesPrice)}</strong>
+                      </div>
+
+                      <div className="buttonRow eventOutcomeTradeButtons">
+                        <Link className="button buttonYes eventMarketButton eventOutcomeTradeButton" href={childHref(eventDetail.event.slug, child.marketId, lang, 'yes')}>
+                          <span>{tr(lang, 'Yes', 'Ναι')}</span>
+                          <strong>{Math.round(child.yesPrice * 100)}¢</strong>
+                        </Link>
+                        <Link className="button buttonNo eventMarketButton eventOutcomeTradeButton" href={childHref(eventDetail.event.slug, child.marketId, lang, 'no')}>
+                          <span>{tr(lang, 'No', 'Όχι')}</span>
+                          <strong>{Math.round(child.noPrice * 100)}¢</strong>
+                        </Link>
+                      </div>
                     </div>
+                  );
+                })}
+              </section>
 
-                    <div className="eventOutcomeChance">
-                      <strong>{formatPercent(child.yesPrice)}</strong>
-                    </div>
-
-                    <div className="buttonRow eventOutcomeTradeButtons">
-                      <Link className="button buttonYes eventMarketButton eventOutcomeTradeButton" href={childHref(eventDetail.event.slug, child.marketId, lang, 'yes')}>
-                        <span>{tr(lang, 'Yes', 'Ναι')}</span>
-                        <strong>{Math.round(child.yesPrice * 100)}¢</strong>
-                      </Link>
-                      <Link className="button buttonNo eventMarketButton eventOutcomeTradeButton" href={childHref(eventDetail.event.slug, child.marketId, lang, 'no')}>
-                        <span>{tr(lang, 'No', 'Όχι')}</span>
-                        <strong>{Math.round(child.noPrice * 100)}¢</strong>
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-            </section>
-
-            <EventTrustPanel
-              lang={lang}
-              closeTime={eventDetail.event.closeTime}
-              determinationTime={eventDetail.event.determinationTime}
-              sourcePrimary={eventDetail.event.sourcePrimary}
-              sourceFallback={eventDetail.event.sourceFallback}
-              resolutionRule={eventDetail.event.resolutionRule}
-              voidRule={eventDetail.event.voidRule}
-              status={eventDetail.event.status}
-              childCount={eventDetail.aggregate.childCount}
-              updatedAt={eventDetail.serverTime}
-            />
+              <EventTrustPanel
+                lang={lang}
+                closeTime={eventDetail.event.closeTime}
+                determinationTime={eventDetail.event.determinationTime}
+                sourcePrimary={eventDetail.event.sourcePrimary}
+                sourceFallback={eventDetail.event.sourceFallback}
+                resolutionRule={eventDetail.event.resolutionRule}
+                voidRule={eventDetail.event.voidRule}
+                status={eventDetail.event.status}
+                childCount={eventDetail.aggregate.childCount}
+                updatedAt={eventDetail.serverTime}
+              />
+            </div>
           </article>
 
           <aside className="marketTicketCard eventTicketCard" id="trade-ticket">
