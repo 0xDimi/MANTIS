@@ -1,6 +1,6 @@
 # Alpha Operator Runbook
 
-Last updated: 2026-04-14 21:24 (EEST)
+Last updated: 2026-06-08 14:40 (EEST)
 
 ## Scope
 Operational playbook for xyz Labs alpha (`https://xyz-labs-demo.vercel.app`) while product remains in paper-trading mode.
@@ -16,10 +16,12 @@ Operational playbook for xyz Labs alpha (`https://xyz-labs-demo.vercel.app`) whi
 
 ## Pre-deploy checklist
 - Branch is `alpha` and synced with `origin/alpha`
+- Working tree is clean with no staged, unstaged, or untracked deploy-relevant files
 - Markets slate unchanged unless explicit launch-slate window is opened
 - Supabase migrations applied on runtime before deploy if schema changed
 - New markets have matching Greek copy in `lib/market-copy.ts`
 - No open red blockers in `docs/ALPHA_LIVE_STATUS.md`
+- `npm run preflight:deploy` passes before any production push/deploy
 
 ## New-market localization gate
 Any new market is incomplete until it passes both language readbacks:
@@ -39,9 +41,13 @@ If a market was inserted directly into live Supabase, deploy the app code contai
 ## Deploy procedure (production)
 ```bash
 cd side-project-os/prediction-market/demo
-git push origin alpha
-vercel deploy --prod --yes
+npm run deploy:prod
 ```
+
+Hard rule:
+- Never run `vercel deploy --prod` from the main workspace directly.
+- Production deploys must ship from the clean worktree created by `scripts/deploy-alpha-prod.sh`.
+- If `npm run preflight:deploy` fails because the repo is dirty or behind `origin/alpha`, stop and fix the repo state first instead of forcing a deploy.
 
 ## Post-deploy verification
 ```bash
