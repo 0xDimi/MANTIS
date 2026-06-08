@@ -111,6 +111,22 @@ const ENTITY_ICONS = {
   }
 } as const satisfies Record<string, MarketCardIconAsset>;
 
+const SLUG_ICON_OVERRIDES = {
+  'gre-economy-cpi-above-5-may2026': CATEGORY_IMAGES.economy,
+  'gre-gas-unleaded-above-206-jun11-2026': CATEGORY_IMAGES.energy,
+  'gre-markets-athex-general-index-2415-jun12-2026': CATEGORY_IMAGES.economy,
+  'gre-weather-athens-33c-by-jun15-2026': CATEGORY_IMAGES.weather,
+  'gre-social-heraklion-airport-protest-jun24-2026': CATEGORY_IMAGES.social,
+  'gre-sports-zambidis-mayweather-win-jun27-2026': CATEGORY_IMAGES.sports,
+  'gre-politics-samaras-new-party-before-jun30-2026': CATEGORY_IMAGES.politics,
+  'global-us-invade-iran-by-jun30': ENTITY_ICONS.usIran,
+  'gre-economy-unemployment-below-95-may2026': CATEGORY_IMAGES.economy,
+  'gre-politics-election-before-2027': CATEGORY_IMAGES.politics,
+  'global-albania-rama-ceases-pm-before-2027': ENTITY_ICONS.albania,
+  'global-us-iran-final-agreement-checkpoints-2026': ENTITY_ICONS.usIran,
+  'gre-football-greek-clubs-uefa-league-phase-2026-27': CATEGORY_IMAGES.sports
+} as const satisfies Record<string, MarketCardIconAsset>;
+
 function normalize(value: string | null | undefined) {
   return (value ?? '')
     .normalize('NFD')
@@ -126,8 +142,15 @@ function normalizedWords(value: string) {
   return ` ${value.replace(/[^a-z0-9]+/g, ' ').trim()} `;
 }
 
+function normalizePhrase(value: string) {
+  return normalize(value).replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
 function includesPhrase(haystack: string, needles: readonly string[]) {
-  return needles.some((needle) => haystack.includes(` ${needle} `));
+  return needles.some((needle) => {
+    const normalizedNeedle = normalizePhrase(needle);
+    return normalizedNeedle.length > 0 && haystack.includes(` ${normalizedNeedle} `);
+  });
 }
 
 function collectAssetPaths(asset: MarketCardAssetPathCarrier) {
@@ -159,41 +182,45 @@ export function resolveMarketCardIcon(input: MarketCardIconInput): MarketCardIco
   const haystack = `${slug} ${text}`;
   const wordHaystack = normalizedWords(haystack);
 
+  if (slug && slug in SLUG_ICON_OVERRIDES) {
+    return SLUG_ICON_OVERRIDES[slug as keyof typeof SLUG_ICON_OVERRIDES];
+  }
+
   if (
-    includesAny(haystack, ['iran']) &&
+    includesPhrase(wordHaystack, ['iran']) &&
     includesPhrase(wordHaystack, ['us', 'usa', 'united states', 'america'])
   ) {
     return ENTITY_ICONS.usIran;
   }
 
-  if (includesAny(haystack, ['bitcoin', 'btc'])) return ENTITY_ICONS.bitcoin;
-  if (includesAny(haystack, ['spacex'])) return ENTITY_ICONS.spacex;
-  if (includesAny(haystack, ['olympiacos'])) return ENTITY_ICONS.olympiacos;
-  if (includesAny(haystack, ['panathinaikos'])) return ENTITY_ICONS.panathinaikos;
-  if (includesAny(haystack, ['paok'])) return ENTITY_ICONS.paok;
-  if (includesAny(haystack, ['aek'])) return ENTITY_ICONS.aek;
-  if (includesAny(haystack, ['albania', 'rama'])) return ENTITY_ICONS.albania;
-  if (includesAny(haystack, ['peru'])) return ENTITY_ICONS.peru;
-  if (includesAny(haystack, ['iran'])) return ENTITY_ICONS.iran;
+  if (includesPhrase(wordHaystack, ['bitcoin', 'btc'])) return ENTITY_ICONS.bitcoin;
+  if (includesPhrase(wordHaystack, ['spacex'])) return ENTITY_ICONS.spacex;
+  if (includesPhrase(wordHaystack, ['olympiacos'])) return ENTITY_ICONS.olympiacos;
+  if (includesPhrase(wordHaystack, ['panathinaikos'])) return ENTITY_ICONS.panathinaikos;
+  if (includesPhrase(wordHaystack, ['paok'])) return ENTITY_ICONS.paok;
+  if (includesPhrase(wordHaystack, ['aek'])) return ENTITY_ICONS.aek;
+  if (includesPhrase(wordHaystack, ['albania', 'rama'])) return ENTITY_ICONS.albania;
+  if (includesPhrase(wordHaystack, ['peru'])) return ENTITY_ICONS.peru;
+  if (includesPhrase(wordHaystack, ['iran'])) return ENTITY_ICONS.iran;
 
-  if (includesAny(haystack, ['nato', 'ukraine', 'russia', 'ceasefire', 'invade', 'geopolitics', 'international', 'global'])) {
+  if (includesPhrase(wordHaystack, ['nato', 'ukraine', 'russia', 'ceasefire', 'invade', 'geopolitics', 'international', 'global'])) {
     return CATEGORY_IMAGES.global;
   }
 
-  if (includesAny(haystack, ['protest', 'strike', 'streaming', 'posts', 'social'])) return CATEGORY_IMAGES.social;
-  if (includesAny(haystack, ['gas', 'unleaded', 'fuel', 'petrol', 'energy'])) return CATEGORY_IMAGES.energy;
-  if (includesAny(haystack, ['weather', 'heatwave', 'rain', 'storm', 'temperature', 'hurricane'])) return CATEGORY_IMAGES.weather;
-  if (includesAny(haystack, ['uefa', 'superleague', 'football', 'soccer', 'euroleague', 'basket', 'final4', 'olympiacos', 'panathinaikos', 'paok', 'aek', 'zambidis'])) {
+  if (includesPhrase(wordHaystack, ['protest', 'strike', 'streaming', 'posts', 'social'])) return CATEGORY_IMAGES.social;
+  if (includesPhrase(wordHaystack, ['gas', 'unleaded', 'fuel', 'petrol', 'energy'])) return CATEGORY_IMAGES.energy;
+  if (includesPhrase(wordHaystack, ['weather', 'heatwave', 'rain', 'storm', 'temperature', 'hurricane'])) return CATEGORY_IMAGES.weather;
+  if (includesPhrase(wordHaystack, ['uefa', 'superleague', 'football', 'soccer', 'euroleague', 'basket', 'final4', 'olympiacos', 'panathinaikos', 'paok', 'aek', 'zambidis'])) {
     return CATEGORY_IMAGES.sports;
   }
 
-  if (includesAny(haystack, ['bitcoin', 'btc', 'crypto', 'athex', 'index', 'stocks', 'market', 'banks', 'deposit', 'tourism', 'inflation', 'cpi', 'unemployment', 'economy'])) {
+  if (includesPhrase(wordHaystack, ['bitcoin', 'btc', 'crypto', 'athex', 'index', 'stocks', 'banks', 'deposit', 'tourism', 'inflation', 'cpi', 'unemployment', 'economy'])) {
     return CATEGORY_IMAGES.economy;
   }
 
-  if (includesAny(haystack, ['ai', 'startup', 'tech', 'technology', 'spacex', 'rocket', 'satellite'])) return CATEGORY_IMAGES.tech;
+  if (includesPhrase(wordHaystack, ['ai', 'startup', 'tech', 'technology', 'spacex', 'rocket', 'satellite'])) return CATEGORY_IMAGES.tech;
 
-  if (includesAny(haystack, ['cabinet', 'tsipras', 'samaras', 'minister', 'politics', 'election', 'parliament'])) {
+  if (includesPhrase(wordHaystack, ['cabinet', 'tsipras', 'samaras', 'minister', 'politics', 'election', 'parliament'])) {
     return CATEGORY_IMAGES.politics;
   }
 

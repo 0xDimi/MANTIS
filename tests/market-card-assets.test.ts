@@ -88,6 +88,33 @@ test('generic category fallbacks still land on stable board thumbnails', () => {
   assert.equal(sports.src, '/market-card-images/sports-field.jpg');
 });
 
+test('live slug overrides keep current icon assignments stable even if copy changes', () => {
+  const icon = resolveMarketCardIcon({
+    slug: 'global-us-iran-final-agreement-checkpoints-2026',
+    question: 'Completely different copy that should not reshuffle the icon',
+    title: 'Different title',
+    category: 'politics'
+  });
+
+  assert.equal(icon.kind, 'pair');
+  assert.equal(icon.leftSrc, '/market-card-icons/flag-us.svg');
+  assert.equal(icon.rightSrc, '/market-card-icons/flag-iran.svg');
+});
+
+test('word-boundary matching does not misclassify Mayweather as weather', () => {
+  const icon = resolveMarketCardIcon({
+    slug: 'boxing-floyd-mayweather-win-2026',
+    question: 'Will Floyd Mayweather win his next fight?',
+    category: 'sports'
+  });
+
+  assert.equal('src' in icon, true);
+  if (!('src' in icon)) {
+    throw new Error('expected a single-asset icon for sports fallback');
+  }
+  assert.equal(icon.src, '/market-card-images/sports-field.jpg');
+});
+
 test('detail pages reuse the shared market-card icon header layout', () => {
   const eventPageSource = readFileSync(path.join(repoRoot, 'app/events/[slug]/page.tsx'), 'utf8');
   const marketPageSource = readFileSync(path.join(repoRoot, 'app/markets/[slug]/page.tsx'), 'utf8');
