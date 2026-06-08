@@ -1,5 +1,5 @@
 import { AlphaShell } from '@/components/alpha-shell';
-import { PortfolioLivePanel } from '@/components/portfolio-live-panel';
+import { PortfolioV2Panel } from '@/components/portfolio-v2-panel';
 import { resolveServerLang } from '@/lib/ui-lang-server';
 import { tr } from '@/lib/ui-lang';
 
@@ -12,8 +12,13 @@ export default async function PortfolioPage({
   const lang = await resolveServerLang({ searchParam: params.lang });
 
   return (
-    <AlphaShell title={tr(lang, 'Portfolio', 'Χαρτοφυλάκιο')} eyebrow={tr(lang, 'Wallet, performance, positions, and history', 'Πορτοφόλι, απόδοση, θέσεις και ιστορικό')} lang={lang}>
-      <PortfolioLivePanel lang={lang} />
+    <AlphaShell
+      title={tr(lang, 'Portfolio', 'Χαρτοφυλάκιο')}
+      eyebrow={tr(lang, 'Portfolio value, performance, positions and history', 'Αξία, απόδοση, θέσεις και ιστορικό')}
+      lang={lang}
+      showIntro={false}
+    >
+      <PortfolioV2Panel lang={lang} />
     </AlphaShell>
   );
 }

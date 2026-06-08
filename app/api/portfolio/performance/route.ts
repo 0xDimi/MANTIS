@@ -67,12 +67,207 @@ type SettlementEntryRow = {
   no_shares_closed: number | string;
 };
 
+type PortfolioRange = '1D' | '7D' | '1M' | 'YTD' | 'ALL';
+
+type PortfolioChartPoint = {
+  timestamp: string;
+  value: number;
+};
+
+type RangePnlSummary = {
+  range: PortfolioRange;
+  pnlAmount: number;
+  pnlPct: number | null;
+  label: string;
+};
+
 function round2(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
+function parseRange(raw: string | null): PortfolioRange {
+  const normalized = (raw ?? '').toUpperCase();
+  if (normalized === '1D') return '1D';
+  if (normalized === '7D' || normalized === '1W') return '7D';
+  if (normalized === '1M') return '1M';
+  if (normalized === 'YTD') return 'YTD';
+  return 'ALL';
+}
+
 function toNumber(value: number | string | null | undefined) {
   return Number(value ?? 0);
+}
+
+function rangeLabel(range: PortfolioRange, lang: UiLang) {
+  if (range === '1D') return tr(lang, 'Today', 'Σήμερα');
+  if (range === '7D') return tr(lang, 'Last 7 days', 'Τελευταίες 7 ημέρες');
+  if (range === '1M') return tr(lang, 'Last 30 days', 'Τελευταίες 30 ημέρες');
+  if (range === 'YTD') return tr(lang, 'Year to date', 'Από αρχή έτους');
+  return tr(lang, 'All time', 'Από την αρχή');
+}
+
+function rangeStart(range: PortfolioRange, now = new Date()) {
+  const base = new Date(now);
+
+  if (range === '1D') {
+    base.setHours(base.getHours() - 24);
+    return base;
+  }
+
+  if (range === '7D') {
+    base.setDate(base.getDate() - 7);
+    return base;
+  }
+
+  if (range === '1M') {
+    base.setDate(base.getDate() - 30);
+    return base;
+  }
+
+  if (range === 'YTD') {
+    return new Date(base.getFullYear(), 0, 1);
+  }
+
+  return null;
+}
+
+function targetPointCount(range: PortfolioRange) {
+  if (range === '1D') return 48;
+  if (range === '7D') return 42;
+  if (range === '1M') return 60;
+  if (range === 'YTD') return 90;
+  return 120;
+}
+
+function dedupeAndSortPoints(points: PortfolioChartPoint[]) {
+  const deduped = new Map<number, PortfolioChartPoint>();
+
+  for (const point of points) {
+    const timestamp = new Date(point.timestamp).getTime();
+    if (!Number.isFinite(timestamp) || !Number.isFinite(point.value)) continue;
+    deduped.set(timestamp, {
+      timestamp: new Date(timestamp).toISOString(),
+      value: round2(point.value)
+    });
+  }
+
+  return [...deduped.entries()]
+    .sort((left, right) => left[0] - right[0])
+    .map(([, point]) => point);
+}
+
+function downsampleLttb(points: PortfolioChartPoint[], threshold: number) {
+  if (threshold >= points.length || threshold <= 2) return points.slice();
+
+  const sampled: PortfolioChartPoint[] = [];
+  const bucketSize = (points.length - 2) / (threshold - 2);
+  let anchorIndex = 0;
+
+  sampled.push(points[anchorIndex]);
+
+  for (let bucketIndex = 0; bucketIndex < threshold - 2; bucketIndex += 1) {
+    const rangeStartIndex = Math.floor(bucketIndex * bucketSize) + 1;
+    const rangeEndIndex = Math.min(Math.floor((bucketIndex + 1) * bucketSize) + 1, points.length - 1);
+    const nextRangeStartIndex = Math.floor((bucketIndex + 1) * bucketSize) + 1;
+    const nextRangeEndIndex = Math.min(Math.floor((bucketIndex + 2) * bucketSize) + 1, points.length);
+
+    let avgX = 0;
+    let avgY = 0;
+    const avgRangeLength = Math.max(nextRangeEndIndex - nextRangeStartIndex, 1);
+
+    for (let index = nextRangeStartIndex; index < nextRangeEndIndex; index += 1) {
+      avgX += new Date(points[index].timestamp).getTime();
+      avgY += points[index].value;
+    }
+
+    avgX /= avgRangeLength;
+    avgY /= avgRangeLength;
+
+    const anchorX = new Date(points[anchorIndex].timestamp).getTime();
+    const anchorY = points[anchorIndex].value;
+
+    let maxArea = -1;
+    let candidateIndex = rangeStartIndex;
+
+    for (let index = rangeStartIndex; index < rangeEndIndex; index += 1) {
+      const pointX = new Date(points[index].timestamp).getTime();
+      const pointY = points[index].value;
+      const area = Math.abs((anchorX - avgX) * (pointY - anchorY) - (anchorX - pointX) * (avgY - anchorY));
+
+      if (area > maxArea) {
+        maxArea = area;
+        candidateIndex = index;
+      }
+    }
+
+    sampled.push(points[candidateIndex]);
+    anchorIndex = candidateIndex;
+  }
+
+  sampled.push(points[points.length - 1]);
+  return sampled;
+}
+
+function buildChartAndPnl({
+  range,
+  lang,
+  availableSeries,
+  currentPortfolioValue,
+  currentTimestamp
+}: {
+  range: PortfolioRange;
+  lang: UiLang;
+  availableSeries: PortfolioChartPoint[];
+  currentPortfolioValue: number;
+  currentTimestamp: string;
+}) {
+  const ordered = dedupeAndSortPoints(availableSeries);
+
+  const fallbackPoint: PortfolioChartPoint = {
+    timestamp: currentTimestamp,
+    value: round2(currentPortfolioValue)
+  };
+
+  const allPoints = ordered.length ? ordered : [fallbackPoint];
+  const now = new Date(currentTimestamp);
+  const start = rangeStart(range, now);
+  const startMs = start?.getTime() ?? null;
+
+  let baselinePoint = allPoints[0];
+  if (startMs != null) {
+    const candidate = [...allPoints].reverse().find((point) => new Date(point.timestamp).getTime() <= startMs);
+    baselinePoint = candidate ?? allPoints[0];
+  }
+
+  let visiblePoints = allPoints;
+  if (startMs != null) {
+    const firstInRangeIndex = allPoints.findIndex((point) => new Date(point.timestamp).getTime() >= startMs);
+    if (firstInRangeIndex === -1) {
+      visiblePoints = [baselinePoint, fallbackPoint];
+    } else {
+      const baselineIndex = Math.max(firstInRangeIndex - 1, 0);
+      visiblePoints = allPoints.slice(baselineIndex);
+    }
+  }
+
+  const lastVisiblePoint = visiblePoints[visiblePoints.length - 1];
+  if (!lastVisiblePoint || lastVisiblePoint.timestamp !== fallbackPoint.timestamp || lastVisiblePoint.value !== fallbackPoint.value) {
+    visiblePoints = [...visiblePoints, fallbackPoint];
+  }
+
+  const chart = downsampleLttb(dedupeAndSortPoints(visiblePoints), targetPointCount(range));
+  const pnlAmount = round2(currentPortfolioValue - baselinePoint.value);
+  const pnlPct = baselinePoint.value > 0 ? round2(pnlAmount / baselinePoint.value) : null;
+
+  return {
+    chart,
+    selectedRangePnl: {
+      range,
+      pnlAmount,
+      pnlPct,
+      label: rangeLabel(range, lang)
+    } satisfies RangePnlSummary
+  };
 }
 
 function hasOpenExposure(position: PositionRow) {
@@ -166,6 +361,7 @@ export async function GET(request: Request) {
     const supabase = await getSupabaseServerClient();
     const url = new URL(request.url);
     const lang = await resolveServerLang({ searchParam: url.searchParams.get('lang') });
+    const range = parseRange(url.searchParams.get('range'));
     const {
       data: { user },
       error: authError
@@ -218,7 +414,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: tradesError.message }, { status: 500 });
     }
 
-    const walletRow = wallet as { id: string; starting_balance: number | string; available_balance: number | string } | null;
+    const walletRow = wallet as {
+      id: string;
+      starting_balance: number | string;
+      available_balance: number | string;
+      updated_at?: string | null;
+    } | null;
     const positionRows = (positions ?? []) as PositionRow[];
     const tradeRows = (trades ?? []) as TradeRow[];
 
@@ -442,9 +643,26 @@ export async function GET(request: Request) {
         };
       });
 
+    const currentTimestamp = walletRow?.updated_at ?? entries[0]?.createdAt ?? new Date().toISOString();
+    const chartInput = series.map((point) => ({
+      timestamp: point.time,
+      value: round2(point.balanceAfter + openExposure)
+    }));
+    const { chart, selectedRangePnl } = buildChartAndPnl({
+      range,
+      lang,
+      availableSeries: chartInput,
+      currentPortfolioValue: totalAccountValue,
+      currentTimestamp
+    });
+
     return NextResponse.json(
       {
         userId: user.id,
+        selectedRange: range,
+        selectedRangePnl,
+        chart,
+        lastUpdatedAt: currentTimestamp,
         summary: {
           marketsTraded: distinctTradedMarkets.size,
           settledMarkets: settledMarkets.length,

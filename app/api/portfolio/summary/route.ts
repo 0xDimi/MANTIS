@@ -94,7 +94,7 @@ export async function GET(request: Request) {
 
     const [marketsResult, statesResult, resolutionsResult, settlementEntriesResult] = await Promise.all([
       marketIds.length
-        ? supabase.from('markets').select('id,slug,question,category,status').in('id', marketIds)
+        ? supabase.from('markets').select('id,slug,question,category,status,close_time').in('id', marketIds)
         : Promise.resolve({ data: [] as any[], error: null as any }),
       marketIds.length
         ? supabase.from('market_state').select('market_id,yes_price,no_price').in('market_id', marketIds)
@@ -177,7 +177,8 @@ export async function GET(request: Request) {
                 slug: market.slug,
                 question: localizedQuestionFromSlug(market.slug, market.question, lang),
                 status: market.status,
-                category: market.category
+                category: market.category,
+                closeTime: market.close_time
               }
             : null,
           pricing: state
