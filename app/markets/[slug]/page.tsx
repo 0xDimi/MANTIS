@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { AlphaShell } from '@/components/alpha-shell';
+import { MarketCardIcon } from '@/components/market-card-icon';
 import { MarketTrustTabs } from '@/components/market-trust-tabs';
 import { MarketTrendPanel } from '@/components/market-trend-panel';
 import { MarketQuotePreviewCard } from '@/components/market-quote-preview-card';
@@ -67,67 +68,74 @@ export default async function MarketDetailPage({
         <>
           <section className="marketHeroGrid">
             <article className="marketHeroMain">
-              <p className="eyebrow">{localizedCategory(market.category, lang)}</p>
-              <h1 className="marketTitle">{market.question}</h1>
-              <div
-                className="marketCloseMeta"
-                aria-label={tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}
-                title={`${tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}: ${formatDateTime(market.closeTime, lang)}`}
-              >
-                <span className="marketCloseMetaIcon">
-                  <MarketCloseIcon />
-                </span>
-                <span className="marketCloseMetaValue">{formatMarketCloseDate(market.closeTime, lang)}</span>
-              </div>
-
-              <section className="marketChartSurface">
-                <MarketTrendPanel
-                  slug={market.slug}
-                  yesPrice={state?.yesPrice ?? 0.5}
-                  volumeTotal={state?.volumeTotal ?? 0}
-                  liquidity={market.liquidity}
-                  participants={state?.participantsCount ?? 0}
-                  lang={lang}
-                  yesLabel={market.yesLabel}
-                />
-              </section>
-
-              <Link className="button buttonGhost marketTicketJumpButton" href="#trade-ticket">
-                {tr(lang, 'Open trade ticket', 'Μετάβαση στο δελτίο συναλλαγής')}
-              </Link>
-
-              {relatedMarkets.length > 0 ? (
-                <section className="relatedMarketsRail" aria-label={tr(lang, 'Related markets', 'Σχετικές αγορές')}>
-                  <p className="marketTrendLabel">{tr(lang, 'Related markets', 'Σχετικές αγορές')}</p>
-                  <div className="relatedMarketsList">
-                    {relatedMarkets.map((item) => (
-                      <Link key={item.id} className="relatedMarketPill" href={`/markets/${item.slug}${lang === 'el' ? '?lang=el' : ''}`}>
-                        <span>{item.question}</span>
-                        <div className="relatedMarketMeta">
-                          <strong>{formatPercent(item.state?.yesPrice ?? 0.5)}</strong>
-                          <em>{tr(lang, 'Closes', 'Κλείνει')} {formatRelativeClose(item.closeTime, { lang })}</em>
-                        </div>
-                      </Link>
-                    ))}
+              <header className="detailHeroHeader">
+                <MarketCardIcon item={market} size={60} className="detailHeroIcon" />
+                <div className="detailHeroHeaderCopy">
+                  <p className="eyebrow">{localizedCategory(market.category, lang)}</p>
+                  <h1 className="marketTitle">{market.question}</h1>
+                  <div
+                    className="marketCloseMeta"
+                    aria-label={tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}
+                    title={`${tr(lang, 'Trading closes', 'Λήξη διαπραγμάτευσης')}: ${formatDateTime(market.closeTime, lang)}`}
+                  >
+                    <span className="marketCloseMetaIcon">
+                      <MarketCloseIcon />
+                    </span>
+                    <span className="marketCloseMetaValue">{formatMarketCloseDate(market.closeTime, lang)}</span>
                   </div>
-                </section>
-              ) : null}
+                </div>
+              </header>
 
-              <MarketTrustTabs
-                lang={lang}
-                closeTime={market.closeTime}
-                resolutionTime={market.resolutionTime}
-                sourcePrimary={market.sourcePrimary}
-                sourceFallback={market.sourceFallback}
-                voidRule={market.voidRule}
-                description={market.description}
-                resolution={market.resolution}
-                settlement={market.settlement}
-                status={market.status}
-                updatedAt={market.updatedAt}
-                yesLabel={market.yesLabel}
-                noLabel={market.noLabel}
-              />
+              <div className="detailHeroBody">
+                <section className="marketChartSurface">
+                  <MarketTrendPanel
+                    slug={market.slug}
+                    yesPrice={state?.yesPrice ?? 0.5}
+                    volumeTotal={state?.volumeTotal ?? 0}
+                    liquidity={market.liquidity}
+                    participants={state?.participantsCount ?? 0}
+                    lang={lang}
+                    yesLabel={market.yesLabel}
+                  />
+                </section>
+
+                <Link className="button buttonGhost marketTicketJumpButton" href="#trade-ticket">
+                  {tr(lang, 'Open trade ticket', 'Μετάβαση στο δελτίο συναλλαγής')}
+                </Link>
+
+                {relatedMarkets.length > 0 ? (
+                  <section className="relatedMarketsRail" aria-label={tr(lang, 'Related markets', 'Σχετικές αγορές')}>
+                    <p className="marketTrendLabel">{tr(lang, 'Related markets', 'Σχετικές αγορές')}</p>
+                    <div className="relatedMarketsList">
+                      {relatedMarkets.map((item) => (
+                        <Link key={item.id} className="relatedMarketPill" href={`/markets/${item.slug}${lang === 'el' ? '?lang=el' : ''}`}>
+                          <span>{item.question}</span>
+                          <div className="relatedMarketMeta">
+                            <strong>{formatPercent(item.state?.yesPrice ?? 0.5)}</strong>
+                            <em>{tr(lang, 'Closes', 'Κλείνει')} {formatRelativeClose(item.closeTime, { lang })}</em>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
+
+                <MarketTrustTabs
+                  lang={lang}
+                  closeTime={market.closeTime}
+                  resolutionTime={market.resolutionTime}
+                  sourcePrimary={market.sourcePrimary}
+                  sourceFallback={market.sourceFallback}
+                  voidRule={market.voidRule}
+                  description={market.description}
+                  resolution={market.resolution}
+                  settlement={market.settlement}
+                  status={market.status}
+                  updatedAt={market.updatedAt}
+                  yesLabel={market.yesLabel}
+                  noLabel={market.noLabel}
+                />
+              </div>
             </article>
 
             <aside className="marketTicketCard" id="trade-ticket">

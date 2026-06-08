@@ -46,16 +46,16 @@ export default async function EventDetailPage({
       {eventDetail ? (
         <section className="eventDetailGrid">
           <article className="marketHeroMain eventDetailMain">
-            <header className="eventDetailHeader">
-              <MarketCardIcon item={eventDetail.event} size={60} className="eventDetailHeroIcon" />
-              <div className="eventDetailHeaderCopy">
+            <header className="detailHeroHeader">
+              <MarketCardIcon item={eventDetail.event} size={60} className="detailHeroIcon" />
+              <div className="detailHeroHeaderCopy">
                 <p className="eyebrow">{localizedCategory(eventDetail.event.category, lang)}</p>
                 <h1 className="marketTitle">{eventDetail.event.title}</h1>
                 {eventDetail.event.subtitle ? <p className="marketContextLine">{eventDetail.event.subtitle}</p> : null}
               </div>
             </header>
 
-            <div className="eventDetailBody">
+            <div className="detailHeroBody">
               <section className="eventOutcomeTable" aria-label={tr(lang, 'Event markets', 'Αγορές γεγονότος')}>
                 {eventDetail.children.map((child) => {
                   const selected = selectedChild?.marketId === child.marketId;

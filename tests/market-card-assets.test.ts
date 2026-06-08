@@ -88,13 +88,17 @@ test('generic category fallbacks still land on stable board thumbnails', () => {
   assert.equal(sports.src, '/market-card-images/sports-field.jpg');
 });
 
-test('grouped event detail page reuses the shared market-card icon layout', () => {
-  const pageSource = readFileSync(path.join(repoRoot, 'app/events/[slug]/page.tsx'), 'utf8');
+test('detail pages reuse the shared market-card icon header layout', () => {
+  const eventPageSource = readFileSync(path.join(repoRoot, 'app/events/[slug]/page.tsx'), 'utf8');
+  const marketPageSource = readFileSync(path.join(repoRoot, 'app/markets/[slug]/page.tsx'), 'utf8');
   const cssSource = readFileSync(path.join(repoRoot, 'app/globals.css'), 'utf8');
 
-  assert.match(pageSource, /MarketCardIcon item=\{eventDetail\.event\}/);
-  assert.match(pageSource, /className="eventDetailHeader"/);
-  assert.match(pageSource, /className="eventDetailBody"/);
-  assert.match(cssSource, /\.eventDetailHeader\s*\{/);
-  assert.match(cssSource, /\.eventDetailBody\s*\{/);
+  assert.match(eventPageSource, /MarketCardIcon item=\{eventDetail\.event\}/);
+  assert.match(eventPageSource, /className="detailHeroHeader"/);
+  assert.match(eventPageSource, /className="detailHeroBody"/);
+  assert.match(marketPageSource, /MarketCardIcon item=\{market\}/);
+  assert.match(marketPageSource, /className="detailHeroHeader"/);
+  assert.match(marketPageSource, /className="detailHeroBody"/);
+  assert.match(cssSource, /\.detailHeroHeader\s*\{/);
+  assert.match(cssSource, /\.detailHeroBody\s*\{/);
 });
