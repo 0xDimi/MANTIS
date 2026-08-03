@@ -1,71 +1,45 @@
-# xyz Labs Demo v0.8.6.7
+# MANTIS
 
-Current local/live version of the Greek-first prediction-market demo.
+MANTIS is a Greek-first prediction-market product alpha. I built it to explore how localized markets could turn questions about politics, sport, and current affairs into clear forecasts.
 
-## What changed in v0.8.6.7
+[Open the live demo](https://mantis-demo.xyz/)
 
-This version keeps the current alpha direction intact while polishing the homepage featured market card and hero readability.
+> **Project status:** Prototype only. MANTIS does not operate a live or regulated prediction market, hold customer funds, or execute real-money trades. I paused the launch after reviewing the legal and operational requirements in Greece.
 
-### Mobile detail page
+## What I built
 
-- tightened the market-detail hierarchy for narrow screens
-- improved chart, ticket, and tabs readability on phones
-- cleaned up tap targets, spacing, and trade-ticket flow on mobile
-- kept the dark integrated chart and simplified ticket direction intact
+- Greek and English product flows
+- Curated Greek and international markets
+- Binary and multi-outcome market views
+- Search, category, and liquidity-based discovery
+- Market detail pages with probabilities and charts
+- Trade-ticket and portfolio flows
+- Responsive desktop and mobile layouts
 
-### Mobile homepage and cards
+The project took the idea from a market thesis to a working product alpha. I designed the path from market discovery to order entry and portfolio tracking, while testing how a prediction-market interface should work for Greek users.
 
-- compressed the hero so the slogan and featured contract appear faster
-- improved featured-market flow on phones
-- made market cards denser and easier to scan on mobile
-- improved filter/category controls for touch and horizontal scrolling
+## Why I paused the launch
 
-### Mobile nav and final QA
-
-- smoother board -> market -> back flow
-- clearer active states and mobile action hierarchy
-- tighter consistency across spacing, pills, buttons, and sections
-- final cleanup for overflow, wrapping, and rough mobile edges
-
-### Core product state
-
-- homepage, market detail, and portfolio all render cleanly
-- current alpha UI direction remains the same
-- routes, market data, and trade logic are unchanged
-- version metadata is updated to **v0.8.6.6**
-
-## Access code for local testing
-
-```text
-athens-alpha
-```
+Once the alpha was working, I looked more closely at what a compliant launch would require in Greece. The legal structure and operational burden made the original plan impractical. I stopped before launch rather than operate with unresolved risks.
 
 ## Run locally
 
 ```bash
-cd side-project-os/prediction-market/demo
+git clone https://github.com/0xDimi/MANTIS.git
+cd MANTIS
 npm start
 ```
 
-Then open:
+Then open [http://localhost:4173](http://localhost:4173).
 
-```text
-http://localhost:4173
-```
+## Project structure
 
-## Quick review checklist
+- `app.js` — routes, market data, trade-ticket logic, and page rendering
+- `styles.css` — interface, responsive layouts, and component styling
+- `index.html` — application shell and metadata
+- `server.js` — local zero-dependency Node server
+- `package.json` — local start command and project metadata
 
-1. Unlock the gate with `athens-alpha`
-2. Confirm the gate and top bar show **v0.8.6.7**
-3. Check the homepage hero, featured markets, and all-markets grid on mobile
-4. Open a market and confirm the chart/ticket/tabs feel clean on phone width
-5. Verify portfolio still matches the dark theme and renders cleanly
-6. Confirm mobile navigation across board, market, and portfolio feels consistent
+## Disclaimer
 
-## Files
-
-- `app.js` - app structure, routes, market data, ticket logic, and detail-page rendering
-- `styles.css` - theme, layout, board styling, detail-page styling, and mobile polish
-- `index.html` - app metadata
-- `server.js` - zero-dependency local server
-- `package.json` - local start script and version metadata
+MANTIS is a product demonstration. Market data, balances, and trading flows shown in the demo are illustrative.
