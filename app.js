@@ -1,5 +1,5 @@
-const STORAGE_KEY = 'xyz-labs-demo-state-v86';
-const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v85', 'xyz-labs-demo-state-v84', 'xyz-labs-demo-state-v83', 'xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
+const STORAGE_KEY = 'mantis-demo-state-v86';
+const LEGACY_STORAGE_KEYS = ['xyz-labs-demo-state-v86', 'xyz-labs-demo-state-v85', 'xyz-labs-demo-state-v84', 'xyz-labs-demo-state-v83', 'xyz-labs-demo-state-v82', 'xyz-labs-demo-state-v81', 'xyz-labs-demo-state-v8', 'xyz-labs-demo-state-v7'];
 const ONBOARDING_VERSION = 'v86';
 const STARTING_CASH = 25000;
 const ACCESS_CODE = 'athens-alpha';
@@ -7,7 +7,7 @@ const APP_VERSION = 'v0.8.6.7';
 
 const copy = {
   en: {
-    appTitle: 'xyz Labs',
+    appTitle: 'MANTIS',
     appSubtitle: 'Greek event markets',
     productIdentity: 'Here, your opinion has value',
     navMarkets: 'Markets',
@@ -18,9 +18,9 @@ const copy = {
     liveBoard: 'Live board lane',
     heroEyebrow: 'A Greek prediction market, with event pricing across politics, economy, sports, culture, and more.',
     heroFeatured: 'Featured market',
-    aboutTitle: 'About xyz Labs',
-    aboutWhatTitle: 'What xyz Labs is',
-    aboutWhatBody: 'xyz Labs is a Greece-first prediction market concept where users express a view on real-world events through YES / NO pricing.',
+    aboutTitle: 'About MANTIS',
+    aboutWhatTitle: 'What MANTIS is',
+    aboutWhatBody: 'MANTIS is a Greek-first prediction-market product alpha where users express a view on real-world events through YES / NO pricing.',
     aboutPredictionTitle: 'What prediction markets are',
     aboutPredictionBody: 'Prediction markets turn public questions into tradable prices. A higher percentage means the market currently sees that outcome as more likely.',
     aboutResolutionTitle: 'How market resolution works',
@@ -161,7 +161,7 @@ const copy = {
     categoryMix: 'Category mix',
     noResultsTitle: 'No markets match that screen.',
     noResultsBody: 'Try a broader category or clear the search input.',
-    footer: `xyz Labs · Greek event markets · ${APP_VERSION}`,
+    footer: `MANTIS · Greek event markets · ${APP_VERSION}`,
     toastExecutedTitle: 'Trade executed',
     toastExecutedBody: 'Your portfolio has been updated.',
     toastResetTitle: 'Portfolio reset',
@@ -223,7 +223,7 @@ const copy = {
     you: 'You'
   },
   el: {
-    appTitle: 'xyz Labs',
+    appTitle: 'MANTIS',
     appSubtitle: 'Ελληνικές αγορές γεγονότων',
     productIdentity: 'Εδώ, η γνώμη σου έχει αξία.',
     navMarkets: 'Αγορές',
@@ -234,9 +234,9 @@ const copy = {
     liveBoard: 'Ζωντανό board lane',
     heroEyebrow: 'Μια ελληνική αγορά προβλέψεων, με τιμολόγηση γεγονότων σε πολιτική, οικονομία, αθλητισμό, πολιτισμό και πολλά ακόμη.',
     heroFeatured: 'Κύρια αγορά',
-    aboutTitle: 'About xyz Labs',
-    aboutWhatTitle: 'Τι είναι το xyz Labs',
-    aboutWhatBody: 'Το xyz Labs είναι ένα Greece-first concept prediction market όπου οι χρήστες εκφράζουν άποψη πάνω σε πραγματικά γεγονότα μέσω YES / NO pricing.',
+    aboutTitle: 'Σχετικά με το MANTIS',
+    aboutWhatTitle: 'Τι είναι το MANTIS',
+    aboutWhatBody: 'Το MANTIS είναι μια δοκιμαστική ελληνική πλατφόρμα prediction markets, όπου οι χρήστες εκφράζουν την άποψή τους για πραγματικά γεγονότα μέσω τιμών YES / NO.',
     aboutPredictionTitle: 'Τι είναι τα prediction markets',
     aboutPredictionBody: 'Τα prediction markets μετατρέπουν δημόσια ερωτήματα σε τιμές που αλλάζουν. Όσο υψηλότερο είναι το ποσοστό, τόσο πιο πιθανό θεωρεί αυτή τη στιγμή η αγορά το συγκεκριμένο αποτέλεσμα.',
     aboutResolutionTitle: 'Πώς γίνεται το market resolution',
@@ -377,7 +377,7 @@ const copy = {
     categoryMix: 'Μείγμα κατηγοριών',
     noResultsTitle: 'Δεν υπάρχουν αγορές για αυτό το screen.',
     noResultsBody: 'Δοκίμασε πιο ευρύ φίλτρο ή καθάρισε την αναζήτηση.',
-    footer: `xyz Labs · Ελληνικές αγορές γεγονότων · ${APP_VERSION}`,
+    footer: `MANTIS · Ελληνικές αγορές γεγονότων · ${APP_VERSION}`,
     toastExecutedTitle: 'Το trade εκτελέστηκε',
     toastExecutedBody: 'Το portfolio ενημερώθηκε.',
     toastResetTitle: 'Έγινε reset portfolio',
@@ -2759,7 +2759,7 @@ function renderAccessGate() {
         <div class="gate-copy">
           <span class="eyebrow">${t('gateEyebrow')}</span>
           <div class="brand gate-brand">
-            <div class="brand-mark">xyz</div>
+            <div class="brand-mark">M</div>
             <div class="brand-copy">
               <strong>${t('appTitle')} ${APP_VERSION}</strong>
               <span>${t('privateBeta')}</span>
@@ -2833,7 +2833,7 @@ function renderTopbar(route) {
   return `
     <header class="topbar">
       <a class="brand" href="#/markets" aria-label="${t('navMarkets')}">
-        <div class="brand-mark">xyz</div>
+        <div class="brand-mark">M</div>
         <div class="brand-copy">
           <strong>${t('appTitle')}</strong>
           <span>${t('appSubtitle')}</span>

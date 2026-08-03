@@ -1,8 +1,8 @@
 {
-  "name": "xyz-labs-demo",
+  "name": "mantis-demo",
   "version": "0.8.6.7",
   "private": true,
-  "description": "Third dedicated mobile polish pass focused on navigation flow, final consistency polish, and mobile QA cleanup",
+  "description": "Greek-first prediction-market product alpha",
   "scripts": {
     "start": "node server.js"
   }

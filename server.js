@@ -48,5 +48,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`xyz Labs Demo running at http://localhost:${port}`);
+  console.log(`MANTIS demo running at http://localhost:${port}`);
 });

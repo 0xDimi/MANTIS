@@ -32,6 +32,8 @@ npm start
 
 Then open [http://localhost:4173](http://localhost:4173).
 
+Use `athens-alpha` to unlock the local demo.
+
 ## Project structure
 
 - `app.js` — routes, market data, trade-ticket logic, and page rendering
