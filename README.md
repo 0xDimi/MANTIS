@@ -1,8 +1,8 @@
 # MANTIS
 
-MANTIS is exploring a real-money prediction market for Greek users, inspired by Kalshi, with centralized operation and private ownership acceptable. The project resumed product and regulatory feasibility work on 8 October 2026.
+MANTIS is exploring a real-money prediction market for Greek users, inspired by Kalshi, with centralized operation and an order book built in house. The project resumed product and regulatory feasibility work on 8 October 2026.
 
-The trading and pricing mechanism remains open; the priorities are a simple user experience, reliable operation, and a lawful operating structure. Read the [current project direction](docs/PROJECT_DIRECTION.md) for the product constraints, implementation status, and next milestones.
+The resolution system will also be built in house, with AI assistance and human supervision as the intended direction. Crypto and decentralized components are excluded. Read the [current project direction](docs/PROJECT_DIRECTION.md) for the product constraints, implementation status, and next milestones.
 
 [Open the live demo](https://mantis-demo.xyz/)
 
@@ -24,7 +24,7 @@ The project took the idea from a market thesis to a working product alpha. I des
 
 The founder paused the earlier launch because of legal issues in Greece. The restart focuses on defining the exact event contract, counterparty, funding, exit, and settlement structure and identifying a lawful route for that model. Regulatory change is part of the research scope if existing permissions do not accommodate it.
 
-The next milestones are a complete transaction model, a written legal assessment, a liquidity and commercial plan, and an audit of the available prototype code. A launch date and regulatory approval have not been established.
+The product model and architecture are documented. The next milestones are a written legal assessment of the centralized order book, a funded liquidity plan, a complete prototype audit, and staged implementation. A launch date and regulatory approval have not been established.
 
 ## Run locally
 

@@ -1,29 +1,25 @@
 # MANTIS project direction
 
-**Updated:** 8 October 2026 · **Stage:** active product and regulatory feasibility work
+**Updated:** 8 October 2026 · **Stage:** product design and regulatory feasibility
 
-MANTIS targets a real-money prediction market for Greek users, inspired by Kalshi. Centralized operation and private ownership are acceptable. No trading or pricing engine is selected. The founder's latest clarification removes the earlier CLOB requirement and prioritizes a simple, reliable experience with a lawful operating structure.
+MANTIS will be a centrally operated prediction market for Greek users, inspired by Kalshi. Its order book and resolution system will be built in house. Crypto, blockchain, decentralized governance, and decentralized oracles are outside scope. Centralized operation is a requirement.
 
-## Intended experience
+## Product model
 
-Users take a Yes/No position on a defined event, see their cost and potential payout, and hold to settlement or exit earlier when an executable transaction is available. Early exit and its price are not guaranteed. Fees, permissible events, customer eligibility, and exact contractual rights remain to be determined.
+The recommended first release uses fully funded binary Yes/No contracts in EUR, price/time priority, and explicit Buy/Sell flows. A sale requires an executable order; exit and its price are not guaranteed. The platform will keep matching, reservations, unit ownership, and financial accounting consistent.
 
-## Legal and operating model
+## In-house resolution
 
-The feasibility work compares participant matching with a model where the operator acts as transaction counterparty. Each requires its own assessment of permissions, funding of obligations, custody/payment arrangements, pricing, conflicts, event resolution, disputes, and settlement. Centralized ownership alone does not determine those roles or establish permission.
+MANTIS will control contract rules, official-source collection, evidence review, outcome authorization, and settlement. The intended AI role is to extract and summarize evidence and propose a result for human review. The recommended initial release requires human outcome approval and separate authorization before payout. AI will not have permission to change rules or move customer funds.
 
-A Greek counsel package has been prepared for an initial written assessment. It asks for an existing-law route or the precise statutory and regulatory changes required. The Kalshi reference does not establish permission for MANTIS in Greece.
+## Legal and operating work
 
-## Implementation status
+The Greek counsel package describes this centralized order-book product. It requests assessment of the instrument, exchange structure, counterparty obligations, funds, clearing, resolution duties, and the exact reform route if required. Kalshi's US permissions do not establish permission for MANTIS in Greece.
 
-The code on `main` is a static demonstration. The separate `alpha` branch contains additional prototype work. Their suitability for a real-money service has not been established. Earlier prototype and engine specifications are historical; this documentation update changes no software behavior.
+Legal entities, permissions, payment/custody providers, fee rates, and launch timing remain open. A sportsbook with operator-set prices is not an equal product alternative in the current plan.
 
-## Restart milestones
+## Implementation status and next steps
 
-1. Obtain counsel's assessment of the alternative structures and select an operating model.
-2. Specify the instrument, transaction lifecycle, responsible entities, and permissions or changes required.
-3. Establish executable pricing, payout funding, fees, and operating costs.
-4. Audit the prototypes and scope the transaction engine, ledger, payments, resolution, monitoring, and recovery work.
-5. Establish applicable permissions, financing, and demonstrated operational readiness before real-money release.
+The code on main remains a static demo. The alpha branch contains separate prototype work. Current design documents draw on public exchange materials; they do not establish a production-ready system or reproduce a competitor's undisclosed architecture.
 
-No regulatory clearance, financing amount, launch date, or approved operating entity is asserted here.
+Complete legal assessment and the code audit, establish funded liquidity and operating costs, then implement the centralized matching/accounting core, payments, and resolution in stages with integration and recovery evidence. No regulatory clearance, financing amount, approved entity, or launch date is claimed.
