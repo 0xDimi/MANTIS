@@ -2,23 +2,28 @@
 
 **Updated:** 8 October 2026 · **Stage:** active product and regulatory feasibility work
 
-MANTIS targets a prediction market for Greek users with real-money event contracts and centrally operated order matching. A central limit order book is the working direction. The founder excludes AMMs, LMSR, and elaborate substitutes that change the intended business.
+MANTIS targets a real-money prediction market for Greek users, inspired by Kalshi. Centralized operation and private ownership are acceptable. No trading or pricing engine is selected. The founder's latest clarification removes the earlier CLOB requirement and prioritizes a simple, reliable experience with a lawful operating structure.
 
-## Product and implementation status
+## Intended experience
 
-The target model needs to define the contract rights, counterparties, collateral, matching rules, fees, position exits, event resolution, disputes, and settlement. Centralized operation does not by itself determine who holds funds or owes each payout.
+Users take a Yes/No position on a defined event, see their cost and potential payout, and hold to settlement or exit earlier when an executable transaction is available. Early exit and its price are not guaranteed. Fees, permissible events, customer eligibility, and exact contractual rights remain to be determined.
 
-The code on `main` is a static demonstration. The separate `alpha` branch contains additional prototype work. Those implementations require an audit before a technical starting point is chosen. The target CLOB has not been implemented by this documentation update.
+## Legal and operating model
 
-Earlier prototype or AMM materials are historical records. They do not define the current product's market mechanics, legal route, or readiness.
+The feasibility work compares participant matching with a model where the operator acts as transaction counterparty. Each requires its own assessment of permissions, funding of obligations, custody/payment arrangements, pricing, conflicts, event resolution, disputes, and settlement. Centralized ownership alone does not determine those roles or establish permission.
+
+A Greek counsel package has been prepared for an initial written assessment. It asks for an existing-law route or the precise statutory and regulatory changes required. The Kalshi reference does not establish permission for MANTIS in Greece.
+
+## Implementation status
+
+The code on `main` is a static demonstration. The separate `alpha` branch contains additional prototype work. Their suitability for a real-money service has not been established. Earlier prototype and engine specifications are historical; this documentation update changes no software behavior.
 
 ## Restart milestones
 
-1. Define one exact instrument and transaction model for product, counsel, and builders.
-2. Map the applicable current Greek and EU rules, including amendments and requirements for the intended order matching structure.
-3. Obtain a written legal assessment of available permissions or the specific changes required.
-4. Develop the liquidity plan, quoting counterparties, fees, and operating costs.
-5. Audit the prototype code and scope the CLOB, collateral, ledger, resolution, and settlement work.
-6. Establish applicable permissions, financing, and demonstrated operational readiness before a real-money release.
+1. Obtain counsel's assessment of the alternative structures and select an operating model.
+2. Specify the instrument, transaction lifecycle, responsible entities, and permissions or changes required.
+3. Establish executable pricing, payout funding, fees, and operating costs.
+4. Audit the prototypes and scope the transaction engine, ledger, payments, resolution, monitoring, and recovery work.
+5. Establish applicable permissions, financing, and demonstrated operational readiness before real-money release.
 
-The project is examining authorization and regulatory reform. No regulatory clearance, financing amount, launch date, or approved operating entity is asserted here.
+No regulatory clearance, financing amount, launch date, or approved operating entity is asserted here.
