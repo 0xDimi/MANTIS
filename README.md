@@ -1,10 +1,12 @@
 # MANTIS
 
-MANTIS is a Greek-first prediction-market product alpha. I built it to explore how localized markets could turn questions about politics, sport, and current affairs into clear forecasts.
+MANTIS is exploring a real-money prediction market for Greek users, operated centrally with a central limit order book (CLOB). The project resumed product and regulatory feasibility work on 8 October 2026.
+
+The intended model excludes AMM and LMSR pricing. Read the [current project direction](docs/PROJECT_DIRECTION.md) for the product constraints, implementation status, and next milestones.
 
 [Open the live demo](https://mantis-demo.xyz/)
 
-> **Project status:** Prototype only. MANTIS does not operate a live or regulated prediction market, hold customer funds, or execute real-money trades. I paused the launch after reviewing the legal and operational requirements in Greece.
+> **Project status:** Feasibility work is active. The code on `main` remains a static product demo with illustrative data and balances. It does not implement the target CLOB or establish authorization for real-money operation. The legal route and operating structure remain under examination.
 
 ## What I built
 
@@ -18,9 +20,11 @@ MANTIS is a Greek-first prediction-market product alpha. I built it to explore h
 
 The project took the idea from a market thesis to a working product alpha. I designed the path from market discovery to order entry and portfolio tracking, while testing how a prediction-market interface should work for Greek users.
 
-## Why I paused the launch
+## Restart direction
 
-Once the alpha was working, I looked more closely at what a compliant launch would require in Greece. The legal structure and operational burden made the original plan impractical. I stopped before launch rather than operate with unresolved risks.
+The founder paused the earlier launch after legal and operational review in Greece. The restart focuses on defining the exact event contract, customer order matching, collateral, and settlement structure and identifying a lawful route for that model. Regulatory change is part of the research scope if existing permissions do not accommodate it.
+
+The next milestones are a complete transaction model, a written legal assessment, a liquidity and commercial plan, and an audit of the available prototype code. A launch date and regulatory approval have not been established.
 
 ## Run locally
 
